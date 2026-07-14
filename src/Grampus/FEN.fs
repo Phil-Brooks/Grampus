@@ -3,17 +3,6 @@ namespace Grampus
 open System.Text
 open System.Text.RegularExpressions
 
-type Fen =
-    { Pieceat : Piece list
-      Whosturn : Player
-      CastleWS : bool
-      CastleWL : bool
-      CastleBS : bool
-      CastleBL : bool
-      Enpassant : Square
-      Fiftymove : int
-      Fullmove : int }
-
 module FEN =
     let Parse(sFEN : string) =
         let pieceat = Array.create 64 Piece.EMPTY

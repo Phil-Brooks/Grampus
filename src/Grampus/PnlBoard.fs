@@ -131,8 +131,8 @@ module PnlBoardLib =
         let setpcsmvs() =
             let setpcsmvs() =
                 board.PieceAt
-                |> List.map Piece.ToStr
-                |> List.iteri (fun i c -> 
+                |> Array.map Piece.ToStr
+                |> Array.iteri (fun i c -> 
                        sqs.[i].Image <- if c = " " then null
                                         else getim c)
             if (bd.InvokeRequired) then 

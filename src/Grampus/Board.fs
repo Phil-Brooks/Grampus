@@ -8,7 +8,7 @@ module Board =
         
         let pieceat =
             bd.PieceAt
-            |> List.mapi (fun i p -> 
+            |> Array.mapi (fun i p -> 
                    if i = int (mto) then piece
                    elif i = int (mfrom) then Piece.EMPTY
                    else p)
@@ -54,7 +54,7 @@ module Board =
         
         let pieceat =
             bd.PieceAt
-            |> List.mapi (fun i p -> 
+            |> Array.mapi (fun i p -> 
                    if i = int (pos) then piece
                    else p)
         
@@ -101,7 +101,7 @@ module Board =
         
         let pieceat =
             bd.PieceAt
-            |> List.mapi (fun i p -> 
+            |> Array.mapi (fun i p -> 
                    if i = int (pos) then Piece.EMPTY
                    else p)
         

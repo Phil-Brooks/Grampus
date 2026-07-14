@@ -198,30 +198,18 @@ module Types =
      /// <summary>Record type holding board details such as pieces on each square.</summary>
     type Brd =
         { 
-          PieceAt : Piece list
-          
+          PieceAt : Piece[]
           WtKingPos : Square
-          
           BkKingPos : Square
-          
           PieceTypes : Bitboard list
-          
           WtPrBds : Bitboard
-          
           BkPrBds : Bitboard
-          
           PieceLocationsAll : Bitboard
-          
           Checkers : Bitboard
-          
           WhosTurn : Player
-          
           CastleRights : CstlFlgs
-          
           EnPassant : Square
-          
           Fiftymove : int
-          
           Fullmove : int }
         member bd.Item
             with get (sq : Square) = bd.PieceAt.[int (sq)]
@@ -245,8 +233,8 @@ module Types =
             
             let bdstr =
                 bd.PieceAt
-                |> List.map (fun p -> p |> pctostr)
-                |> List.reduce (+)
+                |> Array.map (fun p -> p |> pctostr)
+                |> String.concat ""
             
             let tomv =
                 if bd.WhosTurn = Player.White then " w"
@@ -255,7 +243,7 @@ module Types =
             bdstr + tomv
     
     let BrdEMP =
-        { PieceAt = Array.create 64 Piece.EMPTY |> List.ofArray
+        { PieceAt = Array.create 64 Piece.EMPTY
           WtKingPos = OUTOFBOUNDS
           BkKingPos = OUTOFBOUNDS
           PieceTypes = Array.create 7 Bitboard.Empty |> List.ofArray
@@ -282,3 +270,14 @@ module Types =
           IsCheckMate : bool
           San : string }
         override x.ToString() = x.San
+
+    type Fen =
+        { Pieceat : Piece list
+          Whosturn : Player
+          CastleWS : bool
+          CastleWL : bool
+          CastleBS : bool
+          CastleBL : bool
+          Enpassant : Square
+          Fiftymove : int
+          Fullmove : int }
