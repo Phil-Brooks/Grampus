@@ -35,6 +35,7 @@ module Piece =
     [<Theory>]
     [<InlineData(Piece.WPawn, "P")>]
     [<InlineData(Piece.BQueen, "q")>]
+    [<InlineData(Piece.EMPTY, ".")>]
     let ``ToStr returns correct string for Piece``(input, expected) =
         Piece.ToStr input |> should equal expected
 
@@ -43,15 +44,8 @@ module Piece =
 
     [<Property(Arbitrary = [| typeof<PieceGenerator> |])>]
     let ``Piece Round-trip: Parse(ToStr(p)) equals p`` (p: Piece) =
-        // Note: This requires ToStr to return "." for EMPTY to match Parse
-        if p = Piece.EMPTY then
-            // If you keep ToStr returning " ", this specific case needs to be handled
-            let s = Piece.ToStr p
-            // Parse currently expects '.', but ToStr gives ' '
-            true // Placeholder for fix
-        else
-            let s = Piece.ToStr p
-            Piece.Parse (s.[0]) = p
+        let s = Piece.ToStr p
+        Piece.Parse (s.[0]) = p
 
     [<Property(Arbitrary = [| typeof<PieceGenerator> |])>]
     let ``PieceToPlayer logic is consistent`` (p: Piece) =

@@ -32,7 +32,7 @@ module Piece =
         | Piece.BRook -> "r"
         | Piece.BQueen -> "q"
         | Piece.BKing -> "k"
-        | Piece.EMPTY -> " "
+        | Piece.EMPTY -> "."
         | _ -> failwith ("not a valid piece")
     
     let ToPieceType(piece : Piece) = (int (piece) &&& 7) |> PcTp

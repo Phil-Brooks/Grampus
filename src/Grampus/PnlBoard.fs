@@ -2,22 +2,44 @@ namespace GrampusUI
 
 open System.Drawing
 open System.Windows.Forms
+open System.Collections.Generic
+//open System.Reflection
 open Grampus
 
 [<AutoOpen>]
 module PnlBoardLib =
+    let private imageCache = Dictionary<string, Image>()
+    let private cursorCache = Dictionary<string, Cursor>()
+
+    let private getStream path =
+        let thisExe = System.Reflection.Assembly.GetExecutingAssembly()
+        let stream = thisExe.GetManifestResourceStream(path)
+        if stream = null then 
+            // This will tell you EXACTLY which file is missing/misnamed
+            failwithf "Resource not found: %s. Ensure it is marked as 'Embedded Resource'." path
+        stream
+
     let private img nm =
-        let thisExe = System.Reflection.Assembly.GetExecutingAssembly()
-        let file =
-            thisExe.GetManifestResourceStream("Grampus.Images." + nm)
-        Image.FromStream(file)
-    
+        let path = "Grampus.Images." + nm
+        if not (imageCache.ContainsKey(path)) then
+            use stream = getStream path
+            // Load the image from the stream
+            use tempImg = Image.FromStream(stream)
+            // Create a NEW Bitmap copy. 
+            // This copies the pixels into memory so we can close the stream.
+            imageCache.[path] <- new Bitmap(tempImg)
+        imageCache.[path]
+
     let private cur nm =
-        let thisExe = System.Reflection.Assembly.GetExecutingAssembly()
-        //let nms = thisExe.GetManifestResourceNames()
-        let file =
-            thisExe.GetManifestResourceStream("Grampus.Cursors." + nm)
-        new Cursor(file)
+        let path = "Grampus.Cursors." + nm
+        if not (cursorCache.ContainsKey(path)) then
+            use stream = getStream path
+            // Cursors usually need the stream to stay open 
+            // OR we can copy it to a memory stream first.
+            // For cursors, it's often easiest to just let the stream live:
+            let stream = getStream path 
+            cursorCache.[path] <- new Cursor(stream)
+        cursorCache.[path]    
     
     type PnlBoard() as bd =
         inherit Panel(Width = 400, Height = 420)
@@ -82,6 +104,7 @@ module PnlBoardLib =
                       PieceType.Bishop ]
                 sq.Click.Add(fun e -> 
                     prompctp <- pctps.[i]
+                    dlg.DialogResult <- DialogResult.OK
                     dlg.Close())
                 sqs.[i] <- sq
             
@@ -133,7 +156,7 @@ module PnlBoardLib =
                 board.PieceAt
                 |> Array.map Piece.ToStr
                 |> Array.iteri (fun i c -> 
-                       sqs.[i].Image <- if c = " " then null
+                       sqs.[i].Image <- if c = "." then null
                                         else getim c)
             if (bd.InvokeRequired) then 
                 try 
@@ -189,6 +212,13 @@ module PnlBoardLib =
             sqTo <- System.Convert.ToInt32(p.Tag)
             sqpnl.Cursor <- Cursors.Default
         
+        let refreshPromoImages() =
+            let pcre = if board.WhosTurn = Player.White then "White" else "Black"
+            sqs.[0].Image <- img (pcre + "Queen.png")
+            sqs.[1].Image <- img (pcre + "Rook.png")
+            sqs.[2].Image <- img (pcre + "Knight.png")
+            sqs.[3].Image <- img (pcre + "Bishop.png")
+        
         /// Action for Mouse Down
         let mouseDown (p : PictureBox, e : MouseEventArgs) =
             if e.Button = MouseButtons.Left then 
@@ -221,18 +251,28 @@ module PnlBoardLib =
                         board <- board |> Board.MoveApply mvl.Head
                         setpcsmvs()
                         mvl.Head |> mvEvt.Trigger
-                    //need to allow for promotion
+
                     elif mvl.Length = 4 then 
-                        dlgprom.ShowDialog() |> ignore
-                        let nmvl =
-                            mvl 
-                            |> List.filter 
-                                   (fun mv -> mv
-                                              |> Move.PromoteType = prompctp)
-                        board <- board |> Board.MoveApply nmvl.Head
-                        setpcsmvs()
-                        nmvl.Head |> mvEvt.Trigger
-                    else p.Image <- oimg
+                        prompctp <- PieceType.EMPTY // Reset before showing
+                        refreshPromoImages()
+                        let result = dlgprom.ShowDialog()
+                    
+                        if result = DialogResult.OK && prompctp <> PieceType.EMPTY then
+                            // Use tryFind to safely locate the specific promotion move
+                            let matchedMove = mvl |> List.tryFind (fun mv -> Move.PromoteType mv = prompctp)
+                        
+                            match matchedMove with
+                            | Some mv ->
+                                board <- board |> Board.MoveApply mv
+                                setpcsmvs()
+                                mv |> mvEvt.Trigger
+                            | None -> 
+                                // This shouldn't happen, but if it does, snap back
+                                p.Image <- oimg 
+                        else
+                            // User closed the dialog or cancelled
+                            p.Image <- oimg 
+
                 else p.Image <- oimg
                 sqpnl.Cursor <- Cursors.Default
                 [] |> highlightsqs
