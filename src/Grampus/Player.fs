@@ -1,6 +1,4 @@
-namespace GrampusInternal
-
-open Grampus
+namespace Grampus
 
 module Player =
     let AllPlayers = [| Player.White; Player.Black |]

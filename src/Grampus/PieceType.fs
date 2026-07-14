@@ -1,6 +1,4 @@
-namespace GrampusInternal
-
-open Grampus
+namespace Grampus
 
 module PieceType =
     let Parse(c : char) =

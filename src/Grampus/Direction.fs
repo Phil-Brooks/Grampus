@@ -1,6 +1,4 @@
-namespace GrampusInternal
-
-open Grampus
+namespace Grampus
 
 type Dirn =
     | DirN = 8

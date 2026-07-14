@@ -1,6 +1,4 @@
-namespace GrampusInternal
-
-open Grampus
+namespace Grampus
 
 module Piece =
     let Parse(c : char) =
@@ -20,7 +18,7 @@ module Piece =
         | '.' -> Piece.EMPTY
         | _ -> failwith (c.ToString() + " is not a valid piece")
     
-    let PieceToString(piece : Piece) =
+    let ToStr(piece : Piece) =
         match piece with
         | Piece.WPawn -> "P"
         | Piece.WKnight -> "N"

@@ -1,6 +1,4 @@
-namespace GrampusInternal
-
-open Grampus
+namespace Grampus
 
 module Board =
     let private PieceMove (mfrom : Square) mto (bd : Brd) =

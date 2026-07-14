@@ -1,6 +1,4 @@
-namespace GrampusInternal
-
-open Grampus
+namespace Grampus
 
 module Rank =
     let Parse(c : char) : Rank =

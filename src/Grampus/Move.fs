@@ -1,6 +1,4 @@
-namespace GrampusInternal
-
-open Grampus
+namespace Grampus
 
 module Move =
     let Create (pfrom : Square) (pto : Square) (piece : Piece) 

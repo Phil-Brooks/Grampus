@@ -1,6 +1,4 @@
-namespace GrampusInternal
-
-open Grampus
+namespace Grampus
 
 module MoveGenerate =
     let private legal (bd : Brd) (mvs : Move list) =

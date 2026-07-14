@@ -1,6 +1,5 @@
-namespace GrampusInternal
+namespace Grampus
 
-open Grampus
 open System.Text
 open System.Text.RegularExpressions
 

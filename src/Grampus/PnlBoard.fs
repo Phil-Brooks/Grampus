@@ -1,4 +1,4 @@
-namespace GrampusWinForms
+namespace GrampusUI
 
 open System.Drawing
 open System.Windows.Forms
@@ -194,7 +194,7 @@ module PnlBoardLib =
             if e.Button = MouseButtons.Left then 
                 let sqFrom = System.Convert.ToInt32(p.Tag)
                 let sqf : Square = sqFrom |> int16
-                let psmvs = sqf |> Board.PossMoves board
+                let psmvs = sqf |> MoveGenerate.PossMoves board
                 
                 let pssqs =
                     psmvs
@@ -218,7 +218,7 @@ module PnlBoardLib =
                                |> Move.To
                                |> int = sqTo)
                     if mvl.Length = 1 then 
-                        board <- board |> Board.Push mvl.Head
+                        board <- board |> Board.MoveApply mvl.Head
                         setpcsmvs()
                         mvl.Head |> mvEvt.Trigger
                     //need to allow for promotion
@@ -228,8 +228,8 @@ module PnlBoardLib =
                             mvl 
                             |> List.filter 
                                    (fun mv -> mv
-                                              |> Move.PromPcTp = prompctp)
-                        board <- board |> Board.Push nmvl.Head
+                                              |> Move.PromoteType = prompctp)
+                        board <- board |> Board.MoveApply nmvl.Head
                         setpcsmvs()
                         nmvl.Head |> mvEvt.Trigger
                     else p.Image <- oimg
@@ -310,8 +310,8 @@ module PnlBoardLib =
         
         ///Sets the board given a new move in SAN format
         member bd.DoMove(san : string) =
-            let mv = san |> Move.FromSan board
-            board <- board |> Board.Push mv
+            let mv = san |> MoveUtil.fromSAN board
+            board <- board |> Board.MoveApply mv
             setpcsmvs()
         
         //publish

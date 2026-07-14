@@ -1,11 +1,11 @@
-open GrampusUI.Form
+namespace GrampusUI
 
 open System
 open System.Windows.Forms
-open System.Drawing
+open Form
 
-[<EntryPoint; STAThread>]
-let main argv =
+module Main =
+    [<EntryPoint; STAThread>]
     Application.SetHighDpiMode(HighDpiMode.SystemAware)|>ignore
     Application.EnableVisualStyles()
     Application.SetCompatibleTextRenderingDefault(false)
@@ -13,4 +13,3 @@ let main argv =
     let frm = new FrmMain()
     
     Application.Run(frm)
-    0 // Return exit code

@@ -1,9 +1,7 @@
 namespace GrampusUI
 
-open System.IO
 open System.Drawing
 open System.Windows.Forms
-open GrampusWinForms
 
 module Form =
     let img nm =
