@@ -37,4 +37,10 @@ module Piece =
     
     let ToPieceType(piece : Piece) = (int (piece) &&& 7) |> PcTp
     
-    let PieceToPlayer(piece : Piece) = (int (piece) >>> 3) |> Plyr
+    let PieceToPlayer (piece : Piece) =
+        if piece = Piece.EMPTY then 
+            None 
+        else
+            // Shift to get 0 for White, 1 for Black, then wrap in Some
+            let playerValue = int piece >>> 3
+            Some (LanguagePrimitives.EnumOfValue<int, Player>(playerValue))

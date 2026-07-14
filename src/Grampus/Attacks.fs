@@ -1,70 +1,79 @@
 namespace Grampus
 
 module Attacks =
+    open System
+    open System.Numerics
+
+    // 1. Basic Helpers (Must be first)
+    let inline private toBB (sq: Square) = 
+        LanguagePrimitives.EnumOfValue<uint64, Bitboard>(1UL <<< int sq)
+
+    let private combineBB (bbs: Bitboard seq) = 
+        bbs |> Seq.fold (|||) Bitboard.Empty
+
     let Combinations(mask : Bitboard) =
-        let posl = mask |> Bitboard.ToSquares
-        let possCombs = 1 <<< (posl.Length)
-        
-        let getc i =
-            posl
-            |> List.mapi (fun b p -> 
-                   if i &&& (1 <<< b) = 0 then Bitboard.Empty
-                   else p |> Square.ToBitboard)
-            |> List.reduce (|||)
-        [ 0..possCombs - 1 ] |> List.map getc
-    
+        let posl = mask |> Bitboard.toSquares
+        let numPositions = posl.Length
+        let numCombinations = 1 <<< numPositions
+        List.init numCombinations (fun i ->
+            let mutable result = Bitboard.Empty
+            for b = 0 to numPositions - 1 do
+                if (i &&& (1 <<< b)) <> 0 then
+                    result <- result ||| (toBB posl.[b])
+            result
+        )
+
+    // 2. Mask Calculation Logic
     let RookMaskCalc(position : Square) =
-        let rec getr (d : Dirn) (p : Square) rv =
-            if p
-               |> Square.PositionInDirection(d) = OUTOFBOUNDS then rv
-            else 
-                let nrv = rv ||| (p |> Square.ToBitboard)
-                getr d (p |> Square.PositionInDirection(d)) nrv
         Direction.AllDirectionsRook
-        |> Array.map 
-               (fun d -> 
-               getr d (position |> Square.PositionInDirection(d)) Bitboard.Empty)
-        |> Array.reduce (|||)
-    
+        |> Array.map (fun d -> 
+            let rec getr (p : Square) rv =
+                let next = p |> Square.PositionInDirection(d)
+                if next = OUTOFBOUNDS || (next |> Square.PositionInDirection(d)) = OUTOFBOUNDS then 
+                    rv
+                else 
+                    getr next (rv ||| (toBB next))
+            getr position Bitboard.Empty)
+        |> combineBB
+
     let BishopMaskCalc(position : Square) =
-        let rec getr d (p : Square) rv =
-            if p
-               |> Square.PositionInDirection(d) = OUTOFBOUNDS then rv
-            else 
-                let nrv = rv ||| (p |> Square.ToBitboard)
-                getr d (p |> Square.PositionInDirection(d)) nrv
         Direction.AllDirectionsBishop
-        |> Array.map 
-               (fun d -> 
-               getr d (position |> Square.PositionInDirection(d)) Bitboard.Empty)
-        |> Array.reduce (|||)
-    
+        |> Array.map (fun d -> 
+            let rec getr (p : Square) rv =
+                let next = p |> Square.PositionInDirection(d)
+                if next = OUTOFBOUNDS || (next |> Square.PositionInDirection(d)) = OUTOFBOUNDS then 
+                    rv
+                else 
+                    getr next (rv ||| (toBB next))
+            getr position Bitboard.Empty)
+        |> combineBB
+
     let RookAttacksCalc (position : Square) (blockers : Bitboard) =
-        let rec getr d p rv =
-            if p = OUTOFBOUNDS then rv
-            else 
-                let nrv = rv ||| (p |> Square.ToBitboard)
-                if blockers |> Bitboard.ContainsPos(p) then nrv
-                else getr d (p |> Square.PositionInDirection(d)) nrv
         Direction.AllDirectionsRook
-        |> Array.map 
-               (fun d -> 
-               getr d (position |> Square.PositionInDirection(d)) Bitboard.Empty)
-        |> Array.reduce (|||)
-    
+        |> Array.map (fun d -> 
+            let rec getr p rv =
+                let next = p |> Square.PositionInDirection(d)
+                if next = OUTOFBOUNDS then rv
+                else 
+                    let nrv = rv ||| (toBB next)
+                    if Bitboard.containsPos next blockers then nrv
+                    else getr next nrv
+            getr position Bitboard.Empty)
+        |> combineBB
+
     let BishopAttacksCalc (position : Square) (blockers : Bitboard) =
-        let rec getr d p rv =
-            if p = OUTOFBOUNDS then rv
-            else 
-                let nrv = rv ||| (p |> Square.ToBitboard)
-                if blockers |> Bitboard.ContainsPos(p) then nrv
-                else getr d (p |> Square.PositionInDirection(d)) nrv
         Direction.AllDirectionsBishop
-        |> Array.map 
-               (fun d -> 
-               getr d (position |> Square.PositionInDirection(d)) Bitboard.Empty)
-        |> Array.reduce (|||)
-    
+        |> Array.map (fun d -> 
+            let rec getr p rv =
+                let next = p |> Square.PositionInDirection(d)
+                if next = OUTOFBOUNDS then rv
+                else 
+                    let nrv = rv ||| (toBB next)
+                    if Bitboard.containsPos next blockers then nrv
+                    else getr next nrv
+            getr position Bitboard.Empty)
+        |> combineBB
+
     let MagicsB =
         [| 11533720853379293696UL //A8
                                   ; 4634221887939944448UL //B8
@@ -240,95 +249,119 @@ module Attacks =
            45071337550774534UL //H1
                                |]
     
+    // 4. Pre-calculated Tables (Must be above the Accessor functions)
+    
     let AttacksKn =
-        let getkn sq =
+        SQUARES |> List.map (fun sq ->
             Direction.AllDirectionsKnight
-            |> Seq.map (fun d -> 
-                   sq
-                   |> Square.PositionInDirection(d)
-                   |> Square.ToBitboard)
-            |> Seq.reduce (|||)
-        SQUARES |> List.map getkn
-    
+            |> Seq.map (fun d -> sq |> Square.PositionInDirection d)
+            |> Seq.filter (fun res -> res <> OUTOFBOUNDS)
+            |> Seq.map toBB |> combineBB) |> List.toArray
+
     let AttacksK =
-        let getk sq =
+        SQUARES |> List.map (fun sq ->
             Direction.AllDirectionsQueen
-            |> Seq.map (fun d -> 
-                   sq
-                   |> Square.PositionInDirection(d)
-                   |> Square.ToBitboard)
-            |> Seq.reduce (|||)
-        SQUARES |> List.map getk
+            |> Seq.map (fun d -> sq |> Square.PositionInDirection d)
+            |> Seq.filter (fun res -> res <> OUTOFBOUNDS)
+            |> Seq.map toBB |> combineBB) |> List.toArray
+
+    let AttacksP =
+        [|
+            // White Pawn Attacks (Index 0)
+            SQUARES |> List.map (fun sq ->
+                let b = toBB sq
+                (Bitboard.shift Dirn.DirNE b) ||| (Bitboard.shift Dirn.DirNW b)
+            ) |> List.toArray
+
+            // Black Pawn Attacks (Index 1)
+            SQUARES |> List.map (fun sq ->
+                let b = toBB sq
+                (Bitboard.shift Dirn.DirSE b) ||| (Bitboard.shift Dirn.DirSW b)
+            ) |> List.toArray
+        |]
+
+    // Optional: Pawn Pushes (Useful for UI highlighting valid moves)
+    let PawnPushes =
+        [|
+            // White Pushes
+            SQUARES |> List.map (fun sq ->
+                let b = toBB sq
+                let single = Bitboard.shift Dirn.DirN b
+                // Only allow double push if on starting rank
+                let rank = sq / 8s
+                if rank = 1s then single ||| (Bitboard.shift Dirn.DirN single)
+                else single
+            ) |> List.toArray
+
+            // Black Pushes
+            SQUARES |> List.map (fun sq ->
+                let b = toBB sq
+                let single = Bitboard.shift Dirn.DirS b
+                let rank = sq / 8s
+                if rank = 6s then single ||| (Bitboard.shift Dirn.DirS single)
+                else single
+            ) |> List.toArray
+        |]    
     
-    let AttacksP, AttacksPF =
-        let getp pr sq =
-            let board =
-                Bitboard.Empty 
-                ||| (((sq |> Square.PositionInDirection(pr |> Direction.MyNorth)) 
-                      |> Square.PositionInDirection(Dirn.DirE)) 
-                     |> Square.ToBitboard) 
-                ||| (((sq |> Square.PositionInDirection(pr |> Direction.MyNorth)) 
-                      |> Square.PositionInDirection(Dirn.DirW)) 
-                     |> Square.ToBitboard)
-            board, (board |> Bitboard.Flood(pr |> Direction.MyNorth))
-        
-        let getps pr =
-            SQUARES
-            |> List.map (getp pr)
-            |> List.unzip
-        
-        Player.AllPlayers
-        |> Array.map getps
-        |> Array.unzip
-    
-    let LookupB, ShiftB, MaskB =
-        let getlsm sq =
+    // Initialize Sliding Tables
+    let private bishopResults = 
+        SQUARES |> List.map (fun sq ->
             let mask = BishopMaskCalc(sq)
-            let possibleCombinations = 1 <<< (mask |> Bitboard.BitCount)
-            let shift = 64 - (mask |> Bitboard.BitCount)
-            let magic = MagicsB.[int (sq)]
-            let lu = Array.create possibleCombinations Bitboard.Empty
-            for bitset in Combinations(mask) do
+            let bitCount = Bitboard.bitCount mask
+            let shift = 64 - bitCount
+            let magic = MagicsB.[int sq]
+            let combinations = Combinations mask
+            let lu = Array.create (1 <<< bitCount) Bitboard.Empty
+            for bitset in combinations do
                 let attacks = BishopAttacksCalc sq bitset
-                let index = (magic * uint64 (bitset)) >>> shift
-                lu.[int (index)] <- attacks //OK
-            lu, shift, mask
-        SQUARES
-        |> List.map getlsm
-        |> List.unzip3
-    
-    let LookupR, ShiftR, MaskR =
-        let getlsm sq =
+                let index = (magic * uint64 bitset) >>> shift
+                lu.[int index] <- attacks
+            lu, shift, mask)
+
+    let LookupB = bishopResults |> List.map (fun (a,_,_) -> a) |> List.toArray
+    let ShiftB  = bishopResults |> List.map (fun (_,b,_) -> b) |> List.toArray
+    let MaskB   = bishopResults |> List.map (fun (_,_,c) -> c) |> List.toArray
+
+    let private rookResults = 
+        SQUARES |> List.map (fun sq ->
             let mask = RookMaskCalc(sq)
-            let possibleCombinations = 1 <<< (mask |> Bitboard.BitCount)
-            let shift = 64 - (mask |> Bitboard.BitCount)
-            let magic = MagicsR.[int (sq)]
-            let lu = Array.create possibleCombinations Bitboard.Empty
-            for bitset in Combinations(mask) do
+            let bitCount = Bitboard.bitCount mask
+            let shift = 64 - bitCount
+            let magic = MagicsR.[int sq]
+            let combinations = Combinations mask
+            let lu = Array.create (1 <<< bitCount) Bitboard.Empty
+            for bitset in combinations do
                 let attacks = RookAttacksCalc sq bitset
-                let index = (magic * uint64 (bitset)) >>> shift
-                lu.[int (index)] <- attacks //OK
-            lu, shift, mask
-        SQUARES
-        |> List.map getlsm
-        |> List.unzip3
+                let index = (magic * uint64 bitset) >>> shift
+                lu.[int index] <- attacks
+            lu, shift, mask)
+
+    let LookupR = rookResults |> List.map (fun (a,_,_) -> a) |> List.toArray
+    let ShiftR  = rookResults |> List.map (fun (_,b,_) -> b) |> List.toArray
+    let MaskR   = rookResults |> List.map (fun (_,_,c) -> c) |> List.toArray
+
+    // 5. Final Accessor Functions (Public API)
     
-    let KnightAttacks(from : Square) = AttacksKn.[int (from)]
-    let KingAttacks(from : Square) = AttacksK.[int (from)]
-    let PawnAttacks (from : Square) (player : Player) =
-        AttacksP.[int (player)].[int (from)]
+    /// Returns the squares a pawn on 'from' attacks (captures)
+    let PawnAttacks (from : Square) (player : Player) = 
+        AttacksP.[int player].[int from]
+
+    /// Returns the squares a pawn on 'from' can move to (ignoring blockers for now)
+    let PawnMoveSquares (from : Square) (player : Player) =
+        PawnPushes.[int player].[int from]    
     
+    let KnightAttacks(from : Square) = AttacksKn.[int from]
+    let KingAttacks(from : Square) = AttacksK.[int from]
+
     let BishopAttacks (pos : Square) (allPieces : Bitboard) =
-        let ind1 = uint64 (allPieces &&& MaskB.[int (pos)])
-        let ind2 = ind1 * MagicsB.[int (pos)]
-        let ind3 = int (ind2 >>> ShiftB.[int (pos)])
-        LookupB.[int (pos)].[ind3]
-    
+        let idx = int pos
+        let i = (uint64 (allPieces &&& MaskB.[idx]) * MagicsB.[idx]) >>> ShiftB.[idx]
+        LookupB.[idx].[int i]
+
     let RookAttacks (pos : Square) (allPieces : Bitboard) =
-        let ind1 = uint64 (allPieces &&& MaskR.[int (pos)])
-        let ind2 = ind1 * MagicsR.[int (pos)]
-        let ind3 = int (ind2 >>> ShiftR.[int (pos)])
-        LookupR.[int (pos)].[ind3]
-    
+        let idx = int pos
+        let i = (uint64 (allPieces &&& MaskR.[idx]) * MagicsR.[idx]) >>> ShiftR.[idx]
+        LookupR.[idx].[int i]
+
     let QueenAttacks (pos : Square) (allPieces : Bitboard) =
         (RookAttacks pos allPieces) ||| (BishopAttacks pos allPieces)

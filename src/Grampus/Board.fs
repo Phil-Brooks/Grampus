@@ -3,7 +3,7 @@ namespace Grampus
 module Board =
     let private PieceMove (mfrom : Square) mto (bd : Brd) =
         let piece = bd.PieceAt.[int (mfrom)]
-        let player = piece |> Piece.PieceToPlayer
+        let player = (piece |> Piece.PieceToPlayer).Value
         let pieceType = piece |> Piece.ToPieceType
         
         let pieceat =
@@ -49,7 +49,7 @@ module Board =
                   BkKingPos = bkkingpos }
     
     let private PieceAdd pos (piece : Piece) (bd : Brd) =
-        let player = piece |> Piece.PieceToPlayer
+        let player = (piece |> Piece.PieceToPlayer).Value
         let pieceType = piece |> Piece.ToPieceType
         
         let pieceat =
@@ -69,12 +69,12 @@ module Board =
         let piecelocationsall = bd.PieceLocationsAll ||| posBits
         
         let wtprbds =
-            if (piece |> Piece.PieceToPlayer) = Player.White then 
+            if (piece |> Piece.PieceToPlayer).Value = Player.White then 
                 bd.WtPrBds ||| posBits
             else bd.WtPrBds
         
         let bkprbds =
-            if (piece |> Piece.PieceToPlayer) = Player.Black then 
+            if (piece |> Piece.PieceToPlayer).Value = Player.Black then 
                 bd.BkPrBds ||| posBits
             else bd.BkPrBds
         
@@ -96,7 +96,7 @@ module Board =
     
     let private PieceRemove (pos : Square) (bd : Brd) =
         let piece = bd.PieceAt.[int (pos)]
-        let player = piece |> Piece.PieceToPlayer
+        let player = (piece |> Piece.PieceToPlayer).Value
         let pieceType = piece |> Piece.ToPieceType
         
         let pieceat =
