@@ -48,7 +48,7 @@ module Board =
                   WtKingPos = wtkingpos
                   BkKingPos = bkkingpos }
     
-    let private PieceAdd pos (piece : Piece) (bd : Brd) =
+    let PieceAdd pos (piece : Piece) (bd : Brd) =
         let player = (piece |> Piece.PieceToPlayer).Value
         let pieceType = piece |> Piece.ToPieceType
         
@@ -94,7 +94,7 @@ module Board =
                   WtKingPos = wtkingpos
                   BkKingPos = bkkingpos }
     
-    let private PieceRemove (pos : Square) (bd : Brd) =
+    let PieceRemove (pos : Square) (bd : Brd) =
         let piece = bd.PieceAt.[int (pos)]
         let player = (piece |> Piece.PieceToPlayer).Value
         let pieceType = piece |> Piece.ToPieceType
@@ -180,14 +180,12 @@ module Board =
         
         let bd =
             if move |> Move.IsCastle then 
-                if piece = Piece.WKing && mfrom = E1 && mto = G1 then 
-                    bd |> PieceMove H1 F1
-                elif piece = Piece.WKing && mfrom = E1 && mto = C1 then 
-                    bd |> PieceMove A1 D1
-                elif piece = Piece.BKing && mfrom = E8 && mto = G8 then 
-                    bd |> PieceMove H8 F8
-                else bd |> PieceMove A8 D8
-            else bd
+                if piece = Piece.WKing && mto = G1 then bd |> PieceMove H1 F1
+                elif piece = Piece.WKing && mto = C1 then bd |> PieceMove A1 D1
+                elif piece = Piece.BKing && mto = G8 then bd |> PieceMove H8 F8
+                elif piece = Piece.BKing && mto = C8 then bd |> PieceMove A8 D8
+                else bd // Safety fallback
+            else bd        
         
         let bd =
             if bd.CastleRights <> CstlFlgs.EMPTY then 
@@ -249,15 +247,28 @@ module Board =
                 { bd with Fiftymove = bd.Fiftymove + 1 }
             else { bd with Fiftymove = 0 }
         
+                // 1. Switch turns
         let bd = { bd with WhosTurn = bd.WhosTurn |> Player.PlayerOther }
-        { bd with Checkers =
-                      bd
-                      |> AttacksToBoth(if bd.WhosTurn = Player.White then 
-                                           bd.WtKingPos
-                                       else bd.BkKingPos)
-                      &&& (if (bd.WhosTurn |> Player.PlayerOther) = Player.White then 
-                               bd.WtPrBds
-                           else bd.BkPrBds) }
+        
+        // 2. Determine the current King's position safely
+        let kingPos = 
+            if bd.WhosTurn = Player.White then bd.WtKingPos 
+            else bd.BkKingPos
+
+        // 3. Update Checkers ONLY if the king is actually on the board
+        let checkers =
+            if kingPos = OUTOFBOUNDS then 
+                Bitboard.Empty
+            else
+                // Find pieces of the PREVIOUS player that attack the CURRENT king
+                let opponent = bd.WhosTurn |> Player.PlayerOther
+                let opponentPieces = 
+                    if opponent = Player.White then bd.WtPrBds 
+                    else bd.BkPrBds
+                
+                (bd |> AttacksToBoth kingPos) &&& opponentPieces
+
+        { bd with Checkers = checkers }
     
     ///Is there a check on the Board(bd)
     let IsChk(bd : Brd) = bd.Checkers <> Bitboard.Empty
@@ -267,7 +278,9 @@ module Board =
         let kingpos =
             if kingplayer = Player.White then bd.WtKingPos
             else bd.BkKingPos
-        bd |> SquareAttacked kingpos (kingplayer |> Player.PlayerOther)
+        // Guard: If the king isn't on the board, he can't be in check
+        if kingpos = OUTOFBOUNDS then false
+        else bd |> SquareAttacked kingpos (kingplayer |> Player.PlayerOther)
     
     ///Create a new Board given a Fen(fen)
     let FromFEN(fen : Fen) =

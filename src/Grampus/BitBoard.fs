@@ -22,8 +22,8 @@ module Bitboard =
     
     let inline shiftN (ibb: Bitboard) = (uint64 (ibb &&& ~~~Bitboard.Rank8) <<< 8) |> bb
     let inline shiftS (ibb: Bitboard) = (uint64 (ibb &&& ~~~Bitboard.Rank1) >>> 8) |> bb
-    let inline shiftE (ibb: Bitboard) = (uint64 (ibb &&& ~~~Bitboard.FileH) >>> 1) |> bb
-    let inline shiftW (ibb: Bitboard) = (uint64 (ibb &&& ~~~Bitboard.FileA) <<< 1) |> bb
+    let inline shiftE (ibb: Bitboard) = (uint64 (ibb &&& ~~~Bitboard.FileH) <<< 1) |> bb
+    let inline shiftW (ibb: Bitboard) = (uint64 (ibb &&& ~~~Bitboard.FileA) >>> 1) |> bb
 
     let shift dir (ibb: Bitboard) =
         match dir with

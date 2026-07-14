@@ -56,22 +56,22 @@ module Square =
             
             let nr, nf =
                 match dir with
-                | Dirn.DirN -> r -! 1s, f
+                | Dirn.DirN -> r +! 1s, f
                 | Dirn.DirE -> r, f ++ 1s
-                | Dirn.DirS -> r +! 1s, f
+                | Dirn.DirS -> r -! 1s, f
                 | Dirn.DirW -> r, f -- 1s
-                | Dirn.DirNE -> r -! 1s, f ++ 1s
-                | Dirn.DirSE -> r +! 1s, f ++ 1s
-                | Dirn.DirSW -> r +! 1s, f -- 1s
-                | Dirn.DirNW -> r -! 1s, f -- 1s
-                | Dirn.DirNNE -> r -! 2s, f ++ 1s
-                | Dirn.DirEEN -> r -! 1s, f ++ 2s
-                | Dirn.DirEES -> r +! 1s, f ++ 2s
-                | Dirn.DirSSE -> r +! 2s, f ++ 1s
-                | Dirn.DirSSW -> r +! 2s, f -- 1s
-                | Dirn.DirWWS -> r +! 1s, f -- 2s
-                | Dirn.DirWWN -> r -! 1s, f -- 2s
-                | Dirn.DirNNW -> r -! 2s, f -- 1s
+                | Dirn.DirNE -> r +! 1s, f ++ 1s
+                | Dirn.DirSE -> r -! 1s, f ++ 1s
+                | Dirn.DirSW -> r -! 1s, f -- 1s
+                | Dirn.DirNW -> r +! 1s, f -- 1s
+                | Dirn.DirNNE -> r +! 2s, f ++ 1s
+                | Dirn.DirEEN -> r +! 1s, f ++ 2s
+                | Dirn.DirEES -> r -! 1s, f ++ 2s
+                | Dirn.DirSSE -> r -! 2s, f ++ 1s
+                | Dirn.DirSSW -> r -! 2s, f -- 1s
+                | Dirn.DirWWS -> r -! 1s, f -- 2s
+                | Dirn.DirWWN -> r +! 1s, f -- 2s
+                | Dirn.DirNNW -> r +! 2s, f -- 1s
                 | _ -> RANK_EMPTY, FILE_EMPTY
             if nr = RANK_EMPTY && nf = FILE_EMPTY then OUTOFBOUNDS
             elif (nr |> Rank.IsInBounds) && (nf |> File.IsInBounds) then 

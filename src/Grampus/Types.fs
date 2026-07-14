@@ -1,11 +1,5 @@
 namespace Grampus
 
-module AssemblyInfo =
-    open System.Runtime.CompilerServices
-    
-    [<assembly:InternalsVisibleTo("Grampus.Tests")>]
-    do ()
-
 [<AutoOpen>]
 /// <namespacedoc>
 ///   <summary>This is the namespace containing all Grampus backend functionality.</summary>
