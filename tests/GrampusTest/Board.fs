@@ -40,7 +40,7 @@ module Board =
     [<Fact>]
     let ``MoveApply: Capture removes piece and updates bitboards`` () =
         // Setup: White Knight on F3 captures Black Pawn on E5
-        let bd = BrdEMP 
+        let bd = Board.EMPTY 
                  |> Board.PieceAdd F3 Piece.WKnight 
                  |> Board.PieceAdd E5 Piece.BPawn
         let mv = Move.Create F3 E5 Piece.WKnight Piece.BPawn
@@ -67,7 +67,7 @@ module Board =
     [<Fact>]
     let ``MoveApply: En Passant removes the correct pawn`` () =
         // White Pawn on E5, Black Pawn on D5, EP square is D6
-        let bd = { BrdEMP with EnPassant = D6; WhosTurn = 0 }
+        let bd = { Board.EMPTY with EnPassant = D6; WhosTurn = 0 }
                  |> Board.PieceAdd E5 Piece.WPawn
                  |> Board.PieceAdd D5 Piece.BPawn
         let mv = Move.Create E5 D6 Piece.WPawn Piece.EMPTY // exd6 e.p.
@@ -81,7 +81,7 @@ module Board =
     [<Fact>]
     let ``IsChck correctly identifies king is under fire`` () =
         // White King on E1, Black Rook on E8
-        let bd = BrdEMP 
+        let bd = Board.EMPTY 
                  |> Board.PieceAdd E1 Piece.WKing 
                  |> Board.PieceAdd E8 Piece.BRook
         
@@ -93,21 +93,21 @@ module Board =
     [<Property(Arbitrary = [| typeof<PieceGenerator>; typeof<ChessDimGenerator> |])>]
     let ``PieceLocationsAll is always the sum of White and Black bitboards`` (sq: int) (p: int) =
         if Square.IsInBounds sq && p <> Piece.EMPTY then
-            let bd = Board.PieceAdd sq p BrdEMP
+            let bd = Board.PieceAdd sq p Board.EMPTY
             bd.PieceLocationsAll = (bd.WtPrBds ||| bd.BkPrBds)
         else true
 
     [<Property(Arbitrary = [| typeof<PieceGenerator>; typeof<ChessDimGenerator> |])>]
     let ``Adding then removing a piece returns board to empty`` (sq: int) (p: int) =
         if Square.IsInBounds sq && p <> Piece.EMPTY then
-            let bd = BrdEMP |> Board.PieceAdd sq p |> Board.PieceRemove sq
+            let bd = Board.EMPTY |> Board.PieceAdd sq p |> Board.PieceRemove sq
             bd.PieceLocationsAll = Bitboard.Empty && bd.PieceAt.[sq] = Piece.EMPTY
         else true
 
     [<Fact>]
     let ``MoveApply: Moving a piece on a kingless board does not crash`` () =
         // Setup: Just two rooks, no kings
-        let bd = BrdEMP 
+        let bd = Board.EMPTY 
                  |> Board.PieceAdd A1 Piece.WRook 
                  |> Board.PieceAdd A8 Piece.BRook
         let mv = Move.Create A1 A5 Piece.WRook Piece.EMPTY

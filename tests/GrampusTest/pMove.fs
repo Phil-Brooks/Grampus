@@ -11,17 +11,17 @@ module pMove =
     // Note: We box them into 'obj array' so xUnit can consume them
     let ParseTestData : obj array seq =
         seq {
-            yield [| "e4"; PieceType.Pawn; E4; MoveType.Simple |]
-            yield [| "Nf3"; PieceType.Knight; F3; MoveType.Simple |]
-            yield [| "Bxe5"; PieceType.Bishop; E5; MoveType.Capture |]
-            yield [| "O-O"; PieceType.King; OUTOFBOUNDS; MoveType.CastleKingSide |]
-            yield [| "O-O-O"; PieceType.King; OUTOFBOUNDS; MoveType.CastleQueenSide |]
+            yield [| "e4"; PieceType.Pawn; E4; pMove.Simple |]
+            yield [| "Nf3"; PieceType.Knight; F3; pMove.Simple |]
+            yield [| "Bxe5"; PieceType.Bishop; E5; pMove.Capture |]
+            yield [| "O-O"; PieceType.King; OUTOFBOUNDS; pMove.CastleKingSide |]
+            yield [| "O-O-O"; PieceType.King; OUTOFBOUNDS; pMove.CastleQueenSide |]
         }
 
     // 2. Reference the data using MemberData
     [<Theory>]
     [<MemberData(nameof(ParseTestData))>]
-    let ``Parse correctly identifies basic move components`` (san: string, expPiece: int, expTarget: int, expType: MoveType) =
+    let ``Parse correctly identifies basic move components`` (san: string, expPiece: int, expTarget: int, expType: int) =
         let pm = pMove.Parse san
         pm.Piece |> should equal (Some expPiece)
         pm.TargetSquare |> should equal expTarget

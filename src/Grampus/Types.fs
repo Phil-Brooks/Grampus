@@ -34,12 +34,6 @@ module Types =
     let Sq(f : int, r : int) : int = r * 8 + f
    
     
-    /// <summary>Option holding each type of move e.g. Capture.</summary>
-    type MoveType =
-        | Simple
-        | Capture
-        | CastleKingSide
-        | CastleQueenSide
     
     /// <summary>Record type holding board details such as pieces on each square.</summary>
     type Brd =
@@ -88,24 +82,9 @@ module Types =
             
             bdstr + tomv
     
-    let BrdEMP =
-        { PieceAt = Array.create 64 0
-          WtKingPos = OUTOFBOUNDS
-          BkKingPos = OUTOFBOUNDS
-          PieceTypes = Array.create 7 0UL |> List.ofArray
-          WtPrBds = 0UL
-          BkPrBds = 0UL
-          PieceLocationsAll = 0UL
-          Checkers = 0UL
-          WhosTurn = 0
-          CastleRights = 0
-          EnPassant = OUTOFBOUNDS
-          Fiftymove = 0
-          Fullmove = 0 }
-    
     /// <summary>Record type holding details of an unencoded move such as pieces the target square.</summary>
     type pMove =
-        { Mtype : MoveType
+        { Mtype : int
           TargetSquare : int
           Piece : int option
           OriginFile : int option

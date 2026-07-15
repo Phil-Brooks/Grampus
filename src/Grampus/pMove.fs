@@ -3,6 +3,11 @@ namespace Grampus
 open System.Text.RegularExpressions
 
 module pMove =
+    let [<Literal>] Simple = 0
+    let [<Literal>] Capture = 1
+    let [<Literal>] CastleKingSide = 2
+    let [<Literal>] CastleQueenSide = 3
+    
     let CreateAll(mt, tgs, pc, orf, orr, pp, ic, id, im, san) =
         { Mtype = mt
           TargetSquare = tgs
@@ -45,13 +50,13 @@ module pMove =
         let m = s |> strip "+x#=" |> fun x -> x.Replace("e.p.", "")
         
         match m with
-        | SimpleMove(p, sq) -> Create((if s.Contains("x") then MoveType.Capture else MoveType.Simple), sq, Some(p), s)
-        | Castle(c) -> CreateCastle((if c = 'K' then MoveType.CastleKingSide else MoveType.CastleQueenSide), s)
-        | PawnCapture(f, sq) -> CreateOrig(MoveType.Capture, sq, Some(PieceType.Pawn), Some(f), None, s)
-        | AmbiguousFile(p, f, sq) -> CreateOrig((if s.Contains("x") then MoveType.Capture else MoveType.Simple), sq, Some(p), Some(f), None, s)
-        | AmbiguousRank(p, r, sq) -> CreateOrig((if s.Contains("x") then MoveType.Capture else MoveType.Simple), sq, Some(p), None, Some(r), s)
-        | Promotion(sq, p) -> CreateAll(MoveType.Simple, sq, Some(PieceType.Pawn), None, None, Some(p), false, false, false, s)
-        | PromCapture(f, sq, p) -> CreateAll(MoveType.Capture, sq, Some(PieceType.Pawn), Some(f), None, Some(p), false, false, false, s)
+        | SimpleMove(p, sq) -> Create((if s.Contains("x") then Capture else Simple), sq, Some(p), s)
+        | Castle(c) -> CreateCastle((if c = 'K' then CastleKingSide else CastleQueenSide), s)
+        | PawnCapture(f, sq) -> CreateOrig(Capture, sq, Some(PieceType.Pawn), Some(f), None, s)
+        | AmbiguousFile(p, f, sq) -> CreateOrig((if s.Contains("x") then Capture else Simple), sq, Some(p), Some(f), None, s)
+        | AmbiguousRank(p, r, sq) -> CreateOrig((if s.Contains("x") then Capture else Simple), sq, Some(p), None, Some(r), s)
+        | Promotion(sq, p) -> CreateAll(Simple, sq, Some(PieceType.Pawn), None, None, Some(p), false, false, false, s)
+        | PromCapture(f, sq, p) -> CreateAll(Capture, sq, Some(PieceType.Pawn), Some(f), None, Some(p), false, false, false, s)
 
     /// MODERNIZED: Replaces the broken logic by filtering all legal moves
     let ToMove (bd : Brd) (pmv : pMove) =
@@ -75,8 +80,8 @@ module pMove =
                 // (Note: Castling destination is G1/G8 or C1/C8)
                 let matchesTarget = 
                     match pmv.Mtype with
-                    | MoveType.CastleKingSide  -> (Move.To mv = G1 || Move.To mv = G8)
-                    | MoveType.CastleQueenSide -> (Move.To mv = C1 || Move.To mv = C8)
+                    | CastleKingSide  -> (Move.To mv = G1 || Move.To mv = G8)
+                    | CastleQueenSide -> (Move.To mv = C1 || Move.To mv = C8)
                     | _ -> Move.To mv = pmv.TargetSquare
 
                 // B. Match Origin Ambiguity (e.g., 'd' in Ndf3 or '1' in R1a5)

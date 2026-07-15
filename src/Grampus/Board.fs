@@ -1,6 +1,21 @@
 namespace Grampus
 
 module Board =
+    let EMPTY =
+        { PieceAt = Array.create 64 0
+          WtKingPos = OUTOFBOUNDS
+          BkKingPos = OUTOFBOUNDS
+          PieceTypes = Array.create 7 0UL |> List.ofArray
+          WtPrBds = 0UL
+          BkPrBds = 0UL
+          PieceLocationsAll = 0UL
+          Checkers = 0UL
+          WhosTurn = 0
+          CastleRights = 0
+          EnPassant = OUTOFBOUNDS
+          Fiftymove = 0
+          Fullmove = 0 }
+    
     let private PieceMove (mfrom : int) mto (bd : Brd) =
         let piece = bd.PieceAt.[mfrom]
         let player = (piece |> Piece.PieceToPlayer).Value
@@ -284,7 +299,7 @@ module Board =
     
     ///Create a new Board given a Fen(fen)
     let FromFEN(fen : Fen) =
-        let bd = BrdEMP
+        let bd = EMPTY
         
         let rec addpc posl ibd =
             if List.isEmpty posl then ibd
