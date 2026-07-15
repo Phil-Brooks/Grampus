@@ -6,19 +6,19 @@ module Move =
         pfrom ||| (pto <<< 6) ||| (int (piece) <<< 12) 
          ||| (int (captured) <<< 16)
     let CreateProm (pfrom : int) (pto : int) (piece : Piece) 
-        (captured : Piece) (promoteType : PieceType) : int =
+        (captured : Piece) (promoteType : int) : int =
         pfrom ||| (pto <<< 6) ||| (int (piece) <<< 12) 
          ||| (int (captured) <<< 16) ||| (int (promoteType) <<< 20)
-    let From(move : int) : int = int (move) &&& 0x3F
-    let To(move : int) : int = int (move) >>> 6 &&& 0x3F
-    let MovingPiece(move : int) = (int (move) >>> 12 &&& 0xF) |> Pc
+    let From(move : int) : int = move &&& 0x3F
+    let To(move : int) : int = move >>> 6 &&& 0x3F
+    let MovingPiece(move : int) = (move >>> 12 &&& 0xF) |> Pc
     
-    let MovingPieceType(move : int) = (int (move) >>> 12 &&& 0x7) |> PcTp
-    let MovingPlayer(move : int) = (int (move) >>> 15 &&& 0x1) 
-    let IsCapture(move : int) = (int (move) >>> 16 &&& 0xF) <> 0
-    let CapturedPiece(move : int) = (int (move) >>> 16 &&& 0xF) |> Pc
-    let IsPromotion(move : int) = (int (move) >>> 20 &&& 0x7) <> 0
-    let PromoteType(move : int) = (int (move) >>> 20 &&& 0x7) |> PcTp
+    let MovingPieceType(move : int) = move >>> 12 &&& 0x7
+    let MovingPlayer(move : int) = move >>> 15 &&& 0x1
+    let IsCapture(move : int) = (move >>> 16 &&& 0xF) <> 0
+    let CapturedPiece(move : int) = (move >>> 16 &&& 0xF) |> Pc
+    let IsPromotion(move : int) = (move >>> 20 &&& 0x7) <> 0
+    let PromoteType(move : int) = move >>> 20 &&& 0x7
     
     let Promote(move : int) =
         if move
@@ -39,8 +39,8 @@ module Move =
     let IsCastle(move : int) =
         move
         |> MovingPieceType = PieceType.King
-        && abs (int (move |> From) - int (move |> To)) = 2
+        && abs ((move |> From) - (move |> To)) = 2
     let IsPawnDoubleJump(move : int) =
         move
         |> MovingPieceType = PieceType.Pawn
-        && abs (int (move |> From) - int (move |> To)) = 16
+        && abs ((move |> From) - (move |> To)) = 16

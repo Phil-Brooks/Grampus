@@ -27,7 +27,7 @@ module PieceType =
     [<InlineData('R', PieceType.Rook)>]
     [<InlineData('Q', PieceType.Queen)>]
     [<InlineData('k', PieceType.King)>]
-    let ``Parse returns correct PieceType regardless of case`` (c: char, expected: PieceType) =
+    let ``Parse returns correct PieceType regardless of case`` (c: char, expected: int) =
         PieceType.Parse c |> should equal expected
 
     [<Fact>]
@@ -42,7 +42,7 @@ module PieceType =
     [<InlineData(0, PieceType.King, Piece.WKing)>]     // 6 | (0 << 3) = 6
     [<InlineData(1, PieceType.King, Piece.BKing)>]     // 6 | (1 << 3) = 14
     [<InlineData(1, PieceType.Queen, Piece.BQueen)>]   // 5 | (1 << 3) = 13
-    let ``ForPlayer correctly packs player and type into a Piece`` (player: int, pt: PieceType, expected: Piece) =
+    let ``ForPlayer correctly packs player and type into a Piece`` (player: int, pt: int, expected: Piece) =
         PieceType.ForPlayer player pt |> should equal expected
 
     // --- 3. Property Based Testing ---
@@ -55,7 +55,7 @@ module PieceType =
         else true
 
     [<Property(Arbitrary = [| typeof<PieceTypeGenerator>; typeof<PlayerGenerator> |])>]
-    let ``ForPlayer results are reversible using Piece logic`` (player: int) (pt: PieceType) =
+    let ``ForPlayer results are reversible using Piece logic`` (player: int) (pt: int) =
         // Arrange: Create a piece
         let piece = PieceType.ForPlayer player pt
         
@@ -66,6 +66,6 @@ module PieceType =
         recoveredType = pt && recoveredPlayer = Some player
 
     [<Property(Arbitrary = [| typeof<PieceTypeGenerator> |])>]
-    let ``ForPlayer White is always equal to the integer value of PieceType`` (pt: PieceType) =
+    let ``ForPlayer White is always equal to the integer value of PieceType`` (pt: int) =
         let piece = PieceType.ForPlayer 0 pt
         int piece = int pt

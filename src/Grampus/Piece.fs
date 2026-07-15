@@ -35,7 +35,7 @@ module Piece =
         | Piece.EMPTY -> "."
         | _ -> failwith ("not a valid piece")
     
-    let ToPieceType(piece : Piece) = (int (piece) &&& 7) |> PcTp
+    let ToPieceType(piece : Piece) = (int (piece) &&& 7) 
     
     let PieceToPlayer (piece : Piece) =
         if piece = Piece.EMPTY then 

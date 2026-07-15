@@ -97,7 +97,7 @@ module MoveGenerate =
                     else mvl2
             mvl |> legal bd
     
-    let private pcMoves (bd : Brd) (pt : PieceType) (fnsqbb : int -> Bitboard -> Bitboard) : int list =
+    let private pcMoves (bd : Brd) (pt : int) (fnsqbb : int -> Bitboard -> Bitboard) : int list =
         let me = bd.WhosTurn
         let kingPos = if me = 0 then bd.WtKingPos else bd.BkKingPos
         
@@ -132,7 +132,7 @@ module MoveGenerate =
     // (Simplified logic for other MoveTo functions using toSquares)
     let KnightMovesTo (mto : int) (bd : Brd) =
         let atts = Attacks.KnightAttacks mto
-        let piecePositions = (if bd.WhosTurn = 0 then bd.WtPrBds else bd.BkPrBds) &&& bd.PieceTypes.[int PieceType.Knight]
+        let piecePositions = (if bd.WhosTurn = 0 then bd.WtPrBds else bd.BkPrBds) &&& bd.PieceTypes.[PieceType.Knight]
         let pieceposs = (atts &&& piecePositions) |> Bitboard.toSquares
         pieceposs |> Array.toList |> List.map (fun p -> Move.Create p mto bd.PieceAt.[int p] bd.PieceAt.[int mto]) |> legal bd
 

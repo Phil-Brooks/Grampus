@@ -10,13 +10,6 @@ module Util =
 
     // --- 1. Casting Helpers (Sanity Checks) ---
     [<Theory>]
-    [<InlineData(1, PieceType.Pawn)>]
-    [<InlineData(6, PieceType.King)>]
-    [<InlineData(0, PieceType.EMPTY)>]
-    let ``PcTp casts integers to PieceType correctly`` (i: int, expected: PieceType) =
-        PcTp i |> should equal expected
-
-    [<Theory>]
     [<InlineData(1, Piece.WPawn)>]
     [<InlineData(14, Piece.BKing)>]
     [<InlineData(0, Piece.EMPTY)>]

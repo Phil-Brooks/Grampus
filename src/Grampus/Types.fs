@@ -7,16 +7,7 @@ namespace Grampus
 /// <summary>Holds all the main types used by Grampus.</summary>
 module Types =
 
-    /// <summary>Enum holding each type of piece e.g. 1 for Pawn.</summary>
-    type PieceType =
-        | EMPTY = 0
-        | Pawn = 1
-        | Knight = 2
-        | Bishop = 3
-        | Rook = 4
-        | Queen = 5
-        | King = 6
-    
+   
     /// <summary>Enum holding each type of piece for each colour e.g. 1 for WPawn.</summary>
     type Piece =
         | WPawn = 1
@@ -228,10 +219,10 @@ module Types =
     type pMove =
         { Mtype : MoveType
           TargetSquare : int
-          Piece : PieceType option
+          Piece : int option
           OriginFile : int option
           OriginRank : int option
-          PromotedPiece : PieceType option
+          PromotedPiece : int option
           IsCheck : bool
           IsDoubleCheck : bool
           IsCheckMate : bool
