@@ -9,8 +9,8 @@ module Move =
         (captured : Piece) (promoteType : PieceType) : Move =
         (uint32 (pfrom) ||| (uint32 (pto) <<< 6) ||| (uint32 (piece) <<< 12) 
          ||| (uint32 (captured) <<< 16) ||| (uint32 (promoteType) <<< 20))
-    let From(move : Move) : Square = int16 (int (move) &&& 0x3F)
-    let To(move : Move) : Square = int16 (int (move) >>> 6 &&& 0x3F)
+    let From(move : Move) : Square = int (move) &&& 0x3F
+    let To(move : Move) : Square = int (move) >>> 6 &&& 0x3F
     let MovingPiece(move : Move) = (int (move) >>> 12 &&& 0xF) |> Pc
     
     let MovingPieceType(move : Move) = (int (move) >>> 12 &&& 0x7) |> PcTp

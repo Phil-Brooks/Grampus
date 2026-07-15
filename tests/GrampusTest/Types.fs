@@ -18,10 +18,10 @@ module Types =
     // --- 1. Constant Verification ---
     [<Fact>]
     let ``Square constants have correct values``() =
-        A1 |> should equal 0s
-        H1 |> should equal 7s
-        A8 |> should equal 56s
-        H8 |> should equal 63s
+        A1 |> should equal 0
+        H1 |> should equal 7
+        A8 |> should equal 56
+        H8 |> should equal 63
 
     [<Fact>]
     let ``Files and Ranks lists are exhaustive``() =
@@ -31,7 +31,7 @@ module Types =
 
     [<Fact>]
     let ``OUTOFBOUNDS is set to 64``() =
-        OUTOFBOUNDS |> should equal 64s
+        OUTOFBOUNDS |> should equal 64
 
     // --- 2. Logic Verification (Sq function) ---
     [<Theory>]
@@ -41,7 +41,7 @@ module Types =
     [<InlineData(7, 7, 63)>]  // H8
     [<InlineData(4, 3, 28)>]  // E4
     let ``Sq function calculates correct index``(f, r, expected) =
-        Sq(int16 f, int16 r) |> should equal (int16 expected)
+        Sq(f, r) |> should equal expected
 
     // --- 3. Bitboard Constant Verification ---
     [<Fact>]
@@ -72,13 +72,13 @@ module Types =
     [<Property(Arbitrary = [| typeof<ChessDimGenerator> |])>]
     let ``Any Sq(f, r) is always within 0-63`` (f: File) (r: Rank) =
         let s = Sq(f, r)
-        s >= 0s && s <= 63s
+        s >= 0 && s <= 63
 
     [<Property(Arbitrary = [| typeof<ChessDimGenerator> |])>]
     let ``Sq function is reversible (Modulo 8)`` (f: File) (r: Rank) =
         let s = Sq(f, r)
-        let recoveredFile = s % 8s
-        let recoveredRank = s / 8s
+        let recoveredFile = s % 8
+        let recoveredRank = s / 8
         recoveredFile = f && recoveredRank = r
 
     [<Property(Arbitrary = [| typeof<ChessDimGenerator> |])>]

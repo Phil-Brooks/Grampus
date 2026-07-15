@@ -11,7 +11,7 @@ module Bitboard =
 
     let getFirstPos (ibb: Bitboard) : Square =
         if ibb = Bitboard.Empty then OUTOFBOUNDS
-        else int16 (BitOperations.TrailingZeroCount(uint64 ibb))
+        else BitOperations.TrailingZeroCount(uint64 ibb)
 
     /// Removes the first bit and returns (Square, RemainingBitboard)
     let popFirst (ibb: Bitboard) =
@@ -62,6 +62,6 @@ module Bitboard =
             let mutable temp = uint64 ibb
             while temp <> 0UL do
                 let lsb = BitOperations.TrailingZeroCount(temp)
-                yield int16 lsb // Returns Square (int16)
+                yield int lsb // Returns Square (int16)
                 temp <- temp &&& (temp - 1UL)
         |]

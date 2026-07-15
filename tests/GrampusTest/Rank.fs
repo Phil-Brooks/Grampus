@@ -39,7 +39,7 @@ module Rank =
 
     [<Fact>]
     let ``ToBitboard returns Empty for out of bounds rank`` () =
-        Rank.ToBitboard 8s |> should equal Bitboard.Empty
+        Rank.ToBitboard 8 |> should equal Bitboard.Empty
 
     // --- 3. Property Based Testing ---
 
@@ -54,8 +54,8 @@ module Rank =
         Rank.IsInBounds r = true
 
     [<Property>]
-    let ``IsInBounds returns false for clearly invalid ranks`` (i: int16) =
-        if i < 0s || i > 7s then
+    let ``IsInBounds returns false for clearly invalid ranks`` (i: int) =
+        if i < 0 || i > 7 then
             Rank.IsInBounds i = false
         else true
 

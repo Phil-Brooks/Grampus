@@ -56,7 +56,7 @@ module File =
         File.IsInBounds f = true
 
     [<Property>]
-    let ``IsInBounds is always false for values outside 0 to 7`` (i: int16) =
-        if i < 0s || i > 7s then
+    let ``IsInBounds is always false for values outside 0 to 7`` (i: int) =
+        if i < 0 || i > 7 then
             File.IsInBounds i = false
         else true

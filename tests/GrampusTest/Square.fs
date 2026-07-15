@@ -65,8 +65,8 @@ module Square =
     // --- 4. Property Based Testing ---
 
     [<Property(Arbitrary = [| typeof<ChessDimGenerator> |])>]
-    let ``A square is in bounds if and only if it is between 0 and 63`` (s: int16) =
-        Square.IsInBounds s = (s >= 0s && s <= 63s)
+    let ``A square is in bounds if and only if it is between 0 and 63`` (s: int) =
+        Square.IsInBounds s = (s >= 0 && s <= 63)
 
     [<Property(Arbitrary = [| typeof<ChessDimGenerator> |])>]
     let ``Sq(ToFile(s), ToRank(s)) is identity`` (s: Square) =

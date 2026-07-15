@@ -52,7 +52,7 @@ module Attacks =
 
     [<Property(Arbitrary = [| typeof<BitboardGenerator>; typeof<ChessDimGenerator> |])>]
     let ``Magic RookAttacks matches functional RookAttacksCalc`` (sq: Square) (blockers: Bitboard) =
-        if sq >= 0s && sq < 64s then
+        if sq >= 0 && sq < 64 then
             let magicResult = Attacks.RookAttacks sq blockers
             let functionalResult = Attacks.RookAttacksCalc sq blockers
             magicResult = functionalResult
@@ -60,7 +60,7 @@ module Attacks =
 
     [<Property(Arbitrary = [| typeof<BitboardGenerator>; typeof<ChessDimGenerator> |])>]
     let ``Magic BishopAttacks matches functional BishopAttacksCalc`` (sq: Square) (blockers: Bitboard) =
-        if sq >= 0s && sq < 64s then
+        if sq >= 0 && sq < 64 then
             let magicResult = Attacks.BishopAttacks sq blockers
             let functionalResult = Attacks.BishopAttacksCalc sq blockers
             magicResult = functionalResult

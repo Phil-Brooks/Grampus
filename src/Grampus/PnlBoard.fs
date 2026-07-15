@@ -223,7 +223,7 @@ module PnlBoardLib =
         let mouseDown (p : PictureBox, e : MouseEventArgs) =
             if e.Button = MouseButtons.Left then 
                 let sqFrom = System.Convert.ToInt32(p.Tag)
-                let sqf : Square = sqFrom |> int16
+                let sqf : Square = sqFrom
                 let psmvs = sqf |> MoveGenerate.PossMoves board
                 
                 let pssqs =

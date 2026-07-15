@@ -32,27 +32,27 @@ module Util =
     // --- 2. Arithmetic Operators ---
     [<Fact>]
     let ``Rank arithmetic operators work correctly`` () =
-        Rank1 +! 1s |> should equal Rank2
-        Rank8 -! 7s |> should equal Rank1
-        Rank4 +! 2s |> should equal Rank6
+        Rank1 +! 1 |> should equal Rank2
+        Rank8 -! 7 |> should equal Rank1
+        Rank4 +! 2 |> should equal Rank6
 
     [<Fact>]
     let ``File arithmetic operators work correctly`` () =
-        FileA ++ 1s |> should equal FileB
-        FileH -- 7s |> should equal FileA
-        FileC ++ 3s |> should equal FileF
+        FileA ++ 1 |> should equal FileB
+        FileH -- 7 |> should equal FileA
+        FileC ++ 3 |> should equal FileF
 
     // --- 3. Property Based Testing (FsCheck) ---
     // Using the ChessDimGenerator we created for TypesTests
     
     [<Property(Arbitrary = [| typeof<ChessDimGenerator> |])>]
-    let ``Rank addition and subtraction are inverses`` (r: Rank) (offset: int16) =
+    let ``Rank addition and subtraction are inverses`` (r: Rank) (offset: int) =
         // We use a small offset to stay within reasonable bounds for the logic
-        let smallOffset = offset % 4s 
+        let smallOffset = offset % 4
         (r +! smallOffset) -! smallOffset = r
 
     [<Property(Arbitrary = [| typeof<ChessDimGenerator> |])>]
-    let ``File addition and subtraction are inverses`` (f: File) (offset: int16) =
-        let smallOffset = offset % 4s
+    let ``File addition and subtraction are inverses`` (f: File) (offset: int) =
+        let smallOffset = offset % 4
         (f ++ smallOffset) -- smallOffset = f
 

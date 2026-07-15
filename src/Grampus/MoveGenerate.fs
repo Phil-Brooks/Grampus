@@ -183,7 +183,7 @@ module MoveGenerate =
             let getPcaps capDir att =
                 att |> Bitboard.toSquares |> Array.toList |> List.collect (fun targetpos ->
                     let piecepos = targetpos |> Square.PositionInDirectionUnsafe (capDir |> Direction.Opposite)
-                    if (targetpos / 8s) = myrank8 then 
+                    if (targetpos / 8) = myrank8 then 
                         [ PieceType.Queen; PieceType.Rook; PieceType.Bishop; PieceType.Knight ]
                         |> List.map (fun p -> Move.CreateProm piecepos targetpos bd.PieceAt.[int piecepos] bd.PieceAt.[int targetpos] p)
                     else [ Move.Create piecepos targetpos bd.PieceAt.[int piecepos] bd.PieceAt.[int targetpos] ]
@@ -198,7 +198,7 @@ module MoveGenerate =
                 ((Bitboard.shift mypawnsouth moveLocations) &&& piecePositions)
                 |> Bitboard.toSquares |> Array.toList |> List.collect (fun piecepos ->
                     let targetpos = piecepos |> Square.PositionInDirectionUnsafe mypawnnorth
-                    if (targetpos / 8s) = myrank8 then
+                    if (targetpos / 8) = myrank8 then
                         [ PieceType.Queen; PieceType.Rook; PieceType.Bishop; PieceType.Knight ]
                         |> List.map (fun p -> Move.CreateProm piecepos targetpos bd.PieceAt.[int piecepos] bd.PieceAt.[int targetpos] p)
                     else [ Move.Create piecepos targetpos bd.PieceAt.[int piecepos] bd.PieceAt.[int targetpos] ]

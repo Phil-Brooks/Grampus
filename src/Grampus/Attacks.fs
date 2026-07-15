@@ -288,8 +288,8 @@ module Attacks =
                 let b = toBB sq
                 let single = Bitboard.shift Dirn.DirN b
                 // Only allow double push if on starting rank
-                let rank = sq / 8s
-                if rank = 1s then single ||| (Bitboard.shift Dirn.DirN single)
+                let rank = sq / 8
+                if rank = 1 then single ||| (Bitboard.shift Dirn.DirN single)
                 else single
             ) |> List.toArray
 
@@ -297,8 +297,8 @@ module Attacks =
             SQUARES |> List.map (fun sq ->
                 let b = toBB sq
                 let single = Bitboard.shift Dirn.DirS b
-                let rank = sq / 8s
-                if rank = 6s then single ||| (Bitboard.shift Dirn.DirS single)
+                let rank = sq / 8
+                if rank = 6 then single ||| (Bitboard.shift Dirn.DirS single)
                 else single
             ) |> List.toArray
         |]    
