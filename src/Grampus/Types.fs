@@ -32,102 +32,7 @@ module Types =
           G7; H7; A8; B8; C8; D8; E8; F8; G8; H8 ]
     
     let Sq(f : int, r : int) : int = r * 8 + f
-    
-    [<System.Flags>]
-    /// <summary>Enum holding each type of castling e.g. 1 for WhiteShort.</summary>
-    type CstlFlgs =
-        | EMPTY = 0
-        | WhiteShort = 1
-        | WhiteLong = 2
-        | BlackShort = 4
-        | BlackLong = 8
-        | All = 15
-    
-    [<System.Flags>]
-    /// <summary>Enum holding bitboards for squares/ranks, e.g. 1UL for A1.</summary>
-    type Bitboard =
-        | A1 = 1UL
-        | B1 = 2UL
-        | C1 = 4UL
-        | D1 = 8UL
-        | E1 = 16UL
-        | F1 = 32UL
-        | G1 = 64UL
-        | H1 = 128UL
-        | A2 = 256UL
-        | B2 = 512UL
-        | C2 = 1024UL
-        | D2 = 2048UL
-        | E2 = 4096UL
-        | F2 = 8192UL
-        | G2 = 16384UL
-        | H2 = 32768UL
-        | A3 = 65536UL
-        | B3 = 131072UL
-        | C3 = 262144UL
-        | D3 = 524288UL
-        | E3 = 1048576UL
-        | F3 = 2097152UL
-        | G3 = 4194304UL
-        | H3 = 8388608UL
-        | A4 = 16777216UL
-        | B4 = 33554432UL
-        | C4 = 67108864UL
-        | D4 = 134217728UL
-        | E4 = 268435456UL
-        | F4 = 536870912UL
-        | G4 = 1073741824UL
-        | H4 = 2147483648UL
-        | A5 = 4294967296UL
-        | B5 = 8589934592UL
-        | C5 = 17179869184UL
-        | D5 = 34359738368UL
-        | E5 = 68719476736UL
-        | F5 = 137438953472UL
-        | G5 = 274877906944UL
-        | H5 = 549755813888UL
-        | A6 = 1099511627776UL
-        | B6 = 2199023255552UL
-        | C6 = 4398046511104UL
-        | D6 = 8796093022208UL
-        | E6 = 17592186044416UL
-        | F6 = 35184372088832UL
-        | G6 = 70368744177664UL
-        | H6 = 140737488355328UL
-        | A7 = 281474976710656UL
-        | B7 = 562949953421312UL
-        | C7 = 1125899906842624UL
-        | D7 = 2251799813685248UL
-        | E7 = 4503599627370496UL
-        | F7 = 9007199254740992UL
-        | G7 = 18014398509481984UL
-        | H7 = 36028797018963968UL
-        | A8 = 72057594037927936UL
-        | B8 = 144115188075855872UL
-        | C8 = 288230376151711744UL
-        | D8 = 576460752303423488UL
-        | E8 = 1152921504606846976UL
-        | F8 = 2305843009213693952UL
-        | G8 = 4611686018427387904UL
-        | H8 = 9223372036854775808UL
-        | Rank8 = 18374686479671623680UL
-        | Rank7 = 71776119061217280UL
-        | Rank6 = 280375465082880UL
-        | Rank5 = 1095216660480UL
-        | Rank4 = 4278190080UL
-        | Rank3 = 16711680UL
-        | Rank2 = 65280UL
-        | Rank1 = 255UL
-        | FileA = 72340172838076673UL
-        | FileB = 144680345676153346UL
-        | FileC = 289360691352306692UL
-        | FileD = 578721382704613384UL
-        | FileE = 1157442765409226768UL
-        | FileF = 2314885530818453536UL
-        | FileG = 4629771061636907072UL
-        | FileH = 9259542123273814144UL
-        | Empty = 0UL
-        | Full = 18446744073709551615UL
+   
     
     /// <summary>Option holding each type of move e.g. Capture.</summary>
     type MoveType =
@@ -142,13 +47,13 @@ module Types =
           PieceAt : int[]
           WtKingPos : int
           BkKingPos : int
-          PieceTypes : Bitboard list
-          WtPrBds : Bitboard
-          BkPrBds : Bitboard
-          PieceLocationsAll : Bitboard
-          Checkers : Bitboard
+          PieceTypes : uint64 list
+          WtPrBds : uint64
+          BkPrBds : uint64
+          PieceLocationsAll : uint64
+          Checkers : uint64
           WhosTurn : int
-          CastleRights : CstlFlgs
+          CastleRights : int
           EnPassant : int
           Fiftymove : int
           Fullmove : int }
@@ -187,13 +92,13 @@ module Types =
         { PieceAt = Array.create 64 0
           WtKingPos = OUTOFBOUNDS
           BkKingPos = OUTOFBOUNDS
-          PieceTypes = Array.create 7 Bitboard.Empty |> List.ofArray
-          WtPrBds = Bitboard.Empty
-          BkPrBds = Bitboard.Empty
-          PieceLocationsAll = Bitboard.Empty
-          Checkers = Bitboard.Empty
+          PieceTypes = Array.create 7 0UL |> List.ofArray
+          WtPrBds = 0UL
+          BkPrBds = 0UL
+          PieceLocationsAll = 0UL
+          Checkers = 0UL
           WhosTurn = 0
-          CastleRights = CstlFlgs.EMPTY
+          CastleRights = 0
           EnPassant = OUTOFBOUNDS
           Fiftymove = 0
           Fullmove = 0 }

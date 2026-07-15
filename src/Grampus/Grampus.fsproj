@@ -63,7 +63,6 @@
     <EmbeddedResource Include="Images\tree.png" />
     <EmbeddedResource Include="Images\white.png" />
     <Compile Include="Types.fs" />
-    <Compile Include="Util.fs" />
     <Compile Include="Dirn.fs" />
     <Compile Include="Player.fs" />
     <Compile Include="PieceType.fs" />
@@ -71,6 +70,7 @@
     <Compile Include="Rank.fs" />
     <Compile Include="File.fs" />
     <Compile Include="Square.fs" />
+    <Compile Include="Castle.fs" />
     <Compile Include="BitBoard.fs" />
     <Compile Include="Attacks.fs" />
     <Compile Include="FEN.fs" />

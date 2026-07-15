@@ -54,7 +54,7 @@ module Square =
     let ``Between returns correct bitmask for squares in between`` () =
         // Between A1 and A4 should be A2 and A3
         let bb = Square.Between A4 A1
-        let expected = (1UL <<< int A2) ||| (1UL <<< int A3) |> BitB
+        let expected = (1UL <<< int A2) ||| (1UL <<< int A3) 
         bb |> should equal expected
 
     [<Fact>]

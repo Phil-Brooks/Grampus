@@ -38,21 +38,6 @@ module Types =
         Sq(f, r) |> should equal expected
 
     // --- 3. Bitboard Constant Verification ---
-    [<Fact>]
-    let ``Bitboard Rank1 contains correct bits``() =
-        let expected = 
-            uint64 Bitboard.A1 ||| uint64 Bitboard.B1 ||| uint64 Bitboard.C1 ||| 
-            uint64 Bitboard.D1 ||| uint64 Bitboard.E1 ||| uint64 Bitboard.F1 ||| 
-            uint64 Bitboard.G1 ||| uint64 Bitboard.H1
-        uint64 Bitboard.Rank1 |> should equal expected
-
-    [<Fact>]
-    let ``Bitboard FileA contains correct bits``() =
-        let expected = 
-            uint64 Bitboard.A1 ||| uint64 Bitboard.A2 ||| uint64 Bitboard.A3 ||| 
-            uint64 Bitboard.A4 ||| uint64 Bitboard.A5 ||| uint64 Bitboard.A6 ||| 
-            uint64 Bitboard.A7 ||| uint64 Bitboard.A8
-        uint64 Bitboard.FileA |> should equal expected
 
     // --- 4. Board Representation ---
     [<Fact>]

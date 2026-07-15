@@ -4,7 +4,7 @@ module MoveGenerate =
     
     // Helper to turn Square (int16) into Bitboard (Enum)
     let inline private toBB (sq: int) = 
-        LanguagePrimitives.EnumOfValue<uint64, Bitboard>(1UL <<< sq)
+        1UL <<< sq
 
     let private legal (bd : Brd) (mvs : int list) =
         let me = bd.WhosTurn
@@ -51,7 +51,7 @@ module MoveGenerate =
                         let sqemp =
                             bd.PieceAt.[int F1] = Piece.EMPTY 
                             && bd.PieceAt.[int G1] = Piece.EMPTY
-                        if (bd.CastleRights.HasFlag(CstlFlgs.WhiteShort) 
+                        if ((bd.CastleRights &&& Castle.WK) <> 0 
                             && bd.PieceAt.[int E1] = Piece.WKing 
                             && bd.PieceAt.[int H1] = Piece.WRook && sqemp 
                             && not sqatt) then 
@@ -65,7 +65,7 @@ module MoveGenerate =
                         bd.PieceAt.[B1] = Piece.EMPTY 
                         && bd.PieceAt.[C1] = Piece.EMPTY 
                         && bd.PieceAt.[D1] = Piece.EMPTY
-                    if (bd.CastleRights.HasFlag(CstlFlgs.WhiteLong) 
+                    if ((bd.CastleRights &&& Castle.WQ) <> 0 
                         && bd.PieceAt.[E1] = Piece.WKing 
                         && bd.PieceAt.[A1] = Piece.WRook && sqemp 
                         && not sqatt) then 
@@ -78,7 +78,7 @@ module MoveGenerate =
                                     || bd |> Board.SquareAttacked F8 0
                                     || bd |> Board.SquareAttacked G8 0
                         let sqemp = bd.PieceAt.[F8] = Piece.EMPTY && bd.PieceAt.[G8] = Piece.EMPTY
-                        if (bd.CastleRights.HasFlag(CstlFlgs.BlackShort) 
+                        if ((bd.CastleRights &&& Castle.BK) <> 0 
                             && bd.PieceAt.[E8] = Piece.BKing 
                             && bd.PieceAt.[H8] = Piece.BRook && sqemp 
                             && not sqatt) then 
@@ -89,7 +89,7 @@ module MoveGenerate =
                                 || bd |> Board.SquareAttacked D8 0
                                 || bd |> Board.SquareAttacked C8 0
                     let sqemp = bd.PieceAt.[B8] = Piece.EMPTY && bd.PieceAt.[C8] = Piece.EMPTY && bd.PieceAt.[D8] = Piece.EMPTY
-                    if (bd.CastleRights.HasFlag(CstlFlgs.BlackLong) 
+                    if ((bd.CastleRights &&& Castle.BQ) <> 0 
                         && bd.PieceAt.[E8] = Piece.BKing 
                         && bd.PieceAt.[A8] = Piece.BRook && sqemp 
                         && not sqatt) then 
@@ -97,7 +97,7 @@ module MoveGenerate =
                     else mvl2
             mvl |> legal bd
     
-    let private pcMoves (bd : Brd) (pt : int) (fnsqbb : int -> Bitboard -> Bitboard) : int list =
+    let private pcMoves (bd : Brd) (pt : int) (fnsqbb : int -> uint64 -> uint64) : int list =
         let me = bd.WhosTurn
         let kingPos = if me = 0 then bd.WtKingPos else bd.BkKingPos
         
@@ -206,7 +206,7 @@ module MoveGenerate =
 
             // 3. Double Pushes
             let ptwos =
-                let rankBB = LanguagePrimitives.EnumOfValue<uint64, Bitboard>(if me = 0 then 0xFF00UL else 0x00FF000000000000UL)
+                let rankBB = if me = 0 then 0xFF00UL else 0x00FF000000000000UL
                 (rankBB &&& piecePositions 
                  &&& (Bitboard.shift mypawnsouth (Bitboard.shift mypawnsouth moveLocations))
                  &&& (Bitboard.shift mypawnsouth (~~~bd.PieceLocationsAll)))

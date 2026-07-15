@@ -8,14 +8,6 @@ open Grampus
 
 module Util =
 
-    // --- 1. Casting Helpers (Sanity Checks) ---
-
-    [<Fact>]
-    let ``BitB correctly handles uint64 flags`` () =
-        BitB 1UL |> should equal Bitboard.A1
-        BitB 255UL |> should equal Bitboard.Rank1
-        BitB 0UL |> should equal Bitboard.Empty
-
     // --- 2. Arithmetic Operators ---
     [<Fact>]
     let ``Rank arithmetic operators work correctly`` () =

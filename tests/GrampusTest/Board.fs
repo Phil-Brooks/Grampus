@@ -62,7 +62,7 @@ module Board =
         
         nextBd.PieceAt.[int G1] |> should equal Piece.WKing
         nextBd.PieceAt.[int F1] |> should equal Piece.WRook
-        nextBd.CastleRights.HasFlag(CstlFlgs.WhiteShort) |> should be False
+        nextBd.CastleRights &&& Castle.WK |> should equal 0
 
     [<Fact>]
     let ``MoveApply: En Passant removes the correct pawn`` () =

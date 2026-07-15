@@ -6,12 +6,12 @@ module Attacks =
 
     // 1. Basic Helpers (Must be first)
     let inline private toBB (sq: int) = 
-        LanguagePrimitives.EnumOfValue<uint64, Bitboard>(1UL <<< int sq)
+        1UL <<< sq
 
-    let private combineBB (bbs: Bitboard seq) = 
+    let private combineBB (bbs: uint64 seq) = 
         bbs |> Seq.fold (|||) Bitboard.Empty
 
-    let Combinations(mask : Bitboard) =
+    let Combinations(mask : uint64) =
         let posl = mask |> Bitboard.toSquares
         let numPositions = posl.Length
         let numCombinations = 1 <<< numPositions
@@ -48,7 +48,7 @@ module Attacks =
             getr position Bitboard.Empty)
         |> combineBB
 
-    let RookAttacksCalc (position : int) (blockers : Bitboard) =
+    let RookAttacksCalc (position : int) (blockers : uint64) =
         Dirn.AllDirectionsRook
         |> Array.map (fun d -> 
             let rec getr p rv =
@@ -61,7 +61,7 @@ module Attacks =
             getr position Bitboard.Empty)
         |> combineBB
 
-    let BishopAttacksCalc (position : int) (blockers : Bitboard) =
+    let BishopAttacksCalc (position : int) (blockers : uint64) =
         Dirn.AllDirectionsBishop
         |> Array.map (fun d -> 
             let rec getr p rv =
@@ -353,15 +353,15 @@ module Attacks =
     let KnightAttacks(from : int) = AttacksKn.[int from]
     let KingAttacks(from : int) = AttacksK.[int from]
 
-    let BishopAttacks (pos : int) (allPieces : Bitboard) =
+    let BishopAttacks (pos : int) (allPieces : uint64) =
         let idx = pos
         let i = (uint64 (allPieces &&& MaskB.[idx]) * MagicsB.[idx]) >>> ShiftB.[idx]
         LookupB.[idx].[int i]
 
-    let RookAttacks (pos : int) (allPieces : Bitboard) =
+    let RookAttacks (pos : int) (allPieces : uint64) =
         let idx = pos
         let i = (uint64 (allPieces &&& MaskR.[idx]) * MagicsR.[idx]) >>> ShiftR.[idx]
         LookupR.[idx].[int i]
 
-    let QueenAttacks (pos : int) (allPieces : Bitboard) =
+    let QueenAttacks (pos : int) (allPieces : uint64) =
         (RookAttacks pos allPieces) ||| (BishopAttacks pos allPieces)

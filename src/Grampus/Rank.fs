@@ -30,17 +30,6 @@ module Rank =
 
     let RankToString(rank : int) = toChar(rank).ToString()
 
-    let ToBitboard(rank : int) =
-        if rank = R1 then Bitboard.Rank1
-        elif rank = R2 then Bitboard.Rank2
-        elif rank = R3 then Bitboard.Rank3
-        elif rank = R4 then Bitboard.Rank4
-        elif rank = R5 then Bitboard.Rank5
-        elif rank = R6 then Bitboard.Rank6
-        elif rank = R7 then Bitboard.Rank7
-        elif rank = R8 then Bitboard.Rank8
-        else Bitboard.Empty
-
     let MyRanks =
         [| [| R1; R2; R3; R4; R5; R6; R7; R8 |]
            [| R8; R7; R6; R5; R4; R3; R2; R1 |] |]

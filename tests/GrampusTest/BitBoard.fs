@@ -13,7 +13,6 @@ type BitboardGenerator =
         // FsCheck 3 uses ArbMap to find generators for types
         ArbMap.defaults 
         |> ArbMap.generate<uint64>
-        |> FsCheck.FSharp.Gen.map (LanguagePrimitives.EnumOfValue<uint64, Bitboard>)
         |> Arb.fromGen
         
 module Bitboard =
@@ -21,14 +20,14 @@ module Bitboard =
     // --- 1. Basic Counting and Conversion ---
 
     [<Property(Arbitrary = [| typeof<BitboardGenerator> |])>]
-    let ``bitCount matches toSquares length`` (bb: Bitboard) =
+    let ``bitCount matches toSquares length`` (bb: uint64) =
         Bitboard.bitCount bb = (Bitboard.toSquares bb).Length
 
     [<Property(Arbitrary = [| typeof<BitboardGenerator> |])>]
-    let ``popFirst reduces bitCount by exactly one`` (bb: Bitboard) =
-        if bb = Bitboard.Empty then
+    let ``popFirst reduces bitCount by exactly one`` (bb: uint64) =
+        if bb = 0UL then
             let sq, remaining = Bitboard.popFirst bb
-            sq = OUTOFBOUNDS && remaining = Bitboard.Empty
+            sq = OUTOFBOUNDS && remaining = 0UL
         else
             let originalCount = Bitboard.bitCount bb
             let _, remaining = Bitboard.popFirst bb
@@ -56,13 +55,13 @@ module Bitboard =
     // --- 3. Directional Consistency ---
 
     [<Property(Arbitrary = [| typeof<BitboardGenerator> |])>]
-    let ``Shifting North then South is reversible for non-Rank8 bits`` (bb: Bitboard) =
+    let ``Shifting North then South is reversible for non-Rank8 bits`` (bb: uint64) =
         let input = bb &&& ~~~Bitboard.Rank8
         let result = input |> Bitboard.shiftN |> Bitboard.shiftS
         result = input
 
     [<Property(Arbitrary = [| typeof<BitboardGenerator> |])>]
-    let ``Shifting West then East is reversible for non-FileA bits`` (bb: Bitboard) =
+    let ``Shifting West then East is reversible for non-FileA bits`` (bb: uint64) =
         let input = bb &&& ~~~Bitboard.FileA
         // Note: Based on your code, West is <<< 1 and East is >>> 1
         let result = input |> Bitboard.shiftW |> Bitboard.shiftE
@@ -72,7 +71,7 @@ module Bitboard =
 
     [<Fact>]
     let ``flood North from A1 creates the whole A File`` () =
-        let start = LanguagePrimitives.EnumOfValue<uint64, Bitboard>(1UL <<< int A1)
+        let start = 1UL <<< int A1
         let result = Bitboard.flood Dirn.N start
         result |> should equal Bitboard.FileA
 
@@ -81,6 +80,6 @@ module Bitboard =
     [<Property(Arbitrary = [| typeof<ChessDimGenerator> |])>]
     let ``containsPos is true for a bitboard created from that square`` (sq: int) =
         if sq >= 0 && sq < 64 then
-            let bb = LanguagePrimitives.EnumOfValue<uint64, Bitboard>(1UL <<< int sq)
+            let bb = 1UL <<< sq
             Bitboard.containsPos sq bb
         else true

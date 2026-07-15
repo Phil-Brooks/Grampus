@@ -29,18 +29,6 @@ module Rank =
     let ``RankToString returns correct chess notation`` (rank: int, expected: string) =
         Rank.RankToString rank |> should equal expected
 
-    // --- 2. Bitboard Mapping ---
-
-    [<Theory>]
-    [<InlineData(0s, Bitboard.Rank1)>]
-    [<InlineData(7s, Bitboard.Rank8)>]
-    let ``ToBitboard returns the correct bitmask for the rank`` (rank: int, expected: Bitboard) =
-        Rank.ToBitboard rank |> should equal expected
-
-    [<Fact>]
-    let ``ToBitboard returns Empty for out of bounds rank`` () =
-        Rank.ToBitboard 8 |> should equal Bitboard.Empty
-
     // --- 3. Property Based Testing ---
 
     [<Property(Arbitrary = [| typeof<ChessDimGenerator> |])>]
@@ -59,7 +47,3 @@ module Rank =
             Rank.IsInBounds i = false
         else true
 
-    [<Property(Arbitrary = [| typeof<ChessDimGenerator> |])>]
-    let ``Rank Bitboard always has 8 bits set`` (r: int) =
-        let bb = Rank.ToBitboard r
-        System.Numerics.BitOperations.PopCount(uint64 bb) = 8

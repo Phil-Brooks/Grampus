@@ -51,7 +51,7 @@ module Attacks =
     // --- 4. Magic Consistency (Property tests don't use InlineData, so they work as-is) ---
 
     [<Property(Arbitrary = [| typeof<BitboardGenerator>; typeof<ChessDimGenerator> |])>]
-    let ``Magic RookAttacks matches functional RookAttacksCalc`` (sq: int) (blockers: Bitboard) =
+    let ``Magic RookAttacks matches functional RookAttacksCalc`` (sq: int) (blockers: uint64) =
         if sq >= 0 && sq < 64 then
             let magicResult = Attacks.RookAttacks sq blockers
             let functionalResult = Attacks.RookAttacksCalc sq blockers
@@ -59,7 +59,7 @@ module Attacks =
         else true
 
     [<Property(Arbitrary = [| typeof<BitboardGenerator>; typeof<ChessDimGenerator> |])>]
-    let ``Magic BishopAttacks matches functional BishopAttacksCalc`` (sq: int) (blockers: Bitboard) =
+    let ``Magic BishopAttacks matches functional BishopAttacksCalc`` (sq: int) (blockers: uint64) =
         if sq >= 0 && sq < 64 then
             let magicResult = Attacks.BishopAttacks sq blockers
             let functionalResult = Attacks.BishopAttacksCalc sq blockers

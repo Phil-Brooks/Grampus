@@ -79,8 +79,8 @@ module Square =
             else OUTOFBOUNDS
     
     let ToBitboard(pos : int) =
-        if pos |> IsInBounds then (1UL <<< int (pos)) |> BitB
-        else Bitboard.Empty
+        if pos |> IsInBounds then (1UL <<< pos) 
+        else 0UL
     
     let Between (pto : int) (pfrom : int) =
         let dir = pfrom |> DirectionTo(pto)
@@ -93,7 +93,7 @@ module Square =
                 getb nf nrv
         
         let rv =
-            if int (dir) = 0 then Bitboard.Empty
-            else getb pfrom Bitboard.Empty
+            if int (dir) = 0 then 0UL
+            else getb pfrom 0UL
         
         rv &&& ~~~(pto |> ToBitboard)

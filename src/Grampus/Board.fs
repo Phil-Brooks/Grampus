@@ -188,27 +188,27 @@ module Board =
             else bd        
         
         let bd =
-            if bd.CastleRights <> CstlFlgs.EMPTY then 
+            if bd.CastleRights <> Castle.EMPTY then 
                 if mfrom = H1 then 
                     { bd with CastleRights =
-                                  bd.CastleRights &&& ~~~CstlFlgs.WhiteShort }
+                                  bd.CastleRights &&& ~~~Castle.WK }
                 elif mfrom = A1 then 
                     { bd with CastleRights =
-                                  bd.CastleRights &&& ~~~CstlFlgs.WhiteLong }
+                                  bd.CastleRights &&& ~~~Castle.WQ }
                 elif piece = Piece.WKing then 
                     { bd with CastleRights =
-                                  bd.CastleRights &&& ~~~CstlFlgs.WhiteShort 
-                                  &&& ~~~CstlFlgs.WhiteLong }
+                                  bd.CastleRights &&& ~~~Castle.WK 
+                                  &&& ~~~Castle.WQ }
                 elif mfrom = H8 then 
                     { bd with CastleRights =
-                                  bd.CastleRights &&& ~~~CstlFlgs.BlackShort }
+                                  bd.CastleRights &&& ~~~Castle.BK }
                 elif mfrom = A8 then 
                     { bd with CastleRights =
-                                  bd.CastleRights &&& ~~~CstlFlgs.BlackLong }
+                                  bd.CastleRights &&& ~~~Castle.BQ }
                 elif piece = Piece.BKing then 
                     { bd with CastleRights =
-                                  bd.CastleRights &&& ~~~CstlFlgs.BlackShort 
-                                  &&& ~~~CstlFlgs.BlackLong }
+                                  bd.CastleRights &&& ~~~Castle.BK 
+                                  &&& ~~~Castle.BQ }
                 else bd
             else bd
         
@@ -296,15 +296,15 @@ module Board =
         
         let bd = addpc SQUARES bd
         { bd with CastleRights =
-                      CstlFlgs.EMPTY ||| (if fen.CastleWS then 
-                                              CstlFlgs.WhiteShort
-                                          else CstlFlgs.EMPTY) 
-                      ||| (if fen.CastleWL then CstlFlgs.WhiteLong
-                           else CstlFlgs.EMPTY) ||| (if fen.CastleBS then 
-                                                         CstlFlgs.BlackShort
-                                                     else CstlFlgs.EMPTY)
-                      ||| (if fen.CastleBL then CstlFlgs.BlackLong
-                           else CstlFlgs.EMPTY)
+                      Castle.EMPTY ||| (if fen.CastleWS then 
+                                              Castle.WK
+                                          else Castle.EMPTY) 
+                      ||| (if fen.CastleWL then Castle.WQ
+                           else Castle.EMPTY) ||| (if fen.CastleBS then 
+                                                         Castle.BK
+                                                     else Castle.EMPTY)
+                      ||| (if fen.CastleBL then Castle.BQ
+                           else Castle.EMPTY)
                   WhosTurn = fen.Whosturn
                   EnPassant = fen.Enpassant
                   Fiftymove = fen.Fiftymove
