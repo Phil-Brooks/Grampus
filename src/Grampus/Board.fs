@@ -1,8 +1,8 @@
 namespace Grampus
 
 module Board =
-    let private PieceMove (mfrom : Square) mto (bd : Brd) =
-        let piece = bd.PieceAt.[int (mfrom)]
+    let private PieceMove (mfrom : int) mto (bd : Brd) =
+        let piece = bd.PieceAt.[mfrom]
         let player = (piece |> Piece.PieceToPlayer).Value
         let pieceType = piece |> Piece.ToPieceType
         
@@ -94,15 +94,15 @@ module Board =
                   WtKingPos = wtkingpos
                   BkKingPos = bkkingpos }
     
-    let PieceRemove (pos : Square) (bd : Brd) =
-        let piece = bd.PieceAt.[int (pos)]
+    let PieceRemove (pos : int) (bd : Brd) =
+        let piece = bd.PieceAt.[pos]
         let player = (piece |> Piece.PieceToPlayer).Value
         let pieceType = piece |> Piece.ToPieceType
         
         let pieceat =
             bd.PieceAt
             |> Array.mapi (fun i p -> 
-                   if i = int (pos) then Piece.EMPTY
+                   if i = pos then Piece.EMPTY
                    else p)
         
         let notPosBits = ~~~(pos |> Square.ToBitboard)
@@ -133,7 +133,7 @@ module Board =
         |> PieceRemove(pos)
         |> PieceAdd pos newPiece
     
-    let private AttacksToBoth (mto : Square) (bd : Brd) =
+    let private AttacksToBoth (mto : int) (bd : Brd) =
         (Attacks.KnightAttacks(mto) &&& bd.PieceTypes.[int (PieceType.Knight)]) 
         ||| ((Attacks.RookAttacks mto bd.PieceLocationsAll) 
              &&& (bd.PieceTypes.[int (PieceType.Queen)] 
@@ -148,14 +148,14 @@ module Board =
              &&& bd.PieceTypes.[int (PieceType.Pawn)])
     
     ///Gets the Bitboard that defines the squares that attack the specified Square(mto) by the specified Player(by) for this Board(bd) 
-    let AttacksTo (mto : Square) (by : int) (bd : Brd) =
+    let AttacksTo (mto : int) (by : int) (bd : Brd) =
         bd
         |> AttacksToBoth(mto)
         &&& (if by = 0 then bd.WtPrBds
              else bd.BkPrBds)
     
     ///Is the Square(mto) attacked by the specified Player(by) for this Board(bd)
-    let SquareAttacked (mto : Square) (by : int) (bd : Brd) =
+    let SquareAttacked (mto : int) (by : int) (bd : Brd) =
         bd
         |> AttacksTo mto by
         <> Bitboard.Empty

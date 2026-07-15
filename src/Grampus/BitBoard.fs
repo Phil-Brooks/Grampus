@@ -9,7 +9,7 @@ module Bitboard =
     let bitCount (ibb: Bitboard) =
         BitOperations.PopCount(uint64 ibb)
 
-    let getFirstPos (ibb: Bitboard) : Square =
+    let getFirstPos (ibb: Bitboard) : int =
         if ibb = Bitboard.Empty then OUTOFBOUNDS
         else BitOperations.TrailingZeroCount(uint64 ibb)
 
@@ -53,8 +53,8 @@ module Bitboard =
             else loop next
         loop ibb
 
-    let containsPos (pos : Square) (ibb : Bitboard) =
-        let mask = 1UL <<< int pos
+    let containsPos (pos : int) (ibb : Bitboard) =
+        let mask = 1UL <<< pos
         (uint64 ibb &&& mask) <> 0UL
 
     let toSquares (ibb: Bitboard) =

@@ -8,11 +8,11 @@ module Square =
             let rank = Rank.fromChar(s.[1])
             Sq(file, rank)
     
-    let IsInBounds(pos : Square) = int (pos) >= 0 && int (pos) <= 63
-    let ToRank(pos : Square) : int = pos / 8
-    let ToFile(pos : Square) : int = pos % 8
+    let IsInBounds(pos : int) = pos >= 0 && pos <= 63
+    let ToRank(pos : int) : int = pos / 8
+    let ToFile(pos : int) : int = pos % 8
     
-    let DirectionTo (pto : Square) (pfrom : Square) =
+    let DirectionTo (pto : int) (pfrom : int) =
         let rankfrom = int (pfrom |> ToRank)
         let filefrom = int (pfrom |> ToFile)
         let rankto = int (pto |> ToRank)
@@ -45,10 +45,10 @@ module Square =
             else if filechange > 0 then Dirn.DirNE
             else Dirn.DirNW
     
-    let PositionInDirectionUnsafe (dir : Dirn) (pos : Square) : Square =
+    let PositionInDirectionUnsafe (dir : Dirn) (pos : int) : int =
         pos + int (dir)
     
-    let PositionInDirection (dir : Dirn) (pos : Square) =
+    let PositionInDirection (dir : Dirn) (pos : int) =
         if not (pos |> IsInBounds) then OUTOFBOUNDS
         else 
             let f = pos |> ToFile
@@ -78,11 +78,11 @@ module Square =
                 Sq(nf, nr)
             else OUTOFBOUNDS
     
-    let ToBitboard(pos : Square) =
+    let ToBitboard(pos : int) =
         if pos |> IsInBounds then (1UL <<< int (pos)) |> BitB
         else Bitboard.Empty
     
-    let Between (pto : Square) (pfrom : Square) =
+    let Between (pto : int) (pfrom : int) =
         let dir = pfrom |> DirectionTo(pto)
         
         let rec getb f rv =

@@ -91,17 +91,17 @@ module Board =
     // --- 5. Property Based Testing (Invariants) ---
 
     [<Property(Arbitrary = [| typeof<PieceGenerator>; typeof<ChessDimGenerator> |])>]
-    let ``PieceLocationsAll is always the sum of White and Black bitboards`` (sq: Square) (p: Piece) =
+    let ``PieceLocationsAll is always the sum of White and Black bitboards`` (sq: int) (p: Piece) =
         if Square.IsInBounds sq && p <> Piece.EMPTY then
             let bd = Board.PieceAdd sq p BrdEMP
             bd.PieceLocationsAll = (bd.WtPrBds ||| bd.BkPrBds)
         else true
 
     [<Property(Arbitrary = [| typeof<PieceGenerator>; typeof<ChessDimGenerator> |])>]
-    let ``Adding then removing a piece returns board to empty`` (sq: Square) (p: Piece) =
+    let ``Adding then removing a piece returns board to empty`` (sq: int) (p: Piece) =
         if Square.IsInBounds sq && p <> Piece.EMPTY then
             let bd = BrdEMP |> Board.PieceAdd sq p |> Board.PieceRemove sq
-            bd.PieceLocationsAll = Bitboard.Empty && bd.PieceAt.[int sq] = Piece.EMPTY
+            bd.PieceLocationsAll = Bitboard.Empty && bd.PieceAt.[sq] = Piece.EMPTY
         else true
 
     [<Fact>]

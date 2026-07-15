@@ -79,7 +79,7 @@ module Bitboard =
     // --- 5. Containment ---
 
     [<Property(Arbitrary = [| typeof<ChessDimGenerator> |])>]
-    let ``containsPos is true for a bitboard created from that square`` (sq: Square) =
+    let ``containsPos is true for a bitboard created from that square`` (sq: int) =
         if sq >= 0 && sq < 64 then
             let bb = LanguagePrimitives.EnumOfValue<uint64, Bitboard>(1UL <<< int sq)
             Bitboard.containsPos sq bb

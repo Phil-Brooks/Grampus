@@ -34,7 +34,7 @@ module MoveUtil =
     [<Theory>]
     [<MemberData(nameof(SanIntegrationData))>]
     let ``fromSAN correctly resolves string to bit-encoded move`` 
-        (fen: string, san: string, expFrom: Square, expTo: Square) =
+        (fen: string, san: string, expFrom: int, expTo: int) =
         
         let bd = FEN.Parse fen |> Board.FromFEN
         let actualMove = MoveUtil.fromSAN bd san

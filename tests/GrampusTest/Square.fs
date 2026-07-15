@@ -25,14 +25,14 @@ module Square =
     [<InlineData("a1", 0s)>]
     [<InlineData("h8", 63s)>]
     [<InlineData("e4", 28s)>]
-    let ``Parse returns correct square index`` (s: string, expected: Square) =
+    let ``Parse returns correct square index`` (s: string, expected: int) =
         Square.Parse s |> should equal expected
 
     [<Theory>]
     [<InlineData(0s, 0s, 0s)>]  // A1 -> File 0, Rank 0
     [<InlineData(63s, 7s, 7s)>] // H8 -> File 7, Rank 7
     [<InlineData(28s, 4s, 3s)>] // E4 -> File 4, Rank 3
-    let ``ToRank and ToFile deconstruct correctly`` (sq: Square, expectedFile: int, expectedRank: int) =
+    let ``ToRank and ToFile deconstruct correctly`` (sq: int, expectedFile: int, expectedRank: int) =
         Square.ToRank sq |> should equal expectedRank
         Square.ToFile sq |> should equal expectedFile
 
@@ -40,7 +40,7 @@ module Square =
 
     [<Theory>]
     [<MemberData(nameof(DirectionTestData))>]
-    let ``DirectionTo identifies correct compass direction`` (fromSq: Square, toSq: Square, expectedDir: Dirn) =
+    let ``DirectionTo identifies correct compass direction`` (fromSq: int, toSq: int, expectedDir: Dirn) =
         Square.DirectionTo toSq fromSq |> should equal expectedDir
 
     [<Fact>]
@@ -69,13 +69,13 @@ module Square =
         Square.IsInBounds s = (s >= 0 && s <= 63)
 
     [<Property(Arbitrary = [| typeof<ChessDimGenerator> |])>]
-    let ``Sq(ToFile(s), ToRank(s)) is identity`` (s: Square) =
+    let ``Sq(ToFile(s), ToRank(s)) is identity`` (s: int) =
         if Square.IsInBounds s then
             Sq(Square.ToFile s, Square.ToRank s) = s
         else true
 
     [<Property(Arbitrary = [| typeof<ChessDimGenerator> |])>]
-    let ``ToBitboard popcount is always 1 for in-bounds squares`` (s: Square) =
+    let ``ToBitboard popcount is always 1 for in-bounds squares`` (s: int) =
         if Square.IsInBounds s then
             let bb = Square.ToBitboard s
             System.Numerics.BitOperations.PopCount(uint64 bb) = 1
@@ -83,7 +83,7 @@ module Square =
             Square.ToBitboard s = Bitboard.Empty
 
     [<Property(Arbitrary = [| typeof<ChessDimGenerator> |])>]
-    let ``Square Round-trip: ToFile and ToRank recreate the original Square`` (sq: Square) =
+    let ``Square Round-trip: ToFile and ToRank recreate the original Square`` (sq: int) =
         if Square.IsInBounds sq then
             let f = Square.ToFile sq
             let r = Square.ToRank sq

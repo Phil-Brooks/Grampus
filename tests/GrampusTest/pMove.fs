@@ -21,7 +21,7 @@ module pMove =
     // 2. Reference the data using MemberData
     [<Theory>]
     [<MemberData(nameof(ParseTestData))>]
-    let ``Parse correctly identifies basic move components`` (san: string, expPiece: PieceType, expTarget: Square, expType: MoveType) =
+    let ``Parse correctly identifies basic move components`` (san: string, expPiece: PieceType, expTarget: int, expType: MoveType) =
         let pm = pMove.Parse san
         pm.Piece |> should equal (Some expPiece)
         pm.TargetSquare |> should equal expTarget

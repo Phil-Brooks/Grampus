@@ -35,10 +35,7 @@ module Types =
         | BKing = 14
         | EMPTY = 0
     
-    /// <summary>Short encoded to hold Square.</summary>
-    type Square = int
-    
-    let A1, B1, C1, D1, E1, F1, G1, H1 : Square * Square * Square * Square * Square * Square * Square * Square =
+    let A1, B1, C1, D1, E1, F1, G1, H1 =
         0, 1, 2, 3, 4, 5, 6, 7
     let A2, B2, C2, D2, E2, F2, G2, H2 =
         A1 + 8, B1 + 8, C1 + 8, D1 + 8, E1 + 8, F1 + 8, G1 + 8, H1 + 8
@@ -55,14 +52,14 @@ module Types =
         A6 + 8, B6 + 8, C6 + 8, D6 + 8, E6 + 8, F6 + 8, G6 + 8, H6 + 8
     let A8, B8, C8, D8, E8, F8, G8, H8 =
         A7 + 8, B7 + 8, C7 + 8, D7 + 8, E7 + 8, F7 + 8, G7 + 8, H7 + 8
-    let OUTOFBOUNDS : Square = 64
+    let OUTOFBOUNDS : int = 64
     let SQUARES =
         [ A1; B1; C1; D1; E1; F1; G1; H1; A2; B2; C2; D2; E2; F2; G2; H2; A3; B3; 
           C3; D3; E3; F3; G3; H3; A4; B4; C4; D4; E4; F4; G4; H4; A5; B5; C5; D5; 
           E5; F5; G5; H5; A6; B6; C6; D6; E6; F6; G6; H6; A7; B7; C7; D7; E7; F7; 
           G7; H7; A8; B8; C8; D8; E8; F8; G8; H8 ]
     
-    let Sq(f : int, r : int) : Square = r * 8 + f
+    let Sq(f : int, r : int) : int = r * 8 + f
     
     [<System.Flags>]
     /// <summary>Enum holding each type of castling e.g. 1 for WhiteShort.</summary>
@@ -171,8 +168,8 @@ module Types =
     type Brd =
         { 
           PieceAt : Piece[]
-          WtKingPos : Square
-          BkKingPos : Square
+          WtKingPos : int
+          BkKingPos : int
           PieceTypes : Bitboard list
           WtPrBds : Bitboard
           BkPrBds : Bitboard
@@ -180,11 +177,11 @@ module Types =
           Checkers : Bitboard
           WhosTurn : int
           CastleRights : CstlFlgs
-          EnPassant : Square
+          EnPassant : int
           Fiftymove : int
           Fullmove : int }
         member bd.Item
-            with get (sq : Square) = bd.PieceAt.[int (sq)]
+            with get (sq : int) = bd.PieceAt.[sq]
         override bd.ToString() =
             let pctostr pc =
                 match pc with
@@ -232,7 +229,7 @@ module Types =
     /// <summary>Record type holding details of an unencoded move such as pieces the target square.</summary>
     type pMove =
         { Mtype : MoveType
-          TargetSquare : Square
+          TargetSquare : int
           Piece : PieceType option
           OriginFile : int option
           OriginRank : int option
@@ -250,6 +247,6 @@ module Types =
           CastleWL : bool
           CastleBS : bool
           CastleBL : bool
-          Enpassant : Square
+          Enpassant : int
           Fiftymove : int
           Fullmove : int }

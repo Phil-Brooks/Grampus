@@ -5,7 +5,7 @@ module Attacks =
     open System.Numerics
 
     // 1. Basic Helpers (Must be first)
-    let inline private toBB (sq: Square) = 
+    let inline private toBB (sq: int) = 
         LanguagePrimitives.EnumOfValue<uint64, Bitboard>(1UL <<< int sq)
 
     let private combineBB (bbs: Bitboard seq) = 
@@ -24,10 +24,10 @@ module Attacks =
         )
 
     // 2. Mask Calculation Logic
-    let RookMaskCalc(position : Square) =
+    let RookMaskCalc(position : int) =
         Direction.AllDirectionsRook
         |> Array.map (fun d -> 
-            let rec getr (p : Square) rv =
+            let rec getr (p : int) rv =
                 let next = p |> Square.PositionInDirection(d)
                 if next = OUTOFBOUNDS || (next |> Square.PositionInDirection(d)) = OUTOFBOUNDS then 
                     rv
@@ -36,10 +36,10 @@ module Attacks =
             getr position Bitboard.Empty)
         |> combineBB
 
-    let BishopMaskCalc(position : Square) =
+    let BishopMaskCalc(position : int) =
         Direction.AllDirectionsBishop
         |> Array.map (fun d -> 
-            let rec getr (p : Square) rv =
+            let rec getr (p : int) rv =
                 let next = p |> Square.PositionInDirection(d)
                 if next = OUTOFBOUNDS || (next |> Square.PositionInDirection(d)) = OUTOFBOUNDS then 
                     rv
@@ -48,7 +48,7 @@ module Attacks =
             getr position Bitboard.Empty)
         |> combineBB
 
-    let RookAttacksCalc (position : Square) (blockers : Bitboard) =
+    let RookAttacksCalc (position : int) (blockers : Bitboard) =
         Direction.AllDirectionsRook
         |> Array.map (fun d -> 
             let rec getr p rv =
@@ -61,7 +61,7 @@ module Attacks =
             getr position Bitboard.Empty)
         |> combineBB
 
-    let BishopAttacksCalc (position : Square) (blockers : Bitboard) =
+    let BishopAttacksCalc (position : int) (blockers : Bitboard) =
         Direction.AllDirectionsBishop
         |> Array.map (fun d -> 
             let rec getr p rv =
@@ -343,25 +343,25 @@ module Attacks =
     // 5. Final Accessor Functions (Public API)
     
     /// Returns the squares a pawn on 'from' attacks (captures)
-    let PawnAttacks (from : Square) (player : int) = 
-        AttacksP.[int player].[int from]
+    let PawnAttacks (from : int) (player : int) = 
+        AttacksP.[player].[from]
 
     /// Returns the squares a pawn on 'from' can move to (ignoring blockers for now)
-    let PawnMoveSquares (from : Square) (player : int) =
-        PawnPushes.[int player].[int from]    
+    let PawnMoveSquares (from : int) (player : int) =
+        PawnPushes.[player].[from]    
     
-    let KnightAttacks(from : Square) = AttacksKn.[int from]
-    let KingAttacks(from : Square) = AttacksK.[int from]
+    let KnightAttacks(from : int) = AttacksKn.[int from]
+    let KingAttacks(from : int) = AttacksK.[int from]
 
-    let BishopAttacks (pos : Square) (allPieces : Bitboard) =
-        let idx = int pos
+    let BishopAttacks (pos : int) (allPieces : Bitboard) =
+        let idx = pos
         let i = (uint64 (allPieces &&& MaskB.[idx]) * MagicsB.[idx]) >>> ShiftB.[idx]
         LookupB.[idx].[int i]
 
-    let RookAttacks (pos : Square) (allPieces : Bitboard) =
-        let idx = int pos
+    let RookAttacks (pos : int) (allPieces : Bitboard) =
+        let idx = pos
         let i = (uint64 (allPieces &&& MaskR.[idx]) * MagicsR.[idx]) >>> ShiftR.[idx]
         LookupR.[idx].[int i]
 
-    let QueenAttacks (pos : Square) (allPieces : Bitboard) =
+    let QueenAttacks (pos : int) (allPieces : Bitboard) =
         (RookAttacks pos allPieces) ||| (BishopAttacks pos allPieces)

@@ -3,8 +3,8 @@ namespace Grampus
 module MoveGenerate =
     
     // Helper to turn Square (int16) into Bitboard (Enum)
-    let inline private toBB (sq: Square) = 
-        LanguagePrimitives.EnumOfValue<uint64, Bitboard>(1UL <<< int sq)
+    let inline private toBB (sq: int) = 
+        LanguagePrimitives.EnumOfValue<uint64, Bitboard>(1UL <<< sq)
 
     let private legal (bd : Brd) (mvs : Move list) =
         let me = bd.WhosTurn
@@ -62,14 +62,14 @@ module MoveGenerate =
                                 || bd |> Board.SquareAttacked D1 1
                                 || bd |> Board.SquareAttacked C1 1
                     let sqemp =
-                        bd.PieceAt.[int B1] = Piece.EMPTY 
-                        && bd.PieceAt.[int C1] = Piece.EMPTY 
-                        && bd.PieceAt.[int D1] = Piece.EMPTY
+                        bd.PieceAt.[B1] = Piece.EMPTY 
+                        && bd.PieceAt.[C1] = Piece.EMPTY 
+                        && bd.PieceAt.[D1] = Piece.EMPTY
                     if (bd.CastleRights.HasFlag(CstlFlgs.WhiteLong) 
-                        && bd.PieceAt.[int E1] = Piece.WKing 
-                        && bd.PieceAt.[int A1] = Piece.WRook && sqemp 
+                        && bd.PieceAt.[E1] = Piece.WKing 
+                        && bd.PieceAt.[A1] = Piece.WRook && sqemp 
                         && not sqatt) then 
-                        (Move.Create E1 C1 bd.PieceAt.[int E1] bd.PieceAt.[int C1]) :: mvl1
+                        (Move.Create E1 C1 bd.PieceAt.[E1] bd.PieceAt.[C1]) :: mvl1
                     else mvl1
                 else 
                     // Black Castling Logic...
@@ -77,27 +77,27 @@ module MoveGenerate =
                         let sqatt = bd |> Board.SquareAttacked E8 0
                                     || bd |> Board.SquareAttacked F8 0
                                     || bd |> Board.SquareAttacked G8 0
-                        let sqemp = bd.PieceAt.[int F8] = Piece.EMPTY && bd.PieceAt.[int G8] = Piece.EMPTY
+                        let sqemp = bd.PieceAt.[F8] = Piece.EMPTY && bd.PieceAt.[G8] = Piece.EMPTY
                         if (bd.CastleRights.HasFlag(CstlFlgs.BlackShort) 
-                            && bd.PieceAt.[int E8] = Piece.BKing 
-                            && bd.PieceAt.[int H8] = Piece.BRook && sqemp 
+                            && bd.PieceAt.[E8] = Piece.BKing 
+                            && bd.PieceAt.[H8] = Piece.BRook && sqemp 
                             && not sqatt) then 
-                            [ Move.Create E8 G8 bd.PieceAt.[int E8] bd.PieceAt.[int G8] ]
+                            [ Move.Create E8 G8 bd.PieceAt.[E8] bd.PieceAt.[G8] ]
                         else []
                     
                     let sqatt = bd |> Board.SquareAttacked E8 0
                                 || bd |> Board.SquareAttacked D8 0
                                 || bd |> Board.SquareAttacked C8 0
-                    let sqemp = bd.PieceAt.[int B8] = Piece.EMPTY && bd.PieceAt.[int C8] = Piece.EMPTY && bd.PieceAt.[int D8] = Piece.EMPTY
+                    let sqemp = bd.PieceAt.[B8] = Piece.EMPTY && bd.PieceAt.[C8] = Piece.EMPTY && bd.PieceAt.[D8] = Piece.EMPTY
                     if (bd.CastleRights.HasFlag(CstlFlgs.BlackLong) 
-                        && bd.PieceAt.[int E8] = Piece.BKing 
-                        && bd.PieceAt.[int A8] = Piece.BRook && sqemp 
+                        && bd.PieceAt.[E8] = Piece.BKing 
+                        && bd.PieceAt.[A8] = Piece.BRook && sqemp 
                         && not sqatt) then 
-                        (Move.Create E8 C8 bd.PieceAt.[int E8] bd.PieceAt.[int C8]) :: mvl2
+                        (Move.Create E8 C8 bd.PieceAt.[E8] bd.PieceAt.[C8]) :: mvl2
                     else mvl2
             mvl |> legal bd
     
-    let private pcMoves (bd : Brd) (pt : PieceType) (fnsqbb : Square -> Bitboard -> Bitboard) : Move list =
+    let private pcMoves (bd : Brd) (pt : PieceType) (fnsqbb : int -> Bitboard -> Bitboard) : Move list =
         let me = bd.WhosTurn
         let kingPos = if me = 0 then bd.WtKingPos else bd.BkKingPos
         
@@ -130,7 +130,7 @@ module MoveGenerate =
         getAttacks piecePositions [] |> legal bd
 
     // (Simplified logic for other MoveTo functions using toSquares)
-    let KnightMovesTo (mto : Square) (bd : Brd) =
+    let KnightMovesTo (mto : int) (bd : Brd) =
         let atts = Attacks.KnightAttacks mto
         let piecePositions = (if bd.WhosTurn = 0 then bd.WtPrBds else bd.BkPrBds) &&& bd.PieceTypes.[int PieceType.Knight]
         let pieceposs = (atts &&& piecePositions) |> Bitboard.toSquares
@@ -217,7 +217,7 @@ module MoveGenerate =
 
             (ptwos @ pones @ pcaps) |> legal bd
 
-    let PossMoves (bd : Brd) (sq : Square) =
+    let PossMoves (bd : Brd) (sq : int) =
         let pc = bd.[sq]
         match pc |> Piece.PieceToPlayer with
         | Some p when p = bd.WhosTurn ->
