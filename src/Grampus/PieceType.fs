@@ -27,23 +27,5 @@ module PieceType =
         | 'k' | 'K' -> King
         | _ -> invalidArg "c" $"Invalid piece type char: {c}"
     
-    
-    
-    let Parse(c : char) =
-        match c with
-        | 'P' -> Pawn
-        | 'N' -> Knight
-        | 'B' -> Bishop
-        | 'R' -> Rook
-        | 'Q' -> Queen
-        | 'K' -> King
-        | 'p' -> Pawn
-        | 'n' -> Knight
-        | 'b' -> Bishop
-        | 'r' -> Rook
-        | 'q' -> Queen
-        | 'k' -> King
-        | _ -> failwith (c.ToString() + " is not a valid piece")
-    
     let ForPlayer (player : int) (pt : int) : Piece =
         (int (pt) ||| (player <<< 3)) |> Pc

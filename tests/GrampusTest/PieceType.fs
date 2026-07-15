@@ -28,11 +28,11 @@ module PieceType =
     [<InlineData('Q', PieceType.Queen)>]
     [<InlineData('k', PieceType.King)>]
     let ``Parse returns correct PieceType regardless of case`` (c: char, expected: int) =
-        PieceType.Parse c |> should equal expected
+        PieceType.fromChar c |> should equal expected
 
     [<Fact>]
     let ``Parse throws for invalid characters`` () =
-        (fun () -> PieceType.Parse 'Z' |> ignore) |> should throw typeof<System.Exception>
+        (fun () -> PieceType.fromChar 'Z' |> ignore) |> should throw typeof<System.Exception>
 
     // --- 2. ForPlayer (Bit-packing) Tests ---
 
@@ -51,7 +51,7 @@ module PieceType =
     let ``Parse(c) matches Parse(toUpper c)`` (c: char) =
         let valid = "PNBRQKpnbrqk"
         if valid.Contains(c) then
-            PieceType.Parse c = PieceType.Parse (System.Char.ToUpper c)
+            PieceType.fromChar c = PieceType.fromChar (System.Char.ToUpper c)
         else true
 
     [<Property(Arbitrary = [| typeof<PieceTypeGenerator>; typeof<PlayerGenerator> |])>]

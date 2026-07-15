@@ -24,7 +24,7 @@ module pMove =
     let Parse(s : string) =
         let (|SimpleMove|Castle|PawnCapture|AmbiguousFile|AmbiguousRank|Promotion|PromCapture|) (s:string) =
             if Regex.IsMatch(s, "^[BNRQK][a-h][1-8]$") then 
-                SimpleMove(s.[0] |> PieceType.Parse, s.[1..] |> Square.Parse)
+                SimpleMove(s.[0] |> PieceType.fromChar, s.[1..] |> Square.Parse)
             elif Regex.IsMatch(s, "^[a-h][1-8]$") then 
                 SimpleMove(PieceType.Pawn, s |> Square.Parse)
             elif s = "O-O" then Castle('K')
@@ -32,13 +32,13 @@ module pMove =
             elif Regex.IsMatch(s, "^[a-h][a-h][1-8]$") then 
                 PawnCapture(s.[0] |> File.fromChar, s.[1..] |> Square.Parse)
             elif Regex.IsMatch(s, "^[BNRQK][a-h][a-h][1-8]$") then 
-                AmbiguousFile(s.[0] |> PieceType.Parse, s.[1] |> File.fromChar, s.[2..] |> Square.Parse)
+                AmbiguousFile(s.[0] |> PieceType.fromChar, s.[1] |> File.fromChar, s.[2..] |> Square.Parse)
             elif Regex.IsMatch(s, "^[BNRQK][1-8][a-h][1-8]$") then 
-                AmbiguousRank(s.[0] |> PieceType.Parse, s.[1] |> Rank.fromChar, s.[2..] |> Square.Parse)
+                AmbiguousRank(s.[0] |> PieceType.fromChar, s.[1] |> Rank.fromChar, s.[2..] |> Square.Parse)
             elif Regex.IsMatch(s, "^[a-h][1-8][BNRQ]$") then 
-                Promotion(s.[0..1] |> Square.Parse, s.[2] |> PieceType.Parse)
+                Promotion(s.[0..1] |> Square.Parse, s.[2] |> PieceType.fromChar)
             elif Regex.IsMatch(s, "^[a-h][a-h][1-8][BNRQ]$") then 
-                PromCapture(s.[0] |> File.fromChar, s.[1..2] |> Square.Parse, s.[3] |> PieceType.Parse)
+                PromCapture(s.[0] |> File.fromChar, s.[1..2] |> Square.Parse, s.[3] |> PieceType.fromChar)
             else failwith ("invalid move: " + s)
         
         let strip chars = String.collect (fun c -> if Seq.exists ((=) c) chars then "" else string c)
