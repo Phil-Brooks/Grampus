@@ -6,23 +6,6 @@ namespace Grampus
 /// </namespacedoc>
 /// <summary>Holds all the main types used by Grampus.</summary>
 module Types =
-
-   
-    /// <summary>Enum holding each type of piece for each colour e.g. 1 for WPawn.</summary>
-    type Piece =
-        | WPawn = 1
-        | WKnight = 2
-        | WBishop = 3
-        | WRook = 4
-        | WQueen = 5
-        | WKing = 6
-        | BPawn = 9
-        | BKnight = 10
-        | BBishop = 11
-        | BRook = 12
-        | BQueen = 13
-        | BKing = 14
-        | EMPTY = 0
     
     let A1, B1, C1, D1, E1, F1, G1, H1 =
         0, 1, 2, 3, 4, 5, 6, 7
@@ -156,7 +139,7 @@ module Types =
     /// <summary>Record type holding board details such as pieces on each square.</summary>
     type Brd =
         { 
-          PieceAt : Piece[]
+          PieceAt : int[]
           WtKingPos : int
           BkKingPos : int
           PieceTypes : Bitboard list
@@ -174,19 +157,19 @@ module Types =
         override bd.ToString() =
             let pctostr pc =
                 match pc with
-                | Piece.WPawn -> "P"
-                | Piece.WKnight -> "N"
-                | Piece.WBishop -> "B"
-                | Piece.WRook -> "R"
-                | Piece.WQueen -> "Q"
-                | Piece.WKing -> "K"
-                | Piece.BPawn -> "p"
-                | Piece.BKnight -> "n"
-                | Piece.BBishop -> "b"
-                | Piece.BRook -> "r"
-                | Piece.BQueen -> "q"
-                | Piece.BKing -> "k"
-                | Piece.EMPTY -> "."
+                | 1 -> "P"
+                | 2 -> "N"
+                | 3 -> "B"
+                | 4 -> "R"
+                | 5 -> "Q"
+                | 6 -> "K"
+                | 9 -> "p"
+                | 10 -> "n"
+                | 11 -> "b"
+                | 12 -> "r"
+                | 13 -> "q"
+                | 14 -> "k"
+                | 0 -> "."
                 | _ -> failwith "invalid piece"
             
             let bdstr =
@@ -201,7 +184,7 @@ module Types =
             bdstr + tomv
     
     let BrdEMP =
-        { PieceAt = Array.create 64 Piece.EMPTY
+        { PieceAt = Array.create 64 0
           WtKingPos = OUTOFBOUNDS
           BkKingPos = OUTOFBOUNDS
           PieceTypes = Array.create 7 Bitboard.Empty |> List.ofArray
@@ -230,7 +213,7 @@ module Types =
         override x.ToString() = x.San
 
     type Fen =
-        { Pieceat : Piece list
+        { Pieceat : int list
           Whosturn : int
           CastleWS : bool
           CastleWL : bool

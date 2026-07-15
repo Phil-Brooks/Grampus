@@ -42,7 +42,7 @@ module PieceType =
     [<InlineData(0, PieceType.King, Piece.WKing)>]     // 6 | (0 << 3) = 6
     [<InlineData(1, PieceType.King, Piece.BKing)>]     // 6 | (1 << 3) = 14
     [<InlineData(1, PieceType.Queen, Piece.BQueen)>]   // 5 | (1 << 3) = 13
-    let ``ForPlayer correctly packs player and type into a Piece`` (player: int, pt: int, expected: Piece) =
+    let ``ForPlayer correctly packs player and type into a Piece`` (player: int, pt: int, expected: int) =
         PieceType.ForPlayer player pt |> should equal expected
 
     // --- 3. Property Based Testing ---

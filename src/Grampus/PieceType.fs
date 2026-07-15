@@ -27,5 +27,5 @@ module PieceType =
         | 'k' | 'K' -> King
         | _ -> invalidArg "c" $"Invalid piece type char: {c}"
     
-    let ForPlayer (player : int) (pt : int) : Piece =
-        (int (pt) ||| (player <<< 3)) |> Pc
+    let ForPlayer (player : int) (pt : int) : int =
+        pt ||| (player <<< 3)

@@ -9,12 +9,6 @@ open Grampus
 module Util =
 
     // --- 1. Casting Helpers (Sanity Checks) ---
-    [<Theory>]
-    [<InlineData(1, Piece.WPawn)>]
-    [<InlineData(14, Piece.BKing)>]
-    [<InlineData(0, Piece.EMPTY)>]
-    let ``Pc casts integers to Piece correctly`` (i: int, expected: Piece) =
-        Pc i |> should equal expected
 
     [<Fact>]
     let ``BitB correctly handles uint64 flags`` () =

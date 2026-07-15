@@ -71,7 +71,7 @@ module Move =
     // --- 3. Property Based Testing ---
 
     [<Property(Arbitrary = [| typeof<ChessDimGenerator>; typeof<PieceGenerator> |])>]
-    let ``Move deconstruction is always the inverse of Move creation`` (f: int) (t: int) (p: Piece) =
+    let ``Move deconstruction is always the inverse of Move creation`` (f: int) (t: int) (p: int) =
         // Only test valid squares (0-63)
         if Square.IsInBounds f && Square.IsInBounds t then
             let mv = Move.Create f t p Piece.EMPTY
@@ -79,7 +79,7 @@ module Move =
         else true
 
     [<Property(Arbitrary = [| typeof<PieceGenerator> |])>]
-    let ``MovingPlayer matches the color of the moving piece`` (p: Piece) =
+    let ``MovingPlayer matches the color of the moving piece`` (p: int) =
         if p <> Piece.EMPTY then
             let mv = Move.Create E2 E4 p Piece.EMPTY
             let player = Move.MovingPlayer mv

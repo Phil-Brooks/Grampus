@@ -25,7 +25,7 @@ module Piece =
     [<InlineData('k', Piece.BKing)>]
     [<InlineData('n', Piece.BKnight)>]
     [<InlineData('.', Piece.EMPTY)>]
-    let ``Parse returns correct Piece for valid char``(input: char, expected: Piece) =
+    let ``Parse returns correct Piece for valid char``(input: char, expected: int) =
         Piece.Parse input |> should equal expected
 
     [<Fact>]
@@ -43,12 +43,12 @@ module Piece =
     // --- 2. Property Based Testing (FsCheck) ---
 
     [<Property(Arbitrary = [| typeof<PieceGenerator> |])>]
-    let ``Piece Round-trip: Parse(ToStr(p)) equals p`` (p: Piece) =
+    let ``Piece Round-trip: Parse(ToStr(p)) equals p`` (p: int) =
         let s = Piece.ToStr p
         Piece.Parse (s.[0]) = p
 
     [<Property(Arbitrary = [| typeof<PieceGenerator> |])>]
-    let ``PieceToPlayer logic is consistent`` (p: Piece) =
+    let ``PieceToPlayer logic is consistent`` (p: int) =
         match Piece.PieceToPlayer p with
         | None -> p = Piece.EMPTY
         | Some player ->
@@ -58,7 +58,7 @@ module Piece =
             | _ -> false // Handles values like enum<Player>(2)
     
     [<Property(Arbitrary = [| typeof<PieceGenerator> |])>]
-    let ``ToPieceType ignores color bit`` (p: Piece) =
+    let ``ToPieceType ignores color bit`` (p: int) =
         if p = Piece.EMPTY then 
             Piece.ToPieceType p = PieceType.EMPTY
         else

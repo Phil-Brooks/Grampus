@@ -48,7 +48,7 @@ module Board =
                   WtKingPos = wtkingpos
                   BkKingPos = bkkingpos }
     
-    let PieceAdd pos (piece : Piece) (bd : Brd) =
+    let PieceAdd pos (piece : int) (bd : Brd) =
         let player = (piece |> Piece.PieceToPlayer).Value
         let pieceType = piece |> Piece.ToPieceType
         

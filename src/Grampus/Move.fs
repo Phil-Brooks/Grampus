@@ -1,22 +1,22 @@
 namespace Grampus
 
 module Move =
-    let Create (pfrom : int) (pto : int) (piece : Piece) 
-        (captured : Piece) : int =
-        pfrom ||| (pto <<< 6) ||| (int (piece) <<< 12) 
-         ||| (int (captured) <<< 16)
-    let CreateProm (pfrom : int) (pto : int) (piece : Piece) 
-        (captured : Piece) (promoteType : int) : int =
-        pfrom ||| (pto <<< 6) ||| (int (piece) <<< 12) 
-         ||| (int (captured) <<< 16) ||| (int (promoteType) <<< 20)
+    let Create (pfrom : int) (pto : int) (piece : int) 
+        (captured : int) : int =
+        pfrom ||| (pto <<< 6) ||| (piece <<< 12) 
+         ||| (captured <<< 16)
+    let CreateProm (pfrom : int) (pto : int) (piece : int) 
+        (captured : int) (promoteType : int) : int =
+        pfrom ||| (pto <<< 6) ||| (piece <<< 12) 
+         ||| (captured <<< 16) ||| (promoteType <<< 20)
     let From(move : int) : int = move &&& 0x3F
     let To(move : int) : int = move >>> 6 &&& 0x3F
-    let MovingPiece(move : int) = (move >>> 12 &&& 0xF) |> Pc
+    let MovingPiece(move : int) = move >>> 12 &&& 0xF
     
     let MovingPieceType(move : int) = move >>> 12 &&& 0x7
     let MovingPlayer(move : int) = move >>> 15 &&& 0x1
     let IsCapture(move : int) = (move >>> 16 &&& 0xF) <> 0
-    let CapturedPiece(move : int) = (move >>> 16 &&& 0xF) |> Pc
+    let CapturedPiece(move : int) = move >>> 16 &&& 0xF
     let IsPromotion(move : int) = (move >>> 20 &&& 0x7) <> 0
     let PromoteType(move : int) = move >>> 20 &&& 0x7
     
