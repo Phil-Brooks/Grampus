@@ -9,7 +9,5 @@ module Util =
             (i)
     let (-!) (r : Rank) (i : int) : Rank = r - i
     let (+!) (r : Rank) (i : int) : Rank = r + i
-    let (--) (f : File) (i : int) : File = f - i
-    let (++) (f : File) (i : int) : File = f + i
     
    

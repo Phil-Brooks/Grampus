@@ -29,7 +29,7 @@ module MoveGenerate =
         // Queen can move to E2, E3, E5, E6, E7, E8 (capture)
         // She CANNOT move to D4 or F4 (this would leave king in check)
         queenMoves |> List.iter (fun m -> 
-            (Move.To m |> Square.ToFile) |> should equal FileE)
+            (Move.To m |> Square.ToFile) |> should equal File.E)
         
         queenMoves.Length |> should equal 6
 

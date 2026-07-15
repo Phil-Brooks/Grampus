@@ -24,12 +24,6 @@ module Types =
         H8 |> should equal 63
 
     [<Fact>]
-    let ``Files and Ranks lists are exhaustive``() =
-        FILES.Length |> should equal 8
-        RANKS.Length |> should equal 8
-        SQUARES.Length |> should equal 64
-
-    [<Fact>]
     let ``OUTOFBOUNDS is set to 64``() =
         OUTOFBOUNDS |> should equal 64
 
@@ -70,12 +64,12 @@ module Types =
     // --- 5. Property Based Testing (FsCheck) ---
     
     [<Property(Arbitrary = [| typeof<ChessDimGenerator> |])>]
-    let ``Any Sq(f, r) is always within 0-63`` (f: File) (r: Rank) =
+    let ``Any Sq(f, r) is always within 0-63`` (f: int) (r: int) =
         let s = Sq(f, r)
         s >= 0 && s <= 63
 
     [<Property(Arbitrary = [| typeof<ChessDimGenerator> |])>]
-    let ``Sq function is reversible (Modulo 8)`` (f: File) (r: Rank) =
+    let ``Sq function is reversible (Modulo 8)`` (f: int) (r: int) =
         let s = Sq(f, r)
         let recoveredFile = s % 8
         let recoveredRank = s / 8

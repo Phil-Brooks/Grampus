@@ -283,7 +283,7 @@ module PnlBoardLib =
         /// creates file label
         let flbl i lbli =
             let lbl = new Label()
-            lbl.Text <- FILE_NAMES.[i]
+            lbl.Text <- File.NAMES.[i]
             lbl.Font <- new Font("Arial", 12.0F, FontStyle.Bold, 
                                  GraphicsUnit.Point, byte (0))
             lbl.ForeColor <- Color.Green

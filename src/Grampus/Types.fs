@@ -35,14 +35,6 @@ module Types =
         | BKing = 14
         | EMPTY = 0
     
-    type File = int
-    
-    let FileA, FileB, FileC, FileD, FileE, FileF, FileG, FileH : File * File * File * File * File * File * File * File =
-        0, 1, 2, 3, 4, 5, 6, 7
-    let FILES = [ FileA; FileB; FileC; FileD; FileE; FileF; FileG; FileH ]
-    let FILE_NAMES = [ "a"; "b"; "c"; "d"; "e"; "f"; "g"; "h" ]
-    let FILE_EMPTY : File = 8
-    
     /// <summary>Short encoded to hold Rank.</summary>
     type Rank = int
     
@@ -79,7 +71,7 @@ module Types =
           E5; F5; G5; H5; A6; B6; C6; D6; E6; F6; G6; H6; A7; B7; C7; D7; E7; F7; 
           G7; H7; A8; B8; C8; D8; E8; F8; G8; H8 ]
     
-    let Sq(f : File, r : Rank) : Square = r * 8 + f
+    let Sq(f : int, r : Rank) : Square = r * 8 + f
     
     [<System.Flags>]
     /// <summary>Enum holding each type of castling e.g. 1 for WhiteShort.</summary>
@@ -251,7 +243,7 @@ module Types =
         { Mtype : MoveType
           TargetSquare : Square
           Piece : PieceType option
-          OriginFile : File option
+          OriginFile : int option
           OriginRank : Rank option
           PromotedPiece : PieceType option
           IsCheck : bool

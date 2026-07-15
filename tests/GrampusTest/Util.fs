@@ -38,9 +38,9 @@ module Util =
 
     [<Fact>]
     let ``File arithmetic operators work correctly`` () =
-        FileA ++ 1 |> should equal FileB
-        FileH -- 7 |> should equal FileA
-        FileC ++ 3 |> should equal FileF
+        File.A + 1 |> should equal File.B
+        File.H - 7 |> should equal File.A
+        File.C + 3 |> should equal File.F
 
     // --- 3. Property Based Testing (FsCheck) ---
     // Using the ChessDimGenerator we created for TypesTests
@@ -52,7 +52,7 @@ module Util =
         (r +! smallOffset) -! smallOffset = r
 
     [<Property(Arbitrary = [| typeof<ChessDimGenerator> |])>]
-    let ``File addition and subtraction are inverses`` (f: File) (offset: int) =
+    let ``File addition and subtraction are inverses`` (f: int) (offset: int) =
         let smallOffset = offset % 4
-        (f ++ smallOffset) -- smallOffset = f
+        (f + smallOffset) - smallOffset = f
 

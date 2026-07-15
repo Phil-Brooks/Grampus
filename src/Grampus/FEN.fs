@@ -47,7 +47,7 @@ module FEN =
                     if "1234567890".IndexOf(c) >= 0 then 
                         getpc cl.Tail (ifl + System.Int32.Parse(c.ToString()))
                     else 
-                        pieceat.[int (Sq(FILES.[ifl], rank))] <- Piece.Parse(c) //OK
+                        pieceat.[Sq(ifl, rank)] <- Piece.Parse(c) //OK
                         getpc cl.Tail (ifl + 1)
             
             let srank =

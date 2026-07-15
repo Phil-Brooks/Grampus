@@ -15,13 +15,13 @@ module File =
     [<InlineData('a', 0s)>] // FileA
     [<InlineData('h', 7s)>] // FileH
     [<InlineData('d', 3s)>] // FileD
-    let ``Parse returns correct internal index for valid lowercase characters`` (c: char, expected: File) =
+    let ``Parse returns correct internal index for valid lowercase characters`` (c: char, expected: int) =
         File.fromChar c |> should equal expected
 
     [<Theory>]
     [<InlineData('A', 0s)>]
     [<InlineData('H', 7s)>]
-    let ``Parse handles uppercase characters correctly`` (c: char, expected: File) =
+    let ``Parse handles uppercase characters correctly`` (c: char, expected: int) =
         File.fromChar c |> should equal expected
 
     [<Theory>]
@@ -38,21 +38,21 @@ module File =
     [<InlineData(7s, true)>]
     [<InlineData(-1s, false)>]
     [<InlineData(8s, false)>]
-    let ``IsInBounds correctly identifies valid and invalid indices`` (f: File, expected: bool) =
+    let ``IsInBounds correctly identifies valid and invalid indices`` (f: int, expected: bool) =
         File.IsInBounds f |> should equal expected
 
     // --- 3. Property Based Testing ---
 
     [<Property(Arbitrary = [| typeof<ChessDimGenerator> |])>]
-    let ``Any valid File index can be round-tripped through the global FILE_NAMES list`` (f: File) =
+    let ``Any valid File index can be round-tripped through the global FILE_NAMES list`` (f: int) =
         // Arrange: Get the character for this file from the global list defined in Types
-        let fileChar = FILE_NAMES.[int f].[0]
+        let fileChar = File.NAMES.[f].[0]
         
         // Assert: Parsing that character should return the original index
         File.fromChar fileChar = f
 
     [<Property(Arbitrary = [| typeof<ChessDimGenerator> |])>]
-    let ``IsInBounds is always true for generated valid files`` (f: File) =
+    let ``IsInBounds is always true for generated valid files`` (f: int) =
         File.IsInBounds f = true
 
     [<Property>]
