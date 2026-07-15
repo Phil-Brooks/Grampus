@@ -11,12 +11,12 @@ module Square =
 
     let DirectionTestData : obj array seq =
         seq {
-            yield [| A1; A8; Dirn.DirN |]
-            yield [| A8; A1; Dirn.DirS |]
-            yield [| A1; H1; Dirn.DirE |]
-            yield [| H1; A1; Dirn.DirW |]
-            yield [| A1; H8; Dirn.DirNE |]
-            yield [| B1; A3; Dirn.DirNNW |] // Knight move
+            yield [| A1; A8; Dirn.N |]
+            yield [| A8; A1; Dirn.S |]
+            yield [| A1; H1; Dirn.E |]
+            yield [| H1; A1; Dirn.W |]
+            yield [| A1; H8; Dirn.NE |]
+            yield [| B1; A3; Dirn.NNW |] // Knight move
         }
 
     // --- 1. Parsing and Basic Deconstruction ---
@@ -40,13 +40,13 @@ module Square =
 
     [<Theory>]
     [<MemberData(nameof(DirectionTestData))>]
-    let ``DirectionTo identifies correct compass direction`` (fromSq: int, toSq: int, expectedDir: Dirn) =
+    let ``DirectionTo identifies correct compass direction`` (fromSq: int, toSq: int, expectedDir: int) =
         Square.DirectionTo toSq fromSq |> should equal expectedDir
 
     [<Fact>]
     let ``PositionInDirection returns OUTOFBOUNDS when walking off the board`` () =
-        Square.PositionInDirection Dirn.DirN A8 |> should equal OUTOFBOUNDS
-        Square.PositionInDirection Dirn.DirW A1 |> should equal OUTOFBOUNDS
+        Square.PositionInDirection Dirn.N A8 |> should equal OUTOFBOUNDS
+        Square.PositionInDirection Dirn.W A1 |> should equal OUTOFBOUNDS
 
     // --- 3. Geometric Logic (Between) ---
 

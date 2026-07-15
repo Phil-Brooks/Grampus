@@ -25,7 +25,7 @@ module Attacks =
 
     // 2. Mask Calculation Logic
     let RookMaskCalc(position : int) =
-        Direction.AllDirectionsRook
+        Dirn.AllDirectionsRook
         |> Array.map (fun d -> 
             let rec getr (p : int) rv =
                 let next = p |> Square.PositionInDirection(d)
@@ -37,7 +37,7 @@ module Attacks =
         |> combineBB
 
     let BishopMaskCalc(position : int) =
-        Direction.AllDirectionsBishop
+        Dirn.AllDirectionsBishop
         |> Array.map (fun d -> 
             let rec getr (p : int) rv =
                 let next = p |> Square.PositionInDirection(d)
@@ -49,7 +49,7 @@ module Attacks =
         |> combineBB
 
     let RookAttacksCalc (position : int) (blockers : Bitboard) =
-        Direction.AllDirectionsRook
+        Dirn.AllDirectionsRook
         |> Array.map (fun d -> 
             let rec getr p rv =
                 let next = p |> Square.PositionInDirection(d)
@@ -62,7 +62,7 @@ module Attacks =
         |> combineBB
 
     let BishopAttacksCalc (position : int) (blockers : Bitboard) =
-        Direction.AllDirectionsBishop
+        Dirn.AllDirectionsBishop
         |> Array.map (fun d -> 
             let rec getr p rv =
                 let next = p |> Square.PositionInDirection(d)
@@ -253,14 +253,14 @@ module Attacks =
     
     let AttacksKn =
         SQUARES |> List.map (fun sq ->
-            Direction.AllDirectionsKnight
+            Dirn.AllDirectionsKnight
             |> Seq.map (fun d -> sq |> Square.PositionInDirection d)
             |> Seq.filter (fun res -> res <> OUTOFBOUNDS)
             |> Seq.map toBB |> combineBB) |> List.toArray
 
     let AttacksK =
         SQUARES |> List.map (fun sq ->
-            Direction.AllDirectionsQueen
+            Dirn.AllDirectionsQueen
             |> Seq.map (fun d -> sq |> Square.PositionInDirection d)
             |> Seq.filter (fun res -> res <> OUTOFBOUNDS)
             |> Seq.map toBB |> combineBB) |> List.toArray
@@ -270,13 +270,13 @@ module Attacks =
             // White Pawn Attacks (Index 0)
             SQUARES |> List.map (fun sq ->
                 let b = toBB sq
-                (Bitboard.shift Dirn.DirNE b) ||| (Bitboard.shift Dirn.DirNW b)
+                (Bitboard.shift Dirn.NE b) ||| (Bitboard.shift Dirn.NW b)
             ) |> List.toArray
 
             // Black Pawn Attacks (Index 1)
             SQUARES |> List.map (fun sq ->
                 let b = toBB sq
-                (Bitboard.shift Dirn.DirSE b) ||| (Bitboard.shift Dirn.DirSW b)
+                (Bitboard.shift Dirn.SE b) ||| (Bitboard.shift Dirn.SW b)
             ) |> List.toArray
         |]
 
@@ -286,19 +286,19 @@ module Attacks =
             // White Pushes
             SQUARES |> List.map (fun sq ->
                 let b = toBB sq
-                let single = Bitboard.shift Dirn.DirN b
+                let single = Bitboard.shift Dirn.N b
                 // Only allow double push if on starting rank
                 let rank = sq / 8
-                if rank = 1 then single ||| (Bitboard.shift Dirn.DirN single)
+                if rank = 1 then single ||| (Bitboard.shift Dirn.N single)
                 else single
             ) |> List.toArray
 
             // Black Pushes
             SQUARES |> List.map (fun sq ->
                 let b = toBB sq
-                let single = Bitboard.shift Dirn.DirS b
+                let single = Bitboard.shift Dirn.S b
                 let rank = sq / 8
-                if rank = 6 then single ||| (Bitboard.shift Dirn.DirS single)
+                if rank = 6 then single ||| (Bitboard.shift Dirn.S single)
                 else single
             ) |> List.toArray
         |]    

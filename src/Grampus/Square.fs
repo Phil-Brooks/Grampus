@@ -18,11 +18,11 @@ module Square =
         let rankto = int (pto |> ToRank)
         let fileto = int (pto |> ToFile)
         if fileto = filefrom then 
-            if rankfrom < rankto then Dirn.DirN
-            else Dirn.DirS
+            if rankfrom < rankto then Dirn.N
+            else Dirn.S
         elif rankfrom = rankto then 
-            if filefrom > fileto then Dirn.DirW
-            else Dirn.DirE
+            if filefrom > fileto then Dirn.W
+            else Dirn.E
         else 
             let rankchange = rankto - rankfrom
             let filechange = fileto - filefrom
@@ -37,18 +37,18 @@ module Square =
             
             if (rankchangeabs = 1 && filechangeabs = 2) 
                || (rankchangeabs = 2 && filechangeabs = 1) then 
-                ((rankchange * 8) + filechange) |> enum<Dirn>
-            elif rankchangeabs <> filechangeabs then 0 |> enum<Dirn>
+                ((rankchange * 8) + filechange) 
+            elif rankchangeabs <> filechangeabs then 0 
             elif rankchange < 0 then 
-                if filechange > 0 then Dirn.DirSE
-                else Dirn.DirSW
-            else if filechange > 0 then Dirn.DirNE
-            else Dirn.DirNW
+                if filechange > 0 then Dirn.SE
+                else Dirn.SW
+            else if filechange > 0 then Dirn.NE
+            else Dirn.NW
     
-    let PositionInDirectionUnsafe (dir : Dirn) (pos : int) : int =
-        pos + int (dir)
+    let PositionInDirectionUnsafe (dir : int) (pos : int) : int =
+        pos + dir
     
-    let PositionInDirection (dir : Dirn) (pos : int) =
+    let PositionInDirection (dir : int) (pos : int) =
         if not (pos |> IsInBounds) then OUTOFBOUNDS
         else 
             let f = pos |> ToFile
@@ -56,22 +56,22 @@ module Square =
             
             let nr, nf =
                 match dir with
-                | Dirn.DirN -> r + 1, f
-                | Dirn.DirE -> r, f + 1
-                | Dirn.DirS -> r - 1, f
-                | Dirn.DirW -> r, f - 1
-                | Dirn.DirNE -> r + 1, f + 1
-                | Dirn.DirSE -> r - 1, f + 1
-                | Dirn.DirSW -> r - 1, f - 1
-                | Dirn.DirNW -> r + 1, f - 1
-                | Dirn.DirNNE -> r + 2, f + 1
-                | Dirn.DirEEN -> r + 1, f + 2
-                | Dirn.DirEES -> r - 1, f + 2
-                | Dirn.DirSSE -> r - 2, f + 1
-                | Dirn.DirSSW -> r - 2, f - 1
-                | Dirn.DirWWS -> r - 1, f - 2
-                | Dirn.DirWWN -> r + 1, f - 2
-                | Dirn.DirNNW -> r + 2, f - 1
+                | Dirn.N -> r + 1, f
+                | Dirn.E -> r, f + 1
+                | Dirn.S -> r - 1, f
+                | Dirn.W -> r, f - 1
+                | Dirn.NE -> r + 1, f + 1
+                | Dirn.SE -> r - 1, f + 1
+                | Dirn.SW -> r - 1, f - 1
+                | Dirn.NW -> r + 1, f - 1
+                | Dirn.NNE -> r + 2, f + 1
+                | Dirn.EEN -> r + 1, f + 2
+                | Dirn.EES -> r - 1, f + 2
+                | Dirn.SSE -> r - 2, f + 1
+                | Dirn.SSW -> r - 2, f - 1
+                | Dirn.WWS -> r - 1, f - 2
+                | Dirn.WWN -> r + 1, f - 2
+                | Dirn.NNW -> r + 2, f - 1
                 | _ -> Rank.EMPTY, File.EMPTY
             if nr = Rank.EMPTY && nf = File.EMPTY then OUTOFBOUNDS
             elif (nr |> Rank.IsInBounds) && (nf |> File.IsInBounds) then 

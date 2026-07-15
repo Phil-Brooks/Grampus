@@ -64,7 +64,7 @@
     <EmbeddedResource Include="Images\white.png" />
     <Compile Include="Types.fs" />
     <Compile Include="Util.fs" />
-    <Compile Include="Direction.fs" />
+    <Compile Include="Dirn.fs" />
     <Compile Include="Player.fs" />
     <Compile Include="PieceType.fs" />
     <Compile Include="Piece.fs" />

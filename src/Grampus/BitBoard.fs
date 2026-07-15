@@ -27,23 +27,23 @@ module Bitboard =
 
     let shift dir (ibb: Bitboard) =
         match dir with
-        | Dirn.DirN -> shiftN ibb
-        | Dirn.DirS -> shiftS ibb
-        | Dirn.DirE -> shiftE ibb
-        | Dirn.DirW -> shiftW ibb
-        | Dirn.DirNE -> shiftN (shiftE ibb)
-        | Dirn.DirNW -> shiftN (shiftW ibb)
-        | Dirn.DirSE -> shiftS (shiftE ibb)
-        | Dirn.DirSW -> shiftS (shiftW ibb)
+        | Dirn.N -> shiftN ibb
+        | Dirn.S -> shiftS ibb
+        | Dirn.E -> shiftE ibb
+        | Dirn.W -> shiftW ibb
+        | Dirn.NE -> shiftN (shiftE ibb)
+        | Dirn.NW -> shiftN (shiftW ibb)
+        | Dirn.SE -> shiftS (shiftE ibb)
+        | Dirn.SW -> shiftS (shiftW ibb)
         // Knight moves...
-        | Dirn.DirNNE -> shiftN (shiftN (shiftE ibb))
-        | Dirn.DirEEN -> shiftE (shiftE (shiftN ibb))
-        | Dirn.DirEES -> shiftE (shiftE (shiftS ibb))
-        | Dirn.DirSSE -> shiftS (shiftS (shiftE ibb))
-        | Dirn.DirSSW -> shiftS (shiftS (shiftW ibb))
-        | Dirn.DirWWS -> shiftW (shiftW (shiftS ibb))
-        | Dirn.DirWWN -> shiftW (shiftW (shiftN ibb))
-        | Dirn.DirNNW -> shiftN (shiftN (shiftW ibb))
+        | Dirn.NNE -> shiftN (shiftN (shiftE ibb))
+        | Dirn.EEN -> shiftE (shiftE (shiftN ibb))
+        | Dirn.EES -> shiftE (shiftE (shiftS ibb))
+        | Dirn.SSE -> shiftS (shiftS (shiftE ibb))
+        | Dirn.SSW -> shiftS (shiftS (shiftW ibb))
+        | Dirn.WWS -> shiftW (shiftW (shiftS ibb))
+        | Dirn.WWN -> shiftW (shiftW (shiftN ibb))
+        | Dirn.NNW -> shiftN (shiftN (shiftW ibb))
         | _ -> failwith "invalid dir"
 
     let flood dir (ibb : Bitboard) =

@@ -232,7 +232,7 @@ module Board =
                     mfrom
                     |> Square.PositionInDirectionUnsafe(move
                                                         |> Move.MovingPlayer
-                                                        |> Direction.MyNorth)
+                                                        |> Dirn.MyNorth)
                 { bd with EnPassant = ep }
             else bd
         

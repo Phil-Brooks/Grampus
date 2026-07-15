@@ -158,10 +158,10 @@ module MoveGenerate =
         if checkerCount > 1 then []
         else 
             let me = bd.WhosTurn
-            let mypawnwest = if me = 0 then Dirn.DirNW else Dirn.DirSW
-            let mypawneast = if me = 0 then Dirn.DirNE else Dirn.DirSE
-            let mypawnnorth = if me = 0 then Dirn.DirN else Dirn.DirS
-            let mypawnsouth = if me = 0 then Dirn.DirS else Dirn.DirN
+            let mypawnwest = if me = 0 then Dirn.NW else Dirn.SW
+            let mypawneast = if me = 0 then Dirn.NE else Dirn.SE
+            let mypawnnorth = if me = 0 then Dirn.N else Dirn.S
+            let mypawnsouth = if me = 0 then Dirn.S else Dirn.N
             let myrank8 = if me = 0 then Rank.R8 else Rank.R1
             let myrank2 = if me = 0 then Rank.R2 else Rank.R7
             
@@ -182,7 +182,7 @@ module MoveGenerate =
             // 1. Captures
             let getPcaps capDir att =
                 att |> Bitboard.toSquares |> Array.toList |> List.collect (fun targetpos ->
-                    let piecepos = targetpos |> Square.PositionInDirectionUnsafe (capDir |> Direction.Opposite)
+                    let piecepos = targetpos |> Square.PositionInDirectionUnsafe (capDir |> Dirn.Opposite)
                     if (targetpos / 8) = myrank8 then 
                         [ PieceType.Queen; PieceType.Rook; PieceType.Bishop; PieceType.Knight ]
                         |> List.map (fun p -> Move.CreateProm piecepos targetpos bd.PieceAt.[int piecepos] bd.PieceAt.[int targetpos] p)

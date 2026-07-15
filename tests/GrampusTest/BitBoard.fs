@@ -73,7 +73,7 @@ module Bitboard =
     [<Fact>]
     let ``flood North from A1 creates the whole A File`` () =
         let start = LanguagePrimitives.EnumOfValue<uint64, Bitboard>(1UL <<< int A1)
-        let result = Bitboard.flood Dirn.DirN start
+        let result = Bitboard.flood Dirn.N start
         result |> should equal Bitboard.FileA
 
     // --- 5. Containment ---
