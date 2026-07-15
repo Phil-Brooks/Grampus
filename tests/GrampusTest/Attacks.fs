@@ -43,7 +43,7 @@ module Attacks =
 
     [<Fact>]
     let ``White PawnAttacks wrap-around check`` () =
-        let attacks = Attacks.PawnAttacks A2 Player.White
+        let attacks = Attacks.PawnAttacks A2 0
         Bitboard.containsPos B3 attacks |> should be True
         Bitboard.containsPos H3 attacks |> should be False
         Bitboard.bitCount attacks |> should equal 1

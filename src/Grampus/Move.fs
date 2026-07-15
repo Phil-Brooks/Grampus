@@ -14,7 +14,7 @@ module Move =
     let MovingPiece(move : Move) = (int (move) >>> 12 &&& 0xF) |> Pc
     
     let MovingPieceType(move : Move) = (int (move) >>> 12 &&& 0x7) |> PcTp
-    let MovingPlayer(move : Move) = (int (move) >>> 15 &&& 0x1) |> Plyr
+    let MovingPlayer(move : Move) = (int (move) >>> 15 &&& 0x1) 
     let IsCapture(move : Move) = (int (move) >>> 16 &&& 0xF) <> 0
     let CapturedPiece(move : Move) = (int (move) >>> 16 &&& 0xF) |> Pc
     let IsPromotion(move : Move) = (int (move) >>> 20 &&& 0x7) <> 0

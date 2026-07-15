@@ -54,8 +54,8 @@ module FEN =
                 sRanks.[System.Int32.Parse(rank |> Rank.RankToString) - 1]
             getpc (srank.ToCharArray() |> List.ofArray) 0
         let whosTurn =
-            if sPlayer = "w" then Player.White
-            elif sPlayer = "b" then Player.Black
+            if sPlayer = "w" then 0
+            elif sPlayer = "b" then 1
             else failwith (sPlayer + " is not a valid player")
         
         let castleWS = sCastle.IndexOf("K") >= 0

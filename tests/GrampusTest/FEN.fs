@@ -11,17 +11,17 @@ module FEN =
     let FenTestData : obj array seq =
         seq {
             // 1. Starting Position
-            yield [| FEN.StartStr; Player.White; true; true; true; true; OUTOFBOUNDS; 0; 1 |]
+            yield [| FEN.StartStr; 0; true; true; true; true; OUTOFBOUNDS; 0; 1 |]
             // 2. Mid-game with specific rights and EP
             // Position after 1. e4 c5 2. Nf3 d6 3. d4 cxd4
             yield [| "rnbqkbnr/pp2pppp/3p4/8/3pP3/5N2/PPP2PPP/RNBQKB1R w KQkq - 0 4"; 
-                     Player.White; true; true; true; true; OUTOFBOUNDS; 0; 4 |]
+                     0; true; true; true; true; OUTOFBOUNDS; 0; 4 |]
             // 3. No castling rights, Black to move
             yield [| "4k3/8/8/8/8/8/4P3/4K3 b - - 5 10"; 
-                     Player.Black; false; false; false; false; OUTOFBOUNDS; 5; 10 |]
+                     1; false; false; false; false; OUTOFBOUNDS; 5; 10 |]
             // 4. En Passant square active
             yield [| "rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b KQkq e3 0 1"; 
-                     Player.Black; true; true; true; true; E3; 0; 1 |]
+                     1; true; true; true; true; E3; 0; 1 |]
         }
 
     // --- 2. Functional Tests ---

@@ -53,8 +53,8 @@ module Piece =
         | None -> p = Piece.EMPTY
         | Some player ->
             match player with
-            | Player.White -> (int p > 0 && int p < 8)
-            | Player.Black -> (int p > 8)
+            | 0 -> (int p > 0 && int p < 8)
+            | 1 -> (int p > 8)
             | _ -> false // Handles values like enum<Player>(2)
     
     [<Property(Arbitrary = [| typeof<PieceGenerator> |])>]

@@ -343,11 +343,11 @@ module Attacks =
     // 5. Final Accessor Functions (Public API)
     
     /// Returns the squares a pawn on 'from' attacks (captures)
-    let PawnAttacks (from : Square) (player : Player) = 
+    let PawnAttacks (from : Square) (player : int) = 
         AttacksP.[int player].[int from]
 
     /// Returns the squares a pawn on 'from' can move to (ignoring blockers for now)
-    let PawnMoveSquares (from : Square) (player : Player) =
+    let PawnMoveSquares (from : Square) (player : int) =
         PawnPushes.[int player].[int from]    
     
     let KnightAttacks(from : Square) = AttacksKn.[int from]

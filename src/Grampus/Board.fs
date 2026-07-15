@@ -23,21 +23,21 @@ module Board =
                    else p)
         
         let wtprbds =
-            if player = Player.White then bd.WtPrBds ^^^ posBits
+            if player = 0 then bd.WtPrBds ^^^ posBits
             else bd.WtPrBds
         
         let bkprbds =
-            if player = Player.Black then bd.BkPrBds ^^^ posBits
+            if player = 1 then bd.BkPrBds ^^^ posBits
             else bd.BkPrBds
         
         let pieceLocationsAll = bd.PieceLocationsAll ^^^ posBits
         
         let wtkingpos =
-            if pieceType = PieceType.King && player = Player.White then mto
+            if pieceType = PieceType.King && player = 0 then mto
             else bd.WtKingPos
         
         let bkkingpos =
-            if pieceType = PieceType.King && player = Player.Black then mto
+            if pieceType = PieceType.King && player = 1 then mto
             else bd.BkKingPos
         
         { bd with PieceAt = pieceat
@@ -69,21 +69,21 @@ module Board =
         let piecelocationsall = bd.PieceLocationsAll ||| posBits
         
         let wtprbds =
-            if (piece |> Piece.PieceToPlayer).Value = Player.White then 
+            if (piece |> Piece.PieceToPlayer).Value = 0 then 
                 bd.WtPrBds ||| posBits
             else bd.WtPrBds
         
         let bkprbds =
-            if (piece |> Piece.PieceToPlayer).Value = Player.Black then 
+            if (piece |> Piece.PieceToPlayer).Value = 1 then 
                 bd.BkPrBds ||| posBits
             else bd.BkPrBds
         
         let wtkingpos =
-            if pieceType = PieceType.King && player = Player.White then pos
+            if pieceType = PieceType.King && player = 0 then pos
             else bd.WtKingPos
         
         let bkkingpos =
-            if pieceType = PieceType.King && player = Player.Black then pos
+            if pieceType = PieceType.King && player = 1 then pos
             else bd.BkKingPos
         
         { bd with PieceAt = pieceat
@@ -114,11 +114,11 @@ module Board =
                    else p)
         
         let wtprbds =
-            if player = Player.White then bd.WtPrBds &&& notPosBits
+            if player = 0 then bd.WtPrBds &&& notPosBits
             else bd.WtPrBds
         
         let bkprbds =
-            if player = Player.Black then bd.BkPrBds &&& notPosBits
+            if player = 1 then bd.BkPrBds &&& notPosBits
             else bd.BkPrBds
         
         let piecelocationsall = bd.PieceLocationsAll &&& notPosBits
@@ -142,20 +142,20 @@ module Board =
              &&& (bd.PieceTypes.[int (PieceType.Queen)] 
                   ||| bd.PieceTypes.[int (PieceType.Bishop)])) 
         ||| (Attacks.KingAttacks(mto) &&& (bd.PieceTypes.[int (PieceType.King)])) 
-        ||| ((Attacks.PawnAttacks mto Player.Black) &&& bd.BkPrBds 
+        ||| ((Attacks.PawnAttacks mto 1) &&& bd.BkPrBds 
              &&& bd.PieceTypes.[int (PieceType.Pawn)]) 
-        ||| ((Attacks.PawnAttacks mto Player.White) &&& bd.WtPrBds 
+        ||| ((Attacks.PawnAttacks mto 0) &&& bd.WtPrBds 
              &&& bd.PieceTypes.[int (PieceType.Pawn)])
     
     ///Gets the Bitboard that defines the squares that attack the specified Square(mto) by the specified Player(by) for this Board(bd) 
-    let AttacksTo (mto : Square) (by : Player) (bd : Brd) =
+    let AttacksTo (mto : Square) (by : int) (bd : Brd) =
         bd
         |> AttacksToBoth(mto)
-        &&& (if by = Player.White then bd.WtPrBds
+        &&& (if by = 0 then bd.WtPrBds
              else bd.BkPrBds)
     
     ///Is the Square(mto) attacked by the specified Player(by) for this Board(bd)
-    let SquareAttacked (mto : Square) (by : Player) (bd : Brd) =
+    let SquareAttacked (mto : Square) (by : int) (bd : Brd) =
         bd
         |> AttacksTo mto by
         <> Bitboard.Empty
@@ -237,7 +237,7 @@ module Board =
             else bd
         
         let bd =
-            if bd.WhosTurn = Player.Black then 
+            if bd.WhosTurn = 1 then 
                 { bd with Fullmove = bd.Fullmove + 1 }
             else bd
         
@@ -252,7 +252,7 @@ module Board =
         
         // 2. Determine the current King's position safely
         let kingPos = 
-            if bd.WhosTurn = Player.White then bd.WtKingPos 
+            if bd.WhosTurn = 0 then bd.WtKingPos 
             else bd.BkKingPos
 
         // 3. Update Checkers ONLY if the king is actually on the board
@@ -263,7 +263,7 @@ module Board =
                 // Find pieces of the PREVIOUS player that attack the CURRENT king
                 let opponent = bd.WhosTurn |> Player.PlayerOther
                 let opponentPieces = 
-                    if opponent = Player.White then bd.WtPrBds 
+                    if opponent = 0 then bd.WtPrBds 
                     else bd.BkPrBds
                 
                 (bd |> AttacksToBoth kingPos) &&& opponentPieces
@@ -274,9 +274,9 @@ module Board =
     let IsChk(bd : Brd) = bd.Checkers <> Bitboard.Empty
     
     ///Is there a check on Player(kingplayer) on the Board(bd)
-    let IsChck (kingplayer : Player) (bd : Brd) =
+    let IsChck (kingplayer : int) (bd : Brd) =
         let kingpos =
-            if kingplayer = Player.White then bd.WtKingPos
+            if kingplayer = 0 then bd.WtKingPos
             else bd.BkKingPos
         // Guard: If the king isn't on the board, he can't be in check
         if kingpos = OUTOFBOUNDS then false
@@ -311,10 +311,10 @@ module Board =
                   Fullmove = fen.Fullmove
                   Checkers =
                       bd
-                      |> AttacksToBoth(if fen.Whosturn = Player.White then 
+                      |> AttacksToBoth(if fen.Whosturn = 0 then 
                                            bd.WtKingPos
                                        else bd.BkKingPos)
-                      &&& (if fen.Whosturn = Player.Black then bd.WtPrBds
+                      &&& (if fen.Whosturn = 1 then bd.WtPrBds
                            else bd.BkPrBds) }
     
     ///The starting Board at the beginning of a game

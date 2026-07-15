@@ -37,12 +37,12 @@ module PieceType =
     // --- 2. ForPlayer (Bit-packing) Tests ---
 
     [<Theory>]
-    [<InlineData(Player.White, PieceType.Pawn, Piece.WPawn)>]     // 1 | (0 << 3) = 1
-    [<InlineData(Player.Black, PieceType.Pawn, Piece.BPawn)>]     // 1 | (1 << 3) = 9
-    [<InlineData(Player.White, PieceType.King, Piece.WKing)>]     // 6 | (0 << 3) = 6
-    [<InlineData(Player.Black, PieceType.King, Piece.BKing)>]     // 6 | (1 << 3) = 14
-    [<InlineData(Player.Black, PieceType.Queen, Piece.BQueen)>]   // 5 | (1 << 3) = 13
-    let ``ForPlayer correctly packs player and type into a Piece`` (player: Player, pt: PieceType, expected: Piece) =
+    [<InlineData(0, PieceType.Pawn, Piece.WPawn)>]     // 1 | (0 << 3) = 1
+    [<InlineData(1, PieceType.Pawn, Piece.BPawn)>]     // 1 | (1 << 3) = 9
+    [<InlineData(0, PieceType.King, Piece.WKing)>]     // 6 | (0 << 3) = 6
+    [<InlineData(1, PieceType.King, Piece.BKing)>]     // 6 | (1 << 3) = 14
+    [<InlineData(1, PieceType.Queen, Piece.BQueen)>]   // 5 | (1 << 3) = 13
+    let ``ForPlayer correctly packs player and type into a Piece`` (player: int, pt: PieceType, expected: Piece) =
         PieceType.ForPlayer player pt |> should equal expected
 
     // --- 3. Property Based Testing ---
@@ -55,7 +55,7 @@ module PieceType =
         else true
 
     [<Property(Arbitrary = [| typeof<PieceTypeGenerator>; typeof<PlayerGenerator> |])>]
-    let ``ForPlayer results are reversible using Piece logic`` (player: Player) (pt: PieceType) =
+    let ``ForPlayer results are reversible using Piece logic`` (player: int) (pt: PieceType) =
         // Arrange: Create a piece
         let piece = PieceType.ForPlayer player pt
         
@@ -67,5 +67,5 @@ module PieceType =
 
     [<Property(Arbitrary = [| typeof<PieceTypeGenerator> |])>]
     let ``ForPlayer White is always equal to the integer value of PieceType`` (pt: PieceType) =
-        let piece = PieceType.ForPlayer Player.White pt
+        let piece = PieceType.ForPlayer 0 pt
         int piece = int pt

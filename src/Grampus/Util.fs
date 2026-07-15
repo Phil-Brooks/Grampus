@@ -4,7 +4,6 @@ namespace Grampus
 module Util =
     let PcTp i = enum<PieceType> (i)
     let Pc i = enum<Piece> (i)
-    let Plyr i = enum<Player> (i)
     let BitB i =
         Microsoft.FSharp.Core.LanguagePrimitives.EnumOfValue<uint64, Bitboard>
             (i)

@@ -27,9 +27,9 @@ module Direction =
         Direction.AllDirectionsQueen.Length |> should equal 8
 
     [<Theory>]
-    [<InlineData(Player.White, Dirn.DirN)>]
-    [<InlineData(Player.Black, Dirn.DirS)>]
-    let ``MyNorth returns correct direction for player`` (player: Player, expected: Dirn) =
+    [<InlineData(0, Dirn.DirN)>]
+    [<InlineData(1, Dirn.DirS)>]
+    let ``MyNorth returns correct direction for player`` (player: int, expected: Dirn) =
         Direction.MyNorth player |> should equal expected
 
     // --- 2. Specific Opposite Checks ---

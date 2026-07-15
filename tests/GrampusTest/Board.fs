@@ -14,7 +14,7 @@ module Board =
     [<Fact>]
     let ``Board Start position is correctly initialized`` () =
         let bd = Board.Start
-        bd.WhosTurn |> should equal Player.White
+        bd.WhosTurn |> should equal 0
         bd.PieceAt.[int E1] |> should equal Piece.WKing
         bd.PieceAt.[int E8] |> should equal Piece.BKing
         bd.Fullmove |> should equal 1
@@ -32,7 +32,7 @@ module Board =
         
         nextBd.PieceAt.[int E2] |> should equal Piece.EMPTY
         nextBd.PieceAt.[int E4] |> should equal Piece.WPawn
-        nextBd.WhosTurn |> should equal Player.Black
+        nextBd.WhosTurn |> should equal 1
         // Verify Bitboards
         Bitboard.containsPos E2 nextBd.PieceLocationsAll |> should be False
         Bitboard.containsPos E4 nextBd.PieceLocationsAll |> should be True
@@ -67,7 +67,7 @@ module Board =
     [<Fact>]
     let ``MoveApply: En Passant removes the correct pawn`` () =
         // White Pawn on E5, Black Pawn on D5, EP square is D6
-        let bd = { BrdEMP with EnPassant = D6; WhosTurn = Player.White }
+        let bd = { BrdEMP with EnPassant = D6; WhosTurn = 0 }
                  |> Board.PieceAdd E5 Piece.WPawn
                  |> Board.PieceAdd D5 Piece.BPawn
         let mv = Move.Create E5 D6 Piece.WPawn Piece.EMPTY // exd6 e.p.
@@ -85,8 +85,8 @@ module Board =
                  |> Board.PieceAdd E1 Piece.WKing 
                  |> Board.PieceAdd E8 Piece.BRook
         
-        Board.IsChck Player.White bd |> should be True
-        Board.IsChck Player.Black bd |> should be False
+        Board.IsChck 0 bd |> should be True
+        Board.IsChck 1 bd |> should be False
 
     // --- 5. Property Based Testing (Invariants) ---
 

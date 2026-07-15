@@ -23,12 +23,6 @@ module Util =
     let ``Pc casts integers to Piece correctly`` (i: int, expected: Piece) =
         Pc i |> should equal expected
 
-    [<Theory>]
-    [<InlineData(0, Player.White)>]
-    [<InlineData(1, Player.Black)>]
-    let ``Plyr casts integers to Player correctly`` (i: int, expected: Player) =
-        Plyr i |> should equal expected
-
     [<Fact>]
     let ``BitB correctly handles uint64 flags`` () =
         BitB 1UL |> should equal Bitboard.A1
@@ -62,8 +56,3 @@ module Util =
         let smallOffset = offset % 4s
         (f ++ smallOffset) -- smallOffset = f
 
-    [<Property>]
-    let ``Plyr always produces White or Black for bit 0 values`` (i: int) =
-        let normalized = abs i % 2
-        let p = Plyr normalized
-        p = Player.White || p = Player.Black

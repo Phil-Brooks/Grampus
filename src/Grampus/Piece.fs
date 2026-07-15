@@ -43,4 +43,4 @@ module Piece =
         else
             // Shift to get 0 for White, 1 for Black, then wrap in Some
             let playerValue = int piece >>> 3
-            Some (LanguagePrimitives.EnumOfValue<int, Player>(playerValue))
+            Some (playerValue)

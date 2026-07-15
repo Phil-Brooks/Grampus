@@ -21,10 +21,10 @@ module MoveGenerate =
     let KingMoves(bd : Brd) : Move list =
         let me = bd.WhosTurn
         let targetLocations =
-            (if me = Player.Black then bd.WtPrBds else bd.BkPrBds)
+            (if me = 1 then bd.WtPrBds else bd.BkPrBds)
             ||| (~~~bd.PieceLocationsAll)
         
-        let kingPos = if me = Player.White then bd.WtKingPos else bd.BkKingPos
+        let kingPos = if me = 0 then bd.WtKingPos else bd.BkKingPos
         
         let rec getKingAttacks att mvl =
             if att = Bitboard.Empty then mvl
@@ -42,12 +42,12 @@ module MoveGenerate =
         if (checkerCount > 0) || (bd |> Board.IsChk) then []
         else 
             let mvl =
-                if bd.WhosTurn = Player.White then 
+                if bd.WhosTurn = 0 then 
                     let mvl1 =
                         let sqatt =
-                            bd |> Board.SquareAttacked E1 Player.Black
-                            || bd |> Board.SquareAttacked F1 Player.Black
-                            || bd |> Board.SquareAttacked G1 Player.Black
+                            bd |> Board.SquareAttacked E1 1
+                            || bd |> Board.SquareAttacked F1 1
+                            || bd |> Board.SquareAttacked G1 1
                         let sqemp =
                             bd.PieceAt.[int F1] = Piece.EMPTY 
                             && bd.PieceAt.[int G1] = Piece.EMPTY
@@ -58,9 +58,9 @@ module MoveGenerate =
                             [ Move.Create E1 G1 bd.PieceAt.[int E1] bd.PieceAt.[int G1] ]
                         else []
                     
-                    let sqatt = bd |> Board.SquareAttacked E1 Player.Black
-                                || bd |> Board.SquareAttacked D1 Player.Black
-                                || bd |> Board.SquareAttacked C1 Player.Black
+                    let sqatt = bd |> Board.SquareAttacked E1 1
+                                || bd |> Board.SquareAttacked D1 1
+                                || bd |> Board.SquareAttacked C1 1
                     let sqemp =
                         bd.PieceAt.[int B1] = Piece.EMPTY 
                         && bd.PieceAt.[int C1] = Piece.EMPTY 
@@ -74,9 +74,9 @@ module MoveGenerate =
                 else 
                     // Black Castling Logic...
                     let mvl2 =
-                        let sqatt = bd |> Board.SquareAttacked E8 Player.White
-                                    || bd |> Board.SquareAttacked F8 Player.White
-                                    || bd |> Board.SquareAttacked G8 Player.White
+                        let sqatt = bd |> Board.SquareAttacked E8 0
+                                    || bd |> Board.SquareAttacked F8 0
+                                    || bd |> Board.SquareAttacked G8 0
                         let sqemp = bd.PieceAt.[int F8] = Piece.EMPTY && bd.PieceAt.[int G8] = Piece.EMPTY
                         if (bd.CastleRights.HasFlag(CstlFlgs.BlackShort) 
                             && bd.PieceAt.[int E8] = Piece.BKing 
@@ -85,9 +85,9 @@ module MoveGenerate =
                             [ Move.Create E8 G8 bd.PieceAt.[int E8] bd.PieceAt.[int G8] ]
                         else []
                     
-                    let sqatt = bd |> Board.SquareAttacked E8 Player.White
-                                || bd |> Board.SquareAttacked D8 Player.White
-                                || bd |> Board.SquareAttacked C8 Player.White
+                    let sqatt = bd |> Board.SquareAttacked E8 0
+                                || bd |> Board.SquareAttacked D8 0
+                                || bd |> Board.SquareAttacked C8 0
                     let sqemp = bd.PieceAt.[int B8] = Piece.EMPTY && bd.PieceAt.[int C8] = Piece.EMPTY && bd.PieceAt.[int D8] = Piece.EMPTY
                     if (bd.CastleRights.HasFlag(CstlFlgs.BlackLong) 
                         && bd.PieceAt.[int E8] = Piece.BKing 
@@ -99,16 +99,16 @@ module MoveGenerate =
     
     let private pcMoves (bd : Brd) (pt : PieceType) (fnsqbb : Square -> Bitboard -> Bitboard) : Move list =
         let me = bd.WhosTurn
-        let kingPos = if me = Player.White then bd.WtKingPos else bd.BkKingPos
+        let kingPos = if me = 0 then bd.WtKingPos else bd.BkKingPos
         
         let targetLocations =
             let checkerCount = bd.Checkers |> Bitboard.bitCount
             if checkerCount = 1 then 
                 let checkerPos = bd.Checkers |> Bitboard.getFirstPos
                 let evasionTargets = (kingPos |> Square.Between(checkerPos)) ||| (toBB checkerPos)
-                ((if me = Player.Black then bd.WtPrBds else bd.BkPrBds) ||| (~~~bd.PieceLocationsAll)) &&& evasionTargets
+                ((if me = 1 then bd.WtPrBds else bd.BkPrBds) ||| (~~~bd.PieceLocationsAll)) &&& evasionTargets
             else 
-                (if me = Player.Black then bd.WtPrBds else bd.BkPrBds) ||| (~~~bd.PieceLocationsAll)
+                (if me = 1 then bd.WtPrBds else bd.BkPrBds) ||| (~~~bd.PieceLocationsAll)
         
         let rec getAttacks psns imvl =
             if psns = Bitboard.Empty || targetLocations = Bitboard.Empty then imvl
@@ -126,13 +126,13 @@ module MoveGenerate =
                 
                 getAttacks npsns (getAtts atts imvl)
         
-        let piecePositions = (if me = Player.White then bd.WtPrBds else bd.BkPrBds) &&& bd.PieceTypes.[int pt]
+        let piecePositions = (if me = 0 then bd.WtPrBds else bd.BkPrBds) &&& bd.PieceTypes.[int pt]
         getAttacks piecePositions [] |> legal bd
 
     // (Simplified logic for other MoveTo functions using toSquares)
     let KnightMovesTo (mto : Square) (bd : Brd) =
         let atts = Attacks.KnightAttacks mto
-        let piecePositions = (if bd.WhosTurn = Player.White then bd.WtPrBds else bd.BkPrBds) &&& bd.PieceTypes.[int PieceType.Knight]
+        let piecePositions = (if bd.WhosTurn = 0 then bd.WtPrBds else bd.BkPrBds) &&& bd.PieceTypes.[int PieceType.Knight]
         let pieceposs = (atts &&& piecePositions) |> Bitboard.toSquares
         pieceposs |> Array.toList |> List.map (fun p -> Move.Create p mto bd.PieceAt.[int p] bd.PieceAt.[int mto]) |> legal bd
 
@@ -158,14 +158,14 @@ module MoveGenerate =
         if checkerCount > 1 then []
         else 
             let me = bd.WhosTurn
-            let mypawnwest = if me = Player.White then Dirn.DirNW else Dirn.DirSW
-            let mypawneast = if me = Player.White then Dirn.DirNE else Dirn.DirSE
-            let mypawnnorth = if me = Player.White then Dirn.DirN else Dirn.DirS
-            let mypawnsouth = if me = Player.White then Dirn.DirS else Dirn.DirN
-            let myrank8 = if me = Player.White then Rank8 else Rank1
-            let myrank2 = if me = Player.White then Rank2 else Rank7
+            let mypawnwest = if me = 0 then Dirn.DirNW else Dirn.DirSW
+            let mypawneast = if me = 0 then Dirn.DirNE else Dirn.DirSE
+            let mypawnnorth = if me = 0 then Dirn.DirN else Dirn.DirS
+            let mypawnsouth = if me = 0 then Dirn.DirS else Dirn.DirN
+            let myrank8 = if me = 0 then Rank8 else Rank1
+            let myrank2 = if me = 0 then Rank2 else Rank7
             
-            let kingPos = if me = Player.White then bd.WtKingPos else bd.BkKingPos
+            let kingPos = if me = 0 then bd.WtKingPos else bd.BkKingPos
             
             let evasionTargets =
                 if checkerCount = 1 then 
@@ -173,8 +173,8 @@ module MoveGenerate =
                     (kingPos |> Square.Between(checkerPos)) ||| (toBB checkerPos)
                 else ~~~Bitboard.Empty
             
-            let piecePositions = (if me = Player.White then bd.WtPrBds else bd.BkPrBds) &&& bd.PieceTypes.[int PieceType.Pawn]
-            let captureLocations = if me = Player.Black then bd.WtPrBds else bd.BkPrBds
+            let piecePositions = (if me = 0 then bd.WtPrBds else bd.BkPrBds) &&& bd.PieceTypes.[int PieceType.Pawn]
+            let captureLocations = if me = 1 then bd.WtPrBds else bd.BkPrBds
             let targLocations = (captureLocations &&& evasionTargets) ||| (if bd.EnPassant <> OUTOFBOUNDS then toBB bd.EnPassant else Bitboard.Empty)
             
             let moveLocations = (~~~bd.PieceLocationsAll) &&& evasionTargets
@@ -206,7 +206,7 @@ module MoveGenerate =
 
             // 3. Double Pushes
             let ptwos =
-                let rankBB = LanguagePrimitives.EnumOfValue<uint64, Bitboard>(if me = Player.White then 0xFF00UL else 0x00FF000000000000UL)
+                let rankBB = LanguagePrimitives.EnumOfValue<uint64, Bitboard>(if me = 0 then 0xFF00UL else 0x00FF000000000000UL)
                 (rankBB &&& piecePositions 
                  &&& (Bitboard.shift mypawnsouth (Bitboard.shift mypawnsouth moveLocations))
                  &&& (Bitboard.shift mypawnsouth (~~~bd.PieceLocationsAll)))

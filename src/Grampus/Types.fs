@@ -36,9 +36,9 @@ module Types =
         | EMPTY = 0
     
     /// <summary>Enum holding each type of player e.g. 1 for Black.</summary>
-    type Player =
-        | White = 0
-        | Black = 1
+    //type Player =
+    //    | White = 0
+    //    | Black = 1
     
     /// <summary>Short encoded to hold File.</summary>
     type File = int16
@@ -189,7 +189,7 @@ module Types =
         | CastleKingSide
         | CastleQueenSide
     
-     /// <summary>Record type holding board details such as pieces on each square.</summary>
+    /// <summary>Record type holding board details such as pieces on each square.</summary>
     type Brd =
         { 
           PieceAt : Piece[]
@@ -200,7 +200,7 @@ module Types =
           BkPrBds : Bitboard
           PieceLocationsAll : Bitboard
           Checkers : Bitboard
-          WhosTurn : Player
+          WhosTurn : int
           CastleRights : CstlFlgs
           EnPassant : Square
           Fiftymove : int
@@ -231,7 +231,7 @@ module Types =
                 |> String.concat ""
             
             let tomv =
-                if bd.WhosTurn = Player.White then " w"
+                if bd.WhosTurn = 0 then " w"
                 else " b"
             
             bdstr + tomv
@@ -245,7 +245,7 @@ module Types =
           BkPrBds = Bitboard.Empty
           PieceLocationsAll = Bitboard.Empty
           Checkers = Bitboard.Empty
-          WhosTurn = Player.White
+          WhosTurn = 0
           CastleRights = CstlFlgs.EMPTY
           EnPassant = OUTOFBOUNDS
           Fiftymove = 0
@@ -267,7 +267,7 @@ module Types =
 
     type Fen =
         { Pieceat : Piece list
-          Whosturn : Player
+          Whosturn : int
           CastleWS : bool
           CastleWL : bool
           CastleBS : bool

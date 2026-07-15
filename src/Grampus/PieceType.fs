@@ -17,5 +17,5 @@ module PieceType =
         | 'k' -> PieceType.King
         | _ -> failwith (c.ToString() + " is not a valid piece")
     
-    let ForPlayer (player : Player) (pt : PieceType) : Piece =
-        (int (pt) ||| (int (player) <<< 3)) |> Pc
+    let ForPlayer (player : int) (pt : PieceType) : Piece =
+        (int (pt) ||| (player <<< 3)) |> Pc

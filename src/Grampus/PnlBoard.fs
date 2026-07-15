@@ -96,7 +96,7 @@ module PnlBoardLib =
                                 else Color.PaleGreen
                 sq.Top <- 1
                 sq.Left <- i * 42 + 1
-                sq.Image <- if board.WhosTurn = Player.White then wpcims.[i]
+                sq.Image <- if board.WhosTurn = 0 then wpcims.[i]
                             else bpcims.[i]
                 //events
                 let pctps =
@@ -213,7 +213,7 @@ module PnlBoardLib =
             sqpnl.Cursor <- Cursors.Default
         
         let refreshPromoImages() =
-            let pcre = if board.WhosTurn = Player.White then "White" else "Black"
+            let pcre = if board.WhosTurn = 0 then "White" else "Black"
             sqs.[0].Image <- img (pcre + "Queen.png")
             sqs.[1].Image <- img (pcre + "Rook.png")
             sqs.[2].Image <- img (pcre + "Knight.png")
@@ -271,7 +271,10 @@ module PnlBoardLib =
                                 p.Image <- oimg 
                         else
                             // User closed the dialog or cancelled
-                            p.Image <- oimg 
+                            p.Image <- oimg
+                    else 
+                        // No valid moves, snap back
+                        p.Image <- oimg
 
                 else p.Image <- oimg
                 sqpnl.Cursor <- Cursors.Default

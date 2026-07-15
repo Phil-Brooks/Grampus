@@ -31,6 +31,6 @@ module Direction =
     
     let Opposite(dir : Dirn) : Dirn = -int (dir) |> enum<Dirn>
     
-    let MyNorth(player : Player) =
-        if player = Player.White then Dirn.DirN
+    let MyNorth(player : int) =
+        if player = 0 then Dirn.DirN
         else Dirn.DirS
