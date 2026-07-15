@@ -1,4 +1,7 @@
 <Solution>
+  <Folder Name="/bat/">
+    <File Path="bat/conv_svg.bat" />
+  </Folder>
   <Project Path="src/Grampus/Grampus.fsproj" />
   <Project Path="tests/GrampusTest/GrampusTest.fsproj" Id="92581635-d62d-42ae-bd4e-8100e01d8fdb" />
 </Solution>

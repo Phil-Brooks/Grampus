@@ -7,6 +7,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <EmbeddedResource Remove="bat\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <EmbeddedResource Include="Cursors\BlackBishop.cur" />
     <EmbeddedResource Include="Cursors\BlackKing.cur" />
     <EmbeddedResource Include="Cursors\BlackKnight.cur" />
@@ -19,6 +23,18 @@
     <EmbeddedResource Include="Cursors\WhitePawn.cur" />
     <EmbeddedResource Include="Cursors\WhiteQueen.cur" />
     <EmbeddedResource Include="Cursors\WhiteRook.cur" />
+    <EmbeddedResource Include="Images\Merida\bB.png" />
+    <EmbeddedResource Include="Images\Merida\bK.png" />
+    <EmbeddedResource Include="Images\Merida\bN.png" />
+    <EmbeddedResource Include="Images\Merida\bP.png" />
+    <EmbeddedResource Include="Images\Merida\bQ.png" />
+    <EmbeddedResource Include="Images\Merida\bR.png" />
+    <EmbeddedResource Include="Images\Merida\wB.png" />
+    <EmbeddedResource Include="Images\Merida\wK.png" />
+    <EmbeddedResource Include="Images\Merida\wN.png" />
+    <EmbeddedResource Include="Images\Merida\wP.png" />
+    <EmbeddedResource Include="Images\Merida\wQ.png" />
+    <EmbeddedResource Include="Images\Merida\wR.png" />
     <EmbeddedResource Include="Images\Back.jpg" />
     <EmbeddedResource Include="Images\BlackBishop.png" />
     <EmbeddedResource Include="Images\BlackKing.png" />
@@ -83,6 +99,8 @@
     <Compile Include="Form.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>
+
+  <ItemGroup />
 
 </Project>
 

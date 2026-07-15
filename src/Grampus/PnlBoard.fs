@@ -6,6 +6,29 @@ open System.Collections.Generic
 //open System.Reflection
 open Grampus
 
+module Assets =
+    let private assembly = System.Reflection.Assembly.GetExecutingAssembly()
+    
+    let loadPiece (name: string) =
+        let path = "Grampus.Images.Merida." + name + ".png"
+        let stream = assembly.GetManifestResourceStream(path)
+        if stream = null then 
+            // This will tell you EXACTLY which file is missing/misnamed
+            failwithf "Resource not found: %s. Ensure it is marked as 'Embedded Resource'." path
+        new Bitmap(stream)
+
+    // Cache them in a Map for quick access
+    let Pieces = 
+        [ "wP"; "wN"; "wB"; "wR"; "wQ"; "wK"; 
+          "bP"; "bN"; "bB"; "bR"; "bQ"; "bK" ]
+        |> List.map (fun code -> code, loadPiece code)
+        |> Map.ofList
+
+
+
+
+
+
 [<AutoOpen>]
 module PnlBoardLib =
     let private imageCache = Dictionary<string, Image>()
@@ -76,22 +99,22 @@ module PnlBoardLib =
             let sqs : PictureBox [] = Array.zeroCreate 4
             
             let bpcims =
-                [ img "BlackQueen.png"
-                  img "BlackRook.png"
-                  img "BlackKnight.png"
-                  img "BlackBishop.png" ]
+                [ Assets.Pieces.["bQ"]
+                  Assets.Pieces.["bR"]
+                  Assets.Pieces.["bN"]
+                  Assets.Pieces.["bB"] ]
             
             let wpcims =
-                [ img "WhiteQueen.png"
-                  img "WhiteRook.png"
-                  img "WhiteKnight.png"
-                  img "WhiteBishop.png" ]
+                [ Assets.Pieces.["wQ"]
+                  Assets.Pieces.["wR"]
+                  Assets.Pieces.["wN"]
+                  Assets.Pieces.["wB"] ]
             
             ///set pieces on squares
             let setsq i (sq : PictureBox) =
                 let sq =
                     new PictureBox(Height = 42, Width = 42, 
-                                   SizeMode = PictureBoxSizeMode.CenterImage)
+                                   SizeMode = PictureBoxSizeMode.Zoom)
                 sq.BackColor <- if i % 2 = 0 then Color.Green
                                 else Color.PaleGreen
                 sq.Top <- 1
@@ -136,18 +159,18 @@ module PnlBoardLib =
         /// get image given char
         let getim c =
             match c with
-            | "P" -> img "WhitePawn.png"
-            | "B" -> img "WhiteBishop.png"
-            | "N" -> img "WhiteKnight.png"
-            | "R" -> img "WhiteRook.png"
-            | "K" -> img "WhiteKing.png"
-            | "Q" -> img "WhiteQueen.png"
-            | "p" -> img "BlackPawn.png"
-            | "b" -> img "BlackBishop.png"
-            | "n" -> img "BlackKnight.png"
-            | "r" -> img "BlackRook.png"
-            | "k" -> img "BlackKing.png"
-            | "q" -> img "BlackQueen.png"
+            | "P" -> Assets.Pieces.["wP"]
+            | "B" -> Assets.Pieces.["wB"]
+            | "N" -> Assets.Pieces.["wN"]
+            | "R" -> Assets.Pieces.["wR"]
+            | "K" -> Assets.Pieces.["wK"]
+            | "Q" -> Assets.Pieces.["wQ"]
+            | "p" -> Assets.Pieces.["bP"]
+            | "b" -> Assets.Pieces.["bB"]
+            | "n" -> Assets.Pieces.["bN"]
+            | "r" -> Assets.Pieces.["bR"]
+            | "k" -> Assets.Pieces.["bK"]
+            | "q" -> Assets.Pieces.["bQ"]
             | _ -> failwith "invalid piece"
         
         ///set pieces on squares
@@ -213,11 +236,11 @@ module PnlBoardLib =
             sqpnl.Cursor <- Cursors.Default
         
         let refreshPromoImages() =
-            let pcre = if board.WhosTurn = 0 then "White" else "Black"
-            sqs.[0].Image <- img (pcre + "Queen.png")
-            sqs.[1].Image <- img (pcre + "Rook.png")
-            sqs.[2].Image <- img (pcre + "Knight.png")
-            sqs.[3].Image <- img (pcre + "Bishop.png")
+            let pcre = if board.WhosTurn = 0 then "w" else "b"
+            sqs.[0].Image <- Assets.Pieces[pcre + "Q"]
+            sqs.[1].Image <- Assets.Pieces[pcre + "R"]
+            sqs.[2].Image <- Assets.Pieces[pcre + "N"]
+            sqs.[3].Image <- Assets.Pieces[pcre + "B"]
         
         /// Action for Mouse Down
         let mouseDown (p : PictureBox, e : MouseEventArgs) =
@@ -314,7 +337,7 @@ module PnlBoardLib =
             let f = i % 8
             let sq =
                 new PictureBox(Height = 42, Width = 42, 
-                               SizeMode = PictureBoxSizeMode.CenterImage)
+                               SizeMode = PictureBoxSizeMode.Zoom)
             sq.BackColor <- if (f + r) % 2 = 0 then Color.Green
                             else Color.PaleGreen
             sq.Left <- f * 42 + 1
