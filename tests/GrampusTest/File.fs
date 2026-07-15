@@ -16,20 +16,20 @@ module File =
     [<InlineData('h', 7s)>] // FileH
     [<InlineData('d', 3s)>] // FileD
     let ``Parse returns correct internal index for valid lowercase characters`` (c: char, expected: File) =
-        File.Parse c |> should equal expected
+        File.fromChar c |> should equal expected
 
     [<Theory>]
     [<InlineData('A', 0s)>]
     [<InlineData('H', 7s)>]
     let ``Parse handles uppercase characters correctly`` (c: char, expected: File) =
-        File.Parse c |> should equal expected
+        File.fromChar c |> should equal expected
 
     [<Theory>]
     [<InlineData('z')>]
     [<InlineData('1')>]
     [<InlineData(' ')>]
     let ``Parse throws exception for invalid file characters`` (invalidChar: char) =
-        (fun () -> File.Parse invalidChar |> ignore) |> should throw typeof<System.Exception>
+        (fun () -> File.fromChar invalidChar |> ignore) |> should throw typeof<System.Exception>
 
     // --- 2. Bounds Checking ---
 
@@ -49,7 +49,7 @@ module File =
         let fileChar = FILE_NAMES.[int f].[0]
         
         // Assert: Parsing that character should return the original index
-        File.Parse fileChar = f
+        File.fromChar fileChar = f
 
     [<Property(Arbitrary = [| typeof<ChessDimGenerator> |])>]
     let ``IsInBounds is always true for generated valid files`` (f: File) =

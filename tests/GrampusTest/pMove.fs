@@ -42,9 +42,9 @@ module pMove =
     let ``Parse identifies origin ambiguity`` (san: string, expectedChar: char) =
         let pm = pMove.Parse san
         if System.Char.IsDigit(expectedChar) then
-            pm.OriginRank |> should equal (Some (Rank.Parse expectedChar))
+            pm.OriginRank |> should equal (Some (Rank.fromChar expectedChar))
         else
-            pm.OriginFile |> should equal (Some (File.Parse expectedChar))
+            pm.OriginFile |> should equal (Some (File.fromChar expectedChar))
 
     [<Fact>]
     let ``Parse handles pawn promotions`` () =

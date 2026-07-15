@@ -4,8 +4,8 @@ module Square =
     let Parse(s : string) =
         if s.Length <> 2 then failwith (s + " is not a valid position")
         else 
-            let file = File.Parse(s.[0])
-            let rank = Rank.Parse(s.[1])
+            let file = File.fromChar(s.[0])
+            let rank = Rank.fromChar(s.[1])
             Sq(file, rank)
     
     let IsInBounds(pos : Square) = int (pos) >= 0 && int (pos) <= 63

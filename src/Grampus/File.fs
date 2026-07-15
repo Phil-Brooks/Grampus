@@ -1,10 +1,25 @@
 namespace Grampus
 
 module File =
-    let Parse(c : char) : File =
-        let Filedesclookup = FILE_NAMES |> List.reduce (+)
-        let idx = Filedesclookup.IndexOf(c.ToString().ToLower())
-        if idx < 0 then failwith (c.ToString() + " is not a valid file")
-        else idx
+    let [<Literal>] A = 0
+    let [<Literal>] B = 1
+    let [<Literal>] C = 2
+    let [<Literal>] D = 3
+    let [<Literal>] E = 4
+    let [<Literal>] F = 5
+    let [<Literal>] G = 6
+    let [<Literal>] H = 7
+
+    let firstChar = int 'a'
+    
+    /// Converts a File to its character representation ('a'–'h').
+    let toChar (f: int) : char =
+        char (firstChar + f)
     
     let IsInBounds(file : File) = file >= 0 && file <= 7
+
+    /// Converts a character ('a'–'h') to a File.
+    let fromChar (c: char) : int =
+        let ans = int c - firstChar
+        if IsInBounds ans then ans
+        else failwith (c.ToString() + " is not a valid file")
