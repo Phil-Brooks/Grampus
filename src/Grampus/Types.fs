@@ -6,8 +6,6 @@ namespace Grampus
 /// </namespacedoc>
 /// <summary>Holds all the main types used by Grampus.</summary>
 module Types =
-    /// <summary>Unsigned integer encoded to hold Move information.</summary>
-    type Move = uint32
 
     /// <summary>Enum holding each type of piece e.g. 1 for Pawn.</summary>
     type PieceType =

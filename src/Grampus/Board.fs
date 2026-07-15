@@ -161,7 +161,7 @@ module Board =
         <> Bitboard.Empty
     
     ///Make an encoded Move(move) for this Board(bd) and return the new Board
-    let MoveApply (move : Move) (bd : Brd) =
+    let MoveApply (move : int) (bd : Brd) =
         let mfrom = move |> Move.From
         let mto = move |> Move.To
         let piece = move |> Move.MovingPiece

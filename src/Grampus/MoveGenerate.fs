@@ -6,9 +6,9 @@ module MoveGenerate =
     let inline private toBB (sq: int) = 
         LanguagePrimitives.EnumOfValue<uint64, Bitboard>(1UL <<< sq)
 
-    let private legal (bd : Brd) (mvs : Move list) =
+    let private legal (bd : Brd) (mvs : int list) =
         let me = bd.WhosTurn
-        let rec filt (imvl : Move list) omvl =
+        let rec filt (imvl : int list) omvl =
             match imvl with
             | [] -> omvl |> List.rev
             | mv :: tail ->
@@ -18,7 +18,7 @@ module MoveGenerate =
                 else filt tail (mv :: omvl)
         filt mvs []
     
-    let KingMoves(bd : Brd) : Move list =
+    let KingMoves(bd : Brd) : int list =
         let me = bd.WhosTurn
         let targetLocations =
             (if me = 1 then bd.WtPrBds else bd.BkPrBds)
@@ -37,7 +37,7 @@ module MoveGenerate =
         let mvl = getKingAttacks attacks []
         mvl |> legal bd
     
-    let CastleMoves(bd : Brd) : Move list =
+    let CastleMoves(bd : Brd) : int list =
         let checkerCount = bd.Checkers |> Bitboard.bitCount
         if (checkerCount > 0) || (bd |> Board.IsChk) then []
         else 
@@ -97,7 +97,7 @@ module MoveGenerate =
                     else mvl2
             mvl |> legal bd
     
-    let private pcMoves (bd : Brd) (pt : PieceType) (fnsqbb : int -> Bitboard -> Bitboard) : Move list =
+    let private pcMoves (bd : Brd) (pt : PieceType) (fnsqbb : int -> Bitboard -> Bitboard) : int list =
         let me = bd.WhosTurn
         let kingPos = if me = 0 then bd.WtKingPos else bd.BkKingPos
         
