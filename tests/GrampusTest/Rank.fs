@@ -15,7 +15,7 @@ module Rank =
     [<InlineData('1', 0s)>] // Rank1
     [<InlineData('8', 7s)>] // Rank8
     [<InlineData('4', 3s)>] // Rank4
-    let ``Parse returns correct internal index for valid characters`` (c: char, expected: Rank) =
+    let ``Parse returns correct internal index for valid characters`` (c: char, expected: int) =
         Rank.fromChar c |> should equal expected
 
     [<Fact>]
@@ -26,7 +26,7 @@ module Rank =
     [<Theory>]
     [<InlineData(0s, "1")>]
     [<InlineData(7s, "8")>]
-    let ``RankToString returns correct chess notation`` (rank: Rank, expected: string) =
+    let ``RankToString returns correct chess notation`` (rank: int, expected: string) =
         Rank.RankToString rank |> should equal expected
 
     // --- 2. Bitboard Mapping ---
@@ -34,7 +34,7 @@ module Rank =
     [<Theory>]
     [<InlineData(0s, Bitboard.Rank1)>]
     [<InlineData(7s, Bitboard.Rank8)>]
-    let ``ToBitboard returns the correct bitmask for the rank`` (rank: Rank, expected: Bitboard) =
+    let ``ToBitboard returns the correct bitmask for the rank`` (rank: int, expected: Bitboard) =
         Rank.ToBitboard rank |> should equal expected
 
     [<Fact>]
@@ -44,13 +44,13 @@ module Rank =
     // --- 3. Property Based Testing ---
 
     [<Property(Arbitrary = [| typeof<ChessDimGenerator> |])>]
-    let ``Rank Round-trip: Parse(RankToString(r)) equals r`` (r: Rank) =
+    let ``Rank Round-trip: Parse(RankToString(r)) equals r`` (r: int) =
         // Property: Converting a rank to a string and back to a rank should be an identity function
         let s = Rank.RankToString r
         Rank.fromChar s.[0] = r
 
     [<Property(Arbitrary = [| typeof<ChessDimGenerator> |])>]
-    let ``IsInBounds returns true for all generated valid ranks`` (r: Rank) =
+    let ``IsInBounds returns true for all generated valid ranks`` (r: int) =
         Rank.IsInBounds r = true
 
     [<Property>]
@@ -60,6 +60,6 @@ module Rank =
         else true
 
     [<Property(Arbitrary = [| typeof<ChessDimGenerator> |])>]
-    let ``Rank Bitboard always has 8 bits set`` (r: Rank) =
+    let ``Rank Bitboard always has 8 bits set`` (r: int) =
         let bb = Rank.ToBitboard r
         System.Numerics.BitOperations.PopCount(uint64 bb) = 8

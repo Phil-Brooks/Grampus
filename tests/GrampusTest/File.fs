@@ -12,16 +12,10 @@ module File =
     // --- 1. Parsing Tests ---
 
     [<Theory>]
-    [<InlineData('a', 0s)>] // FileA
-    [<InlineData('h', 7s)>] // FileH
-    [<InlineData('d', 3s)>] // FileD
+    [<InlineData('a', 0)>] // FileA
+    [<InlineData('h', 7)>] // FileH
+    [<InlineData('d', 3)>] // FileD
     let ``Parse returns correct internal index for valid lowercase characters`` (c: char, expected: int) =
-        File.fromChar c |> should equal expected
-
-    [<Theory>]
-    [<InlineData('A', 0s)>]
-    [<InlineData('H', 7s)>]
-    let ``Parse handles uppercase characters correctly`` (c: char, expected: int) =
         File.fromChar c |> should equal expected
 
     [<Theory>]

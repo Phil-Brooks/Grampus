@@ -15,12 +15,12 @@ module Player =
     // 1. Create a static property that returns a sequence of object arrays
     let PerspectiveData : obj array seq =
         seq {
-            yield [| Rank1; 0; Rank1 |]
-            yield [| Rank8; 0; Rank8 |]
-            yield [| Rank1; 1; Rank8 |]
-            yield [| Rank2; 1; Rank7 |]
-            yield [| Rank7; 1; Rank2 |]
-            yield [| Rank8; 1; Rank1 |]
+            yield [| Rank.R1; 0; Rank.R1 |]
+            yield [| Rank.R8; 0; Rank.R8 |]
+            yield [| Rank.R1; 1; Rank.R8 |]
+            yield [| Rank.R2; 1; Rank.R7 |]
+            yield [| Rank.R7; 1; Rank.R2 |]
+            yield [| Rank.R8; 1; Rank.R1 |]
         }
 
     // --- 1. Constant & Collection Verification ---
@@ -40,8 +40,8 @@ module Player =
     // --- 3. Perspective / MyRank Logic ---
     [<Theory>]
     [<MemberData(nameof(PerspectiveData))>]
-    let ``MyRank respects player perspective correctly`` (rank: Rank, player: int, expected: Rank) =
-        Player.MyRank rank player |> should equal expected
+    let ``MyRank respects player perspective correctly`` (rank: int, player: int, expected: int) =
+        Rank.MyRank rank player |> should equal expected
 
     // --- 4. Property Based Testing ---
 
@@ -55,10 +55,10 @@ module Player =
         p |> Player.PlayerOther <> p
 
     [<Property(Arbitrary = [| typeof<ChessDimGenerator> |])>]
-    let ``MyRank for White is always equal to the input rank`` (r: Rank) =
-        Player.MyRank r 0 = r
+    let ``MyRank for White is always equal to the input rank`` (r: int) =
+        Rank.MyRank r 0 = r
 
     [<Property(Arbitrary = [| typeof<ChessDimGenerator> |])>]
-    let ``MyRank for Black and White together sums to 7`` (r: Rank) =
+    let ``MyRank for Black and White together sums to 7`` (r: int) =
         // Rank indices are 0-7. Rank 1 (0) for White + Rank 1 (7) for Black = 7.
-        int (Player.MyRank r 0) + int (Player.MyRank r 1) = 7
+        int (Rank.MyRank r 0) + int (Rank.MyRank r 1) = 7

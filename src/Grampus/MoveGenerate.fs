@@ -162,8 +162,8 @@ module MoveGenerate =
             let mypawneast = if me = 0 then Dirn.DirNE else Dirn.DirSE
             let mypawnnorth = if me = 0 then Dirn.DirN else Dirn.DirS
             let mypawnsouth = if me = 0 then Dirn.DirS else Dirn.DirN
-            let myrank8 = if me = 0 then Rank8 else Rank1
-            let myrank2 = if me = 0 then Rank2 else Rank7
+            let myrank8 = if me = 0 then Rank.R8 else Rank.R1
+            let myrank2 = if me = 0 then Rank.R2 else Rank.R7
             
             let kingPos = if me = 0 then bd.WtKingPos else bd.BkKingPos
             

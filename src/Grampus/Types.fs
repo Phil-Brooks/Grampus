@@ -35,15 +35,6 @@ module Types =
         | BKing = 14
         | EMPTY = 0
     
-    /// <summary>Short encoded to hold Rank.</summary>
-    type Rank = int
-    
-    let Rank1, Rank2, Rank3, Rank4, Rank5, Rank6, Rank7, Rank8 : Rank * Rank * Rank * Rank * Rank * Rank * Rank * Rank =
-        0, 1, 2, 3, 4, 5, 6, 7
-    let RANKS = [ Rank1; Rank2; Rank3; Rank4; Rank5; Rank6; Rank7; Rank8 ]
-    let RANK_NAMES = [ "1"; "2"; "3"; "4"; "5"; "6"; "7"; "8" ]
-    let RANK_EMPTY : Rank = 8
-    
     /// <summary>Short encoded to hold Square.</summary>
     type Square = int
     
@@ -71,7 +62,7 @@ module Types =
           E5; F5; G5; H5; A6; B6; C6; D6; E6; F6; G6; H6; A7; B7; C7; D7; E7; F7; 
           G7; H7; A8; B8; C8; D8; E8; F8; G8; H8 ]
     
-    let Sq(f : int, r : Rank) : Square = r * 8 + f
+    let Sq(f : int, r : int) : Square = r * 8 + f
     
     [<System.Flags>]
     /// <summary>Enum holding each type of castling e.g. 1 for WhiteShort.</summary>
@@ -244,7 +235,7 @@ module Types =
           TargetSquare : Square
           Piece : PieceType option
           OriginFile : int option
-          OriginRank : Rank option
+          OriginRank : int option
           PromotedPiece : PieceType option
           IsCheck : bool
           IsDoubleCheck : bool

@@ -7,7 +7,5 @@ module Util =
     let BitB i =
         Microsoft.FSharp.Core.LanguagePrimitives.EnumOfValue<uint64, Bitboard>
             (i)
-    let (-!) (r : Rank) (i : int) : Rank = r - i
-    let (+!) (r : Rank) (i : int) : Rank = r + i
     
    

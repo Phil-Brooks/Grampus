@@ -32,7 +32,7 @@ module Square =
     [<InlineData(0s, 0s, 0s)>]  // A1 -> File 0, Rank 0
     [<InlineData(63s, 7s, 7s)>] // H8 -> File 7, Rank 7
     [<InlineData(28s, 4s, 3s)>] // E4 -> File 4, Rank 3
-    let ``ToRank and ToFile deconstruct correctly`` (sq: Square, expectedFile: int, expectedRank: Rank) =
+    let ``ToRank and ToFile deconstruct correctly`` (sq: Square, expectedFile: int, expectedRank: int) =
         Square.ToRank sq |> should equal expectedRank
         Square.ToFile sq |> should equal expectedFile
 

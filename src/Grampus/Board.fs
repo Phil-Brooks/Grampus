@@ -218,7 +218,7 @@ module Board =
                 |> PieceRemove(Sq(mto |> Square.ToFile, 
                                   move
                                   |> Move.MovingPlayer
-                                  |> Player.MyRank(Rank5)))
+                                  |> Rank.MyRank(Rank.R5)))
             else bd
         
         let bd =

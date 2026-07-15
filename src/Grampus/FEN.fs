@@ -27,7 +27,7 @@ module FEN =
         if matches.Count > 1 then failwith "Multiple FENs in string"
         let matchr = matches.[0]
         let sRanks =
-            RANKS 
+            Rank.List 
             |> List.map 
                    (fun r -> 
                    matchr.Groups.["R" + (r |> Rank.RankToString)].Value)
@@ -36,7 +36,7 @@ module FEN =
         let sEnpassant = matchr.Groups.["Enpassant"].Value
         let sFiftyMove = matchr.Groups.["FiftyMove"].Value
         let sFullMove = matchr.Groups.["FullMove"].Value
-        for rank in RANKS do
+        for rank in Rank.List do
             let rec getpc (cl : char list) ifl =
                 if not (List.isEmpty cl) then 
                     if ifl > 7 then 
