@@ -25,12 +25,12 @@ module Form =
             new Panel(Dock = DockStyle.Fill, BorderStyle = BorderStyle.Fixed3D)
         let lfpnl =
             new Panel(Dock = DockStyle.Left, BorderStyle = BorderStyle.Fixed3D, 
-                      Width = 400)
+                      Width = 600)
         let rtpnl =
             new Panel(Dock = DockStyle.Fill, BorderStyle = BorderStyle.Fixed3D)
         let lftpnl =
             new Panel(Dock = DockStyle.Top, BorderStyle = BorderStyle.Fixed3D, 
-                      Height = 400)
+                      Height = 600)
         let lfbpnl =
             new Panel(Dock = DockStyle.Fill, BorderStyle = BorderStyle.Fixed3D)
         let rttpnl =
@@ -42,7 +42,6 @@ module Form =
         let rtbpnl =
             new Panel(Dock = DockStyle.Fill, BorderStyle = BorderStyle.Fixed3D)
         do 
-            //ScincFuncs.Eco.Read("scid.eco")|>ignore
             rtbpnl |> rtpnl.Controls.Add
             rtmpnl |> rtpnl.Controls.Add
             rttpnl |> rtpnl.Controls.Add

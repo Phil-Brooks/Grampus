@@ -81,7 +81,7 @@ module Assets =
           "bP"; "bN"; "bB"; "bR"; "bQ"; "bK" ]
         |> List.map (fun code -> 
             let originalBmp = Pieces.[code]
-            let cursorSize = 42 
+            let cursorSize = 64 
             let resizedBmp = resizeBitmap originalBmp cursorSize cursorSize
             let cursor = CursorHelper.createCursorFromBitmap resizedBmp (cursorSize / 2) (cursorSize / 2)
             resizedBmp.Dispose()
@@ -90,7 +90,7 @@ module Assets =
 
 [<AutoOpen>]
 module PnlBoardLib =
-    let sqsz = 42
+    let sqsz = 64
     let bdsz = 8 * sqsz
     let pnlsz = 10 * sqsz
     type PnlBoard() as bd =
@@ -120,11 +120,16 @@ module PnlBoardLib =
         let flbls : Label [] = Array.zeroCreate 8
         let rlbls : Label [] = Array.zeroCreate 8
         
-        let dlgprom =
+        let dlgprom() =
             let dlg =
-                new Form(Text = "Select Piece", Height = 88, Width = 182, 
+                new Form(Text = "", Height = sqsz + 4, Width = sqsz * 4 + 4, 
                          FormBorderStyle = FormBorderStyle.FixedToolWindow, 
-                         StartPosition = FormStartPosition.CenterParent)
+                         StartPosition = FormStartPosition.Manual,
+                         ControlBox = false)
+            
+            let mousePos = Cursor.Position
+            dlg.Location <- new Point(mousePos.X, mousePos.Y)
+            
             let sqs : PictureBox [] = Array.zeroCreate 4
             
             let bpcims =
@@ -162,7 +167,7 @@ module PnlBoardLib =
             
             do sqs |> Array.iteri setsq
                sqs |> Array.iter dlg.Controls.Add
-            dlg
+            dlg.ShowDialog()
         
         //events
         let mvEvt = new Event<_>()
@@ -272,7 +277,7 @@ module PnlBoardLib =
                     elif mvl.Length = 4 then 
                         prompctp <- PieceType.EMPTY // Reset before showing
                         refreshPromoImages()
-                        let result = dlgprom.ShowDialog()
+                        let result = dlgprom()
                     
                         if result = DialogResult.OK && prompctp <> PieceType.EMPTY then
                             // Use tryFind to safely locate the specific promotion move
