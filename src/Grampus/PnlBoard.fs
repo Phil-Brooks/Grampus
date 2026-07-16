@@ -2,11 +2,8 @@ namespace GrampusUI
 
 open System.Drawing
 open System.Windows.Forms
-open System.Collections.Generic
-//open System.Reflection
 open Grampus
 open System.Runtime.InteropServices
-    
 
 module CursorHelper =
     
@@ -44,15 +41,20 @@ module CursorHelper =
     
         new Cursor(hCursor)
 
-
 module Assets =
     let private assembly = System.Reflection.Assembly.GetExecutingAssembly()
+    
+    let loadImage (name: string) =
+        let path = "Grampus.Images." + name
+        let stream = assembly.GetManifestResourceStream(path)
+        if stream = null then 
+            failwithf "Resource not found: %s. Ensure it is marked as 'Embedded Resource'." path
+        new Bitmap(stream)
     
     let loadPiece (name: string) =
         let path = "Grampus.Images.Merida." + name + ".png"
         let stream = assembly.GetManifestResourceStream(path)
         if stream = null then 
-            // This will tell you EXACTLY which file is missing/misnamed
             failwithf "Resource not found: %s. Ensure it is marked as 'Embedded Resource'." path
         new Bitmap(stream)
 
@@ -66,7 +68,8 @@ module Assets =
         g.DrawImage(bmp, 0, 0, newWidth, newHeight)
         newBmp
     
-    // Cache them in a Map for quick access
+    let Back = loadImage "Back.jpg"
+    
     let Pieces = 
         [ "wP"; "wN"; "wB"; "wR"; "wQ"; "wK"; 
           "bP"; "bN"; "bB"; "bR"; "bQ"; "bK" ]
@@ -78,56 +81,15 @@ module Assets =
           "bP"; "bN"; "bB"; "bR"; "bQ"; "bK" ]
         |> List.map (fun code -> 
             let originalBmp = Pieces.[code]
-        
-            // 1. Create a resized temporary version (e.g., 40x40)
             let cursorSize = 42 
             let resizedBmp = resizeBitmap originalBmp cursorSize cursorSize
-        
-            // 2. Create the cursor from the resized version
             let cursor = CursorHelper.createCursorFromBitmap resizedBmp (cursorSize / 2) (cursorSize / 2)
-        
-            // 3. Clean up the temporary resized bitmap immediately
             resizedBmp.Dispose()
-        
             code, cursor)
         |> Map.ofList
 
-
 [<AutoOpen>]
 module PnlBoardLib =
-    let private imageCache = Dictionary<string, Image>()
-    let private cursorCache = Dictionary<string, Cursor>()
-
-    let private getStream path =
-        let thisExe = System.Reflection.Assembly.GetExecutingAssembly()
-        let stream = thisExe.GetManifestResourceStream(path)
-        if stream = null then 
-            // This will tell you EXACTLY which file is missing/misnamed
-            failwithf "Resource not found: %s. Ensure it is marked as 'Embedded Resource'." path
-        stream
-
-    let private img nm =
-        let path = "Grampus.Images." + nm
-        if not (imageCache.ContainsKey(path)) then
-            use stream = getStream path
-            // Load the image from the stream
-            use tempImg = Image.FromStream(stream)
-            // Create a NEW Bitmap copy. 
-            // This copies the pixels into memory so we can close the stream.
-            imageCache.[path] <- new Bitmap(tempImg)
-        imageCache.[path]
-
-    let private cur nm =
-        let path = "Grampus.Cursors." + nm
-        if not (cursorCache.ContainsKey(path)) then
-            use stream = getStream path
-            // Cursors usually need the stream to stay open 
-            // OR we can copy it to a memory stream first.
-            // For cursors, it's often easiest to just let the stream live:
-            let stream = getStream path 
-            cursorCache.[path] <- new Cursor(stream)
-        cursorCache.[path]    
-    
     type PnlBoard() as bd =
         inherit Panel(Width = 400, Height = 420)
         let mutable board = Grampus.Board.Start
@@ -139,16 +101,16 @@ module PnlBoardLib =
         let sqpnl = new Panel(Width = 420, Height = 420, Left = 29, Top = 13)
         
         let edges =
-            [ new Panel(BackgroundImage = img "Back.jpg", Width = 342, 
+            [ new Panel(BackgroundImage = Assets.Back, Width = 342, 
                         Height = 8, Left = 24, Top = 6)
               
-              new Panel(BackgroundImage = img "Back.jpg", Width = 8, 
+              new Panel(BackgroundImage = Assets.Back, Width = 8, 
                         Height = 350, Left = 24, Top = 8)
               
-              new Panel(BackgroundImage = img "Back.jpg", Width = 8, 
+              new Panel(BackgroundImage = Assets.Back, Width = 8, 
                         Height = 350, Left = 366, Top = 6)
               
-              new Panel(BackgroundImage = img "Back.jpg", Width = 342, 
+              new Panel(BackgroundImage = Assets.Back, Width = 342, 
                         Height = 8, Left = 32, Top = 350) ]
         
         let sqs : PictureBox [] = Array.zeroCreate 64
@@ -202,27 +164,6 @@ module PnlBoardLib =
         //events
         let mvEvt = new Event<_>()
         
-        //functions
-        /// get cursor given char
-        let getcur c =
-            match c with
-            | "wP" -> cur "WhitePawn.cur"
-            | "wB" -> cur "WhiteBishop.cur"
-            | "wN" -> cur "WhiteKnight.cur"
-            | "wR" -> cur "WhiteRook.cur"
-            | "wK" -> cur "WhiteKing.cur"
-            | "wQ" -> cur "WhiteQueen.cur"
-            | "bP" -> cur "BlackPawn.cur"
-            | "bB" -> cur "BlackBishop.cur"
-            | "bN" -> cur "BlackKnight.cur"
-            | "bR" -> cur "BlackRook.cur"
-            | "bK" -> cur "BlackKing.cur"
-            | "bQ" -> cur "BlackQueen.cur"
-            | _ -> Cursors.Default
-        
-        /// get image given char
-        let getim (c:string) = Assets.Pieces.[c]
-        
         ///set pieces on squares
         let setpcsmvs() =
             let setpcsmvs() =
@@ -230,7 +171,7 @@ module PnlBoardLib =
                 |> Array.map Piece.ToStr2
                 |> Array.iteri (fun i c -> 
                        sqs.[i].Image <- if c = "." then null
-                                        else getim c)
+                                        else Assets.Pieces.[c])
             if (bd.InvokeRequired) then 
                 try 
                     bd.Invoke(MethodInvoker(setpcsmvs)) |> ignore
@@ -310,7 +251,7 @@ module PnlBoardLib =
                 p.Image <- null
                 p.Refresh()
                 let c = board.PieceAt.[sqFrom] |> Piece.ToStr2
-                cCur <- getcur c
+                cCur <- Assets.Cursors.[c]
                 sqpnl.Cursor <- cCur
                 if pssqs.Length > 0 
                    && (p.DoDragDrop(oimg, DragDropEffects.Move) = DragDropEffects.Move) then 
