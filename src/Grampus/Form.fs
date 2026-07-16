@@ -20,6 +20,31 @@ module Form =
 
         let bd = new PnlBoard(Dock = DockStyle.Fill)
 
+        let createToolbar() =
+            let ts = new ToolStrip()
+    
+            // 1. Flip Board Button
+            let btnFlip = new ToolStripButton(Text = "Flip Board", DisplayStyle = ToolStripItemDisplayStyle.ImageAndText)
+            btnFlip.Image <- img "orient.png"
+            btnFlip.Padding <- Padding(5, 0, 5, 0) 
+    
+            btnFlip.Click.Add(fun _ -> 
+                bd.Orient()
+            )
+
+            // 2. New Game Button (Example)
+            let btnNew = new ToolStripButton(Text = "New Game")
+            btnNew.Click.Add(fun _ -> 
+                // logic to reset board
+                ()
+            )
+
+            ts.Items.Add(btnFlip) |> ignore
+            ts.Items.Add(new ToolStripSeparator()) |> ignore
+            ts.Items.Add(btnNew) |> ignore
+    
+            ts
+        let ts = createToolbar()
 
         let bgpnl =
             new Panel(Dock = DockStyle.Fill, BorderStyle = BorderStyle.Fixed3D)
@@ -51,3 +76,4 @@ module Form =
             lftpnl |> lfpnl.Controls.Add
             lfpnl |> bgpnl.Controls.Add
             bgpnl |> this.Controls.Add
+            ts |> this.Controls.Add
