@@ -66,6 +66,23 @@ module Piece =
         | EMPTY -> "."
         | _ -> failwith ("not a valid piece")
     
+    let ToStr2(piece : int) =
+        match piece with
+        | WPawn -> "wP"
+        | WKnight -> "wN"
+        | WBishop -> "wB"
+        | WRook -> "wR"
+        | WQueen -> "wQ"
+        | WKing -> "wK"
+        | BPawn -> "bP"
+        | BKnight -> "bN"
+        | BBishop -> "bB"
+        | BRook -> "bR"
+        | BQueen -> "bQ"
+        | BKing -> "bK"
+        | EMPTY -> "."
+        | _ -> failwith ("not a valid piece")
+
     let ToPieceType(piece : int) = piece &&& 7 
     
     let PieceToPlayer (piece : int) =

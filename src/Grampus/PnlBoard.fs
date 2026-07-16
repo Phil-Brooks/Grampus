@@ -142,42 +142,28 @@ module PnlBoardLib =
         /// get cursor given char
         let getcur c =
             match c with
-            | "P" -> cur "WhitePawn.cur"
-            | "B" -> cur "WhiteBishop.cur"
-            | "N" -> cur "WhiteKnight.cur"
-            | "R" -> cur "WhiteRook.cur"
-            | "K" -> cur "WhiteKing.cur"
-            | "Q" -> cur "WhiteQueen.cur"
-            | "p" -> cur "BlackPawn.cur"
-            | "b" -> cur "BlackBishop.cur"
-            | "n" -> cur "BlackKnight.cur"
-            | "r" -> cur "BlackRook.cur"
-            | "k" -> cur "BlackKing.cur"
-            | "q" -> cur "BlackQueen.cur"
+            | "wP" -> cur "WhitePawn.cur"
+            | "wB" -> cur "WhiteBishop.cur"
+            | "wN" -> cur "WhiteKnight.cur"
+            | "wR" -> cur "WhiteRook.cur"
+            | "wK" -> cur "WhiteKing.cur"
+            | "wQ" -> cur "WhiteQueen.cur"
+            | "bP" -> cur "BlackPawn.cur"
+            | "bB" -> cur "BlackBishop.cur"
+            | "bN" -> cur "BlackKnight.cur"
+            | "bR" -> cur "BlackRook.cur"
+            | "bK" -> cur "BlackKing.cur"
+            | "bQ" -> cur "BlackQueen.cur"
             | _ -> Cursors.Default
         
         /// get image given char
-        let getim c =
-            match c with
-            | "P" -> Assets.Pieces.["wP"]
-            | "B" -> Assets.Pieces.["wB"]
-            | "N" -> Assets.Pieces.["wN"]
-            | "R" -> Assets.Pieces.["wR"]
-            | "K" -> Assets.Pieces.["wK"]
-            | "Q" -> Assets.Pieces.["wQ"]
-            | "p" -> Assets.Pieces.["bP"]
-            | "b" -> Assets.Pieces.["bB"]
-            | "n" -> Assets.Pieces.["bN"]
-            | "r" -> Assets.Pieces.["bR"]
-            | "k" -> Assets.Pieces.["bK"]
-            | "q" -> Assets.Pieces.["bQ"]
-            | _ -> failwith "invalid piece"
+        let getim (c:string) = Assets.Pieces.[c]
         
         ///set pieces on squares
         let setpcsmvs() =
             let setpcsmvs() =
                 board.PieceAt
-                |> Array.map Piece.ToStr
+                |> Array.map Piece.ToStr2
                 |> Array.iteri (fun i c -> 
                        sqs.[i].Image <- if c = "." then null
                                         else getim c)
@@ -259,7 +245,7 @@ module PnlBoardLib =
                 let oimg = p.Image
                 p.Image <- null
                 p.Refresh()
-                let c = board.PieceAt.[sqFrom] |> Piece.ToStr
+                let c = board.PieceAt.[sqFrom] |> Piece.ToStr2
                 cCur <- getcur c
                 sqpnl.Cursor <- cCur
                 if pssqs.Length > 0 
