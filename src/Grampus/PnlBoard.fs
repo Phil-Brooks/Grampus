@@ -5,6 +5,45 @@ open System.Windows.Forms
 open System.Collections.Generic
 //open System.Reflection
 open Grampus
+open System.Runtime.InteropServices
+    
+
+module CursorHelper =
+    
+    [<StructLayout(LayoutKind.Sequential)>]
+    type IconInfo =
+        struct
+            val mutable fIcon: bool
+            val mutable xHotspot: int
+            val mutable yHotspot: int
+            val mutable hbmMask: nativeint
+            val mutable hbmColor: nativeint
+        end
+    [<DllImport("user32.dll")>]
+    extern bool GetIconInfo(nativeint hIcon, IconInfo& piconinfo)
+
+    [<DllImport("user32.dll")>]
+    extern nativeint CreateIconIndirect(IconInfo& piconinfo)
+
+    [<DllImport("user32.dll")>]
+    extern bool DestroyIcon(nativeint hIcon)
+
+    /// Creates a Cursor from a Bitmap with a specific hotspot
+    let createCursorFromBitmap (bmp: Bitmap) (xHot: int) (yHot: int) =
+        let hIcon = bmp.GetHicon()
+        let mutable tmp = IconInfo()
+        GetIconInfo(hIcon, &tmp)|>ignore
+    
+        tmp.xHotspot <- xHot
+        tmp.yHotspot <- yHot
+        tmp.fIcon <- false // 'false' makes it a cursor instead of an icon
+        let hCursor = CreateIconIndirect(&tmp)
+    
+        // Clean up the temporary icon handle created by GetHicon
+        DestroyIcon(hIcon) |> ignore
+    
+        new Cursor(hCursor)
+
 
 module Assets =
     let private assembly = System.Reflection.Assembly.GetExecutingAssembly()
@@ -17,6 +56,16 @@ module Assets =
             failwithf "Resource not found: %s. Ensure it is marked as 'Embedded Resource'." path
         new Bitmap(stream)
 
+    let resizeBitmap (bmp: Bitmap) (newWidth: int) (newHeight: int) =
+        let newBmp = new Bitmap(newWidth, newHeight)
+        use g = Graphics.FromImage(newBmp)
+        // High quality scaling settings
+        g.InterpolationMode <- System.Drawing.Drawing2D.InterpolationMode.HighQualityBicubic
+        g.SmoothingMode <- System.Drawing.Drawing2D.SmoothingMode.HighQuality
+        g.PixelOffsetMode <- System.Drawing.Drawing2D.PixelOffsetMode.HighQuality
+        g.DrawImage(bmp, 0, 0, newWidth, newHeight)
+        newBmp
+    
     // Cache them in a Map for quick access
     let Pieces = 
         [ "wP"; "wN"; "wB"; "wR"; "wQ"; "wK"; 
@@ -24,9 +73,24 @@ module Assets =
         |> List.map (fun code -> code, loadPiece code)
         |> Map.ofList
 
-
-
-
+    let Cursors = 
+        [ "wP"; "wN"; "wB"; "wR"; "wQ"; "wK"; 
+          "bP"; "bN"; "bB"; "bR"; "bQ"; "bK" ]
+        |> List.map (fun code -> 
+            let originalBmp = Pieces.[code]
+        
+            // 1. Create a resized temporary version (e.g., 40x40)
+            let cursorSize = 42 
+            let resizedBmp = resizeBitmap originalBmp cursorSize cursorSize
+        
+            // 2. Create the cursor from the resized version
+            let cursor = CursorHelper.createCursorFromBitmap resizedBmp (cursorSize / 2) (cursorSize / 2)
+        
+            // 3. Clean up the temporary resized bitmap immediately
+            resizedBmp.Dispose()
+        
+            code, cursor)
+        |> Map.ofList
 
 
 [<AutoOpen>]
