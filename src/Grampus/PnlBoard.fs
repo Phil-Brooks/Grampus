@@ -44,6 +44,13 @@ module CursorHelper =
 module Assets =
     let private assembly = System.Reflection.Assembly.GetExecutingAssembly()
     
+    let loadIcon (name: string) =
+        let path = "Grampus.Images." + name
+        let stream = assembly.GetManifestResourceStream(path)
+        if stream = null then 
+            failwithf "Resource not found: %s. Ensure it is marked as 'Embedded Resource'." path
+        new Icon(stream)
+
     let loadImage (name: string) =
         let path = "Grampus.Images." + name
         let stream = assembly.GetManifestResourceStream(path)
@@ -69,6 +76,8 @@ module Assets =
         newBmp
     
     let Back = loadImage "Back.jpg"
+    let Orient= loadImage "orient.png"
+    let Grampus = loadIcon "grampus.ico"
     
     let Pieces = 
         [ "wP"; "wN"; "wB"; "wR"; "wQ"; "wK"; 

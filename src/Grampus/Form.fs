@@ -4,19 +4,10 @@ open System.Drawing
 open System.Windows.Forms
 
 module Form =
-    let img nm =
-        let thisExe = System.Reflection.Assembly.GetExecutingAssembly()
-        let file = thisExe.GetManifestResourceStream("Grampus.Images." + nm)
-        Image.FromStream(file)
-    
-    let ico nm =
-        let thisExe = System.Reflection.Assembly.GetExecutingAssembly()
-        let file = thisExe.GetManifestResourceStream("Grampus.Images." + nm)
-        new Icon(file)
     
     type FrmMain() as this =
         inherit Form(Text = "Grampus", WindowState = FormWindowState.Maximized, 
-                     IsMdiContainer = true, Icon = ico "grampus.ico")
+                     IsMdiContainer = true, Icon = Assets.Grampus)
 
         let bd = new PnlBoard(Dock = DockStyle.Fill)
 
@@ -25,7 +16,7 @@ module Form =
     
             // 1. Flip Board Button
             let btnFlip = new ToolStripButton(Text = "Flip Board", DisplayStyle = ToolStripItemDisplayStyle.ImageAndText)
-            btnFlip.Image <- img "orient.png"
+            btnFlip.Image <- Assets.Orient
             btnFlip.Padding <- Padding(5, 0, 5, 0) 
     
             btnFlip.Click.Add(fun _ -> 
