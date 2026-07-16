@@ -90,28 +90,31 @@ module Assets =
 
 [<AutoOpen>]
 module PnlBoardLib =
+    let sqsz = 42
+    let bdsz = 8 * sqsz
+    let pnlsz = 10 * sqsz
     type PnlBoard() as bd =
-        inherit Panel(Width = 400, Height = 420)
+        inherit Panel(Width = pnlsz, Height = pnlsz)
         let mutable board = Grampus.Board.Start
         let mutable sqTo = -1
         let mutable cCur = Cursors.Default
         let mutable prompctp = PieceType.EMPTY
         let mutable isw = true
-        let bdpnl = new Panel(Dock = DockStyle.Top, Height = 400)
-        let sqpnl = new Panel(Width = 420, Height = 420, Left = 29, Top = 13)
+        let bdpnl = new Panel(Dock = DockStyle.Top, Height = pnlsz)
+        let sqpnl = new Panel(Width = pnlsz, Height = pnlsz, Left = 29, Top = 13)
         
         let edges =
-            [ new Panel(BackgroundImage = Assets.Back, Width = 342, 
+            [ new Panel(BackgroundImage = Assets.Back, Width = bdsz + 8, 
                         Height = 8, Left = 24, Top = 6)
               
               new Panel(BackgroundImage = Assets.Back, Width = 8, 
-                        Height = 350, Left = 24, Top = 8)
+                        Height = bdsz + 14, Left = 24, Top = 8)
               
               new Panel(BackgroundImage = Assets.Back, Width = 8, 
-                        Height = 350, Left = 366, Top = 6)
+                        Height = bdsz + 14, Left = bdsz + 30, Top = 6)
               
-              new Panel(BackgroundImage = Assets.Back, Width = 342, 
-                        Height = 8, Left = 32, Top = 350) ]
+              new Panel(BackgroundImage = Assets.Back, Width = bdsz + 6, 
+                        Height = 8, Left = 32, Top = bdsz + 14) ]
         
         let sqs : PictureBox [] = Array.zeroCreate 64
         let flbls : Label [] = Array.zeroCreate 8
@@ -139,12 +142,12 @@ module PnlBoardLib =
             ///set pieces on squares
             let setsq i (sq : PictureBox) =
                 let sq =
-                    new PictureBox(Height = 42, Width = 42, 
+                    new PictureBox(Height = sqsz, Width = sqsz, 
                                    SizeMode = PictureBoxSizeMode.Zoom)
                 sq.BackColor <- if i % 2 = 0 then Color.Green
                                 else Color.PaleGreen
                 sq.Top <- 1
-                sq.Left <- i * 42 + 1
+                sq.Left <- i * sqsz + 1
                 sq.Image <- if board.WhosTurn = 0 then wpcims.[i]
                             else bpcims.[i]
                 //events
@@ -185,20 +188,20 @@ module PnlBoardLib =
                 let r = i / 8
                 let f = i % 8
                 if not isw then 
-                    sq.Top <- r * 42 + 1
-                    sq.Left <- 7 * 42 - f * 42 + 1
+                    sq.Top <- r * sqsz + 1
+                    sq.Left <- 7 * sqsz - f * sqsz + 1
                 else 
-                    sq.Left <- f * 42 + 1
-                    sq.Top <- 7 * 42 - r * 42 + 1
+                    sq.Left <- f * sqsz + 1
+                    sq.Top <- 7 * sqsz - r * sqsz + 1
             sqs |> Array.iteri possq
             flbls
             |> Array.iteri (fun i l -> 
-                   if isw then l.Left <- i * 42 + 30
-                   else l.Left <- 7 * 42 - i * 42 + 30)
+                   if isw then l.Left <- i * sqsz + 30
+                   else l.Left <- 7 * sqsz - i * sqsz + 30)
             rlbls
             |> Array.iteri (fun i l -> 
-                   if isw then l.Top <- 7 * 42 - i * 42 + 16
-                   else l.Top <- i * 42 + 16)
+                   if isw then l.Top <- 7 * sqsz - i * sqsz + 16
+                   else l.Top <- i * sqsz + 16)
         
         ///highlight possible squares
         let highlightsqs sl =
@@ -302,10 +305,10 @@ module PnlBoardLib =
                                  GraphicsUnit.Point, byte (0))
             lbl.ForeColor <- Color.Green
             lbl.Height <- 21
-            lbl.Width <- 42
+            lbl.Width <- sqsz
             lbl.TextAlign <- ContentAlignment.MiddleCenter
-            lbl.Left <- i * 42 + 30
-            lbl.Top <- 8 * 42 + 24
+            lbl.Left <- i * sqsz + 30
+            lbl.Top <- 8 * sqsz + 24
             flbls.[i] <- lbl
         
         /// creates rank label
@@ -315,11 +318,11 @@ module PnlBoardLib =
             lbl.Font <- new Font("Arial", 12.0F, FontStyle.Bold, 
                                  GraphicsUnit.Point, byte (0))
             lbl.ForeColor <- Color.Green
-            lbl.Height <- 42
+            lbl.Height <- sqsz
             lbl.Width <- 21
             lbl.TextAlign <- ContentAlignment.MiddleCenter
             lbl.Left <- 0
-            lbl.Top <- 7 * 42 - i * 42 + 16
+            lbl.Top <- 7 * sqsz - i * sqsz + 16
             rlbls.[i] <- lbl
         
         ///set board colours and position of squares
@@ -327,12 +330,12 @@ module PnlBoardLib =
             let r = i / 8
             let f = i % 8
             let sq =
-                new PictureBox(Height = 42, Width = 42, 
+                new PictureBox(Height = sqsz, Width = sqsz, 
                                SizeMode = PictureBoxSizeMode.Zoom)
             sq.BackColor <- if (f + r) % 2 = 0 then Color.Green
                             else Color.PaleGreen
-            sq.Left <- f * 42 + 1
-            sq.Top <- 7 * 42 - r * 42 + 1
+            sq.Left <- f * sqsz + 1
+            sq.Top <- 7 * sqsz - r * sqsz + 1
             sq.Tag <- i
             //events
             sq.MouseDown.Add(fun e -> mouseDown (sq, e))
