@@ -8,7 +8,6 @@ module Board =
           PieceTypes = Array.create 7 0UL |> List.ofArray
           WtPrBds = 0UL
           BkPrBds = 0UL
-          PieceLocationsAll = 0UL
           WhosTurn = 0
           CastleRights = 0
           EnPassant = OUTOFBOUNDS
@@ -44,8 +43,6 @@ module Board =
             if player = 1 then bd.BkPrBds ^^^ posBits
             else bd.BkPrBds
         
-        let pieceLocationsAll = bd.PieceLocationsAll ^^^ posBits
-        
         let wtkingpos =
             if pieceType = PieceType.King && player = 0 then mto
             else bd.WtKingPos
@@ -58,7 +55,6 @@ module Board =
                   PieceTypes = piecetypes
                   WtPrBds = wtprbds
                   BkPrBds = bkprbds
-                  PieceLocationsAll = pieceLocationsAll
                   WtKingPos = wtkingpos
                   BkKingPos = bkkingpos }
     
@@ -80,7 +76,6 @@ module Board =
                    if i = int (piece |> Piece.ToPieceType) then p ||| posBits
                    else p)
         
-        let piecelocationsall = bd.PieceLocationsAll ||| posBits
         
         let wtprbds =
             if (piece |> Piece.PieceToPlayer).Value = 0 then 
@@ -102,7 +97,6 @@ module Board =
         
         { bd with PieceAt = pieceat
                   PieceTypes = piecetypes
-                  PieceLocationsAll = piecelocationsall
                   WtPrBds = wtprbds
                   BkPrBds = bkprbds
                   WtKingPos = wtkingpos
@@ -135,44 +129,15 @@ module Board =
             if player = 1 then bd.BkPrBds &&& notPosBits
             else bd.BkPrBds
         
-        let piecelocationsall = bd.PieceLocationsAll &&& notPosBits
         { bd with PieceAt = pieceat
                   PieceTypes = piecetypes
                   WtPrBds = wtprbds
-                  BkPrBds = bkprbds
-                  PieceLocationsAll = piecelocationsall }
+                  BkPrBds = bkprbds }
     
     let private PieceChange pos newPiece (bd : Brd) =
         bd
         |> PieceRemove(pos)
         |> PieceAdd pos newPiece
-    
-    let private AttacksToBoth (mto : int) (bd : Brd) =
-        (Attacks.KnightAttacks(mto) &&& bd.PieceTypes.[int (PieceType.Knight)]) 
-        ||| ((Attacks.RookAttacks mto bd.PieceLocationsAll) 
-             &&& (bd.PieceTypes.[int (PieceType.Queen)] 
-                  ||| bd.PieceTypes.[int (PieceType.Rook)])) 
-        ||| ((Attacks.BishopAttacks mto bd.PieceLocationsAll) 
-             &&& (bd.PieceTypes.[int (PieceType.Queen)] 
-                  ||| bd.PieceTypes.[int (PieceType.Bishop)])) 
-        ||| (Attacks.KingAttacks(mto) &&& (bd.PieceTypes.[int (PieceType.King)])) 
-        ||| ((Attacks.PawnAttacks mto 1) &&& bd.BkPrBds 
-             &&& bd.PieceTypes.[int (PieceType.Pawn)]) 
-        ||| ((Attacks.PawnAttacks mto 0) &&& bd.WtPrBds 
-             &&& bd.PieceTypes.[int (PieceType.Pawn)])
-    
-    ///Gets the Bitboard that defines the squares that attack the specified Square(mto) by the specified Player(by) for this Board(bd) 
-    let AttacksTo (mto : int) (by : int) (bd : Brd) =
-        bd
-        |> AttacksToBoth(mto)
-        &&& (if by = 0 then bd.WtPrBds
-             else bd.BkPrBds)
-    
-    ///Is the Square(mto) attacked by the specified Player(by) for this Board(bd)
-    let SquareAttacked (mto : int) (by : int) (bd : Brd) =
-        bd
-        |> AttacksTo mto by
-        <> Bitboard.Empty
     
     ///Make an encoded Move(move) for this Board(bd) and return the new Board
     let MoveApply (move : int) (bd : Brd) =

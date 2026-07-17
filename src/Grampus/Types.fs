@@ -44,7 +44,6 @@ module Types =
           PieceTypes : uint64 list
           WtPrBds : uint64
           BkPrBds : uint64
-          PieceLocationsAll : uint64
           WhosTurn : int
           CastleRights : int
           EnPassant : int

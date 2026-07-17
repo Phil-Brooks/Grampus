@@ -19,8 +19,6 @@ module Board =
         bd.PieceAt.[int E8] |> should equal Piece.BKing
         bd.Fullmove |> should equal 1
         bd.Fiftymove |> should equal 0
-        // Starting position has 32 pieces
-        Bitboard.bitCount bd.PieceLocationsAll |> should equal 32
 
     // --- 2. Move Application (Simple & Capture) ---
 
@@ -33,9 +31,6 @@ module Board =
         nextBd.PieceAt.[int E2] |> should equal Piece.EMPTY
         nextBd.PieceAt.[int E4] |> should equal Piece.WPawn
         nextBd.WhosTurn |> should equal 1
-        // Verify Bitboards
-        Bitboard.containsPos E2 nextBd.PieceLocationsAll |> should be False
-        Bitboard.containsPos E4 nextBd.PieceLocationsAll |> should be True
 
     [<Fact>]
     let ``MoveApply: Capture removes piece and updates bitboards`` () =
@@ -74,24 +69,11 @@ module Board =
         let nextBd = Board.MoveApply mv bd
         
         nextBd.PieceAt.[int D5] |> should equal Piece.EMPTY
-        Bitboard.containsPos D5 nextBd.PieceLocationsAll |> should be False
 
 
     // --- 5. Property Based Testing (Invariants) ---
 
-    [<Property(Arbitrary = [| typeof<PieceGenerator>; typeof<ChessDimGenerator> |])>]
-    let ``PieceLocationsAll is always the sum of White and Black bitboards`` (sq: int) (p: int) =
-        if Square.IsInBounds sq && p <> Piece.EMPTY then
-            let bd = Board.PieceAdd sq p Board.EMPTY
-            bd.PieceLocationsAll = (bd.WtPrBds ||| bd.BkPrBds)
-        else true
 
-    [<Property(Arbitrary = [| typeof<PieceGenerator>; typeof<ChessDimGenerator> |])>]
-    let ``Adding then removing a piece returns board to empty`` (sq: int) (p: int) =
-        if Square.IsInBounds sq && p <> Piece.EMPTY then
-            let bd = Board.EMPTY |> Board.PieceAdd sq p |> Board.PieceRemove sq
-            bd.PieceLocationsAll = Bitboard.Empty && bd.PieceAt.[sq] = Piece.EMPTY
-        else true
 
     [<Fact>]
     let ``MoveApply: Moving a piece on a kingless board does not crash`` () =
