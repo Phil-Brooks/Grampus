@@ -285,9 +285,6 @@ module Board =
 
         { bd with Checkers = checkers }
     
-    ///Is there a check on the Board(bd)
-    let IsChk(bd : Brd) = bd.Checkers <> Bitboard.Empty
-    
     ///Is there a check on Player(kingplayer) on the Board(bd)
     let IsChck (kingplayer : int) (bd : Brd) =
         let kingpos =

@@ -70,7 +70,6 @@
     <Compile Include="Board.fs" />
     <Compile Include="MoveGenerate.fs" />
     <Compile Include="pMove.fs" />
-    <Compile Include="MoveUtil.fs" />
     <Compile Include="PnlBoard.fs" />
     <Compile Include="Form.fs" />
     <Compile Include="Program.fs" />

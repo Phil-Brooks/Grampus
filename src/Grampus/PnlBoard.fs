@@ -376,12 +376,6 @@ module PnlBoardLib =
         ///Orients the Board depending on whether White
         member bd.Orient() = orient()
         
-        ///Sets the board given a new move in SAN format
-        member bd.DoMove(san : string) =
-            let mv = san |> MoveUtil.fromSAN board
-            board <- board |> Board.MoveApply mv
-            setpcsmvs()
-        
         //publish
         ///Provides the Move made on the board
         member __.MvMade = mvEvt.Publish

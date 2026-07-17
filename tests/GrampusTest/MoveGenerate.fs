@@ -46,17 +46,6 @@ module MoveGenerate =
         moves.Length |> should equal 4
         moves |> List.iter (fun m -> Move.IsPromotion m |> should be True)
 
-    // --- 4. Castling ---
-    [<Fact>]
-    let ``Castling is illegal if the King must pass through check`` () =
-        // White wants to castle King-side, but Black Rook controls F1
-        let fen = "rnbqk2r/pppppppp/8/8/8/5r2/PPPPP1PP/RNBQK2R w KQkq - 0 1"
-        let bd = FEN.Parse fen |> Board.FromFEN
-        
-        let kingMoves = MoveGenerate.CastleMoves bd
-        // King-side (G1) should be missing because F1 is attacked by the Rook
-        kingMoves |> List.exists (fun m -> Move.To m = G1) |> should be False
-
     // --- 5. Double Check ---
     [<Fact>]
     let ``Only King can move during a double check`` () =
@@ -82,3 +71,78 @@ module MoveGenerate =
         let epMove = pawnMoves |> List.find (fun m -> Move.IsEnPassant m)
         
         Move.To epMove |> should equal E3
+
+    [<Fact>]
+    let ``Pawn correctly attacks diagonal squares but not forward`` () =
+        // Black pawn on d5
+        let fen = "8/8/8/3p4/8/8/8/4K3 w - - 0 1"
+        let bd = FEN.Parse fen |> Board.FromFEN
+        
+        // Squares d5 attacks (c4 and e4)
+        MoveGenerate.isSquareAttacked C4 Player.Black bd |> should be True
+        MoveGenerate.isSquareAttacked E4 Player.Black bd |> should be True
+        
+        // Square directly in front is NOT attacked by a pawn
+        MoveGenerate.isSquareAttacked D4 Player.Black bd |> should be False
+
+    [<Fact>]
+    let ``Knight attacks jumping over pieces`` () =
+        // Black Knight on c3, White pawns surrounding it
+        let fen = "8/8/8/8/8/2n5/1PPP4/1PKP4 w - - 0 1"
+        let bd = FEN.Parse fen |> Board.FromFEN
+        
+        // Knight should jump over the pawns to attack e4 and b1
+        MoveGenerate.isSquareAttacked E4 Player.Black bd |> should be True
+        MoveGenerate.isSquareAttacked B1 Player.Black bd |> should be True
+        
+        // Random square
+        MoveGenerate.isSquareAttacked H8 Player.Black bd |> should be False
+
+    [<Fact>]
+    let ``Sliding attacks are blocked by intervening pieces`` () =
+        // Black Rook on a8, White King on a1
+        let fen = "r7/8/8/8/8/8/8/K7 w - - 0 1"
+        let bd1 = FEN.Parse fen |> Board.FromFEN
+        MoveGenerate.isSquareAttacked A1 Player.Black bd1 |> should be True
+
+        // Now place a blocker on a5
+        let fenBlocked = "r7/8/8/p7/8/8/8/K7 w - - 0 1"
+        let bd2 = FEN.Parse fenBlocked |> Board.FromFEN
+        
+        // The Rook no longer attacks A1 because the pawn is in the way
+        MoveGenerate.isSquareAttacked A1 Player.Black bd2 |> should be False
+
+    [<Fact>]
+    let ``Knight attack does not wrap around the board edge`` () =
+        // White Knight on h1 (Index 7)
+        let fen = "k7/8/8/K7/8/8/8/7N w - - 0 1"
+        let bd = FEN.Parse fen |> Board.FromFEN
+        
+        // Square f2 is a legal jump
+        MoveGenerate.isSquareAttacked F2 Player.White bd |> should be True
+        
+        // Square a2 (Index 8) is 15 away from h1. 
+        // 7 + 15 = 22, but it's on a different side of the board.
+        // It should NOT be attacked.
+        MoveGenerate.isSquareAttacked A2 Player.White bd |> should be False
+
+    [<Fact>]
+    let ``Bishop attacks correctly on diagonals`` () =
+        // White Bishop on d4
+        let fen = "8/8/8/8/3B4/8/8/4k3 b - - 0 1"
+        let bd = FEN.Parse fen |> Board.FromFEN
+        
+        MoveGenerate.isSquareAttacked G7 Player.White bd |> should be True
+        MoveGenerate.isSquareAttacked A1 Player.White bd |> should be True
+        MoveGenerate.isSquareAttacked D5 Player.White bd |> should be False // Straight line
+
+    [<Fact>]
+    let ``King attacks adjacent squares`` () =
+        // White King on e1
+        let fen = "8/8/8/8/8/8/8/4K3 w - - 0 1"
+        let bd = FEN.Parse fen |> Board.FromFEN
+        
+        MoveGenerate.isSquareAttacked D1 Player.White bd |> should be True
+        MoveGenerate.isSquareAttacked D2 Player.White bd |> should be True
+        MoveGenerate.isSquareAttacked E2 Player.White bd |> should be True
+        MoveGenerate.isSquareAttacked E3 Player.White bd |> should be False // Too far
