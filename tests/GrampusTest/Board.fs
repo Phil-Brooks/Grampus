@@ -42,8 +42,6 @@ module Board =
         let nextBd = Board.MoveApply mv bd
         
         nextBd.PieceAt.[int E5] |> should equal Piece.WKnight
-        Bitboard.bitCount nextBd.BkPrBds |> should equal 0
-        Bitboard.bitCount nextBd.WtPrBds |> should equal 1
 
     // --- 3. Castling & Special Rules ---
 

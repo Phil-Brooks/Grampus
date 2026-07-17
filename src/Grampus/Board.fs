@@ -6,8 +6,6 @@ module Board =
           WtKingPos = OUTOFBOUNDS
           BkKingPos = OUTOFBOUNDS
           PieceTypes = Array.create 7 0UL |> List.ofArray
-          WtPrBds = 0UL
-          BkPrBds = 0UL
           WhosTurn = 0
           CastleRights = 0
           EnPassant = OUTOFBOUNDS
@@ -35,14 +33,6 @@ module Board =
                    if i = int (pieceType) then p ^^^ posBits
                    else p)
         
-        let wtprbds =
-            if player = 0 then bd.WtPrBds ^^^ posBits
-            else bd.WtPrBds
-        
-        let bkprbds =
-            if player = 1 then bd.BkPrBds ^^^ posBits
-            else bd.BkPrBds
-        
         let wtkingpos =
             if pieceType = PieceType.King && player = 0 then mto
             else bd.WtKingPos
@@ -53,8 +43,6 @@ module Board =
         
         { bd with PieceAt = pieceat
                   PieceTypes = piecetypes
-                  WtPrBds = wtprbds
-                  BkPrBds = bkprbds
                   WtKingPos = wtkingpos
                   BkKingPos = bkkingpos }
     
@@ -76,17 +64,6 @@ module Board =
                    if i = int (piece |> Piece.ToPieceType) then p ||| posBits
                    else p)
         
-        
-        let wtprbds =
-            if (piece |> Piece.PieceToPlayer).Value = 0 then 
-                bd.WtPrBds ||| posBits
-            else bd.WtPrBds
-        
-        let bkprbds =
-            if (piece |> Piece.PieceToPlayer).Value = 1 then 
-                bd.BkPrBds ||| posBits
-            else bd.BkPrBds
-        
         let wtkingpos =
             if pieceType = PieceType.King && player = 0 then pos
             else bd.WtKingPos
@@ -97,8 +74,6 @@ module Board =
         
         { bd with PieceAt = pieceat
                   PieceTypes = piecetypes
-                  WtPrBds = wtprbds
-                  BkPrBds = bkprbds
                   WtKingPos = wtkingpos
                   BkKingPos = bkkingpos }
     
@@ -121,18 +96,8 @@ module Board =
                    if i = int (pieceType) then p &&& notPosBits
                    else p)
         
-        let wtprbds =
-            if player = 0 then bd.WtPrBds &&& notPosBits
-            else bd.WtPrBds
-        
-        let bkprbds =
-            if player = 1 then bd.BkPrBds &&& notPosBits
-            else bd.BkPrBds
-        
         { bd with PieceAt = pieceat
-                  PieceTypes = piecetypes
-                  WtPrBds = wtprbds
-                  BkPrBds = bkprbds }
+                  PieceTypes = piecetypes }
     
     let private PieceChange pos newPiece (bd : Brd) =
         bd

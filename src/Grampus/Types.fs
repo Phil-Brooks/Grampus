@@ -42,8 +42,6 @@ module Types =
           WtKingPos : int
           BkKingPos : int
           PieceTypes : uint64 list
-          WtPrBds : uint64
-          BkPrBds : uint64
           WhosTurn : int
           CastleRights : int
           EnPassant : int
