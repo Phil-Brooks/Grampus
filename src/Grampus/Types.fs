@@ -33,7 +33,14 @@ module Types =
     
     let Sq(f : int, r : int) : int = r * 8 + f
    
-    
+    type Move =
+        {
+            From : int
+            To : int
+            Pc : int
+            CapPc : int
+            Prom : int
+        }
     
     /// <summary>Record type holding board details such as pieces on each square.</summary>
     type Brd =
