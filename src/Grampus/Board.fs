@@ -163,7 +163,7 @@ module Board =
                 { bd with Fiftymove = bd.Fiftymove + 1 }
             else { bd with Fiftymove = 0 }
         
-        let bd = { bd with WhosTurn = bd.WhosTurn |> Player.PlayerOther }
+        let bd = { bd with WhosTurn = bd.WhosTurn |> Colour.Opp }
         
         bd
     

@@ -26,16 +26,16 @@ module Player =
     // --- 1. Constant & Collection Verification ---
     [<Fact>]
     let ``AllPlayers contains exactly White and Black`` () =
-        Player.AllPlayers.Length |> should equal 2
-        Player.AllPlayers |> should contain 0
-        Player.AllPlayers |> should contain 1
+        Colour.All.Length |> should equal 2
+        Colour.All |> should contain 0
+        Colour.All |> should contain 1
 
     // --- 2. Player Flipping Logic ---
     [<Theory>]
     [<InlineData(0, 1)>]
     [<InlineData(1, 0)>]
     let ``PlayerOther returns the opponent`` (input: int, expected: int) =
-        Player.PlayerOther input |> should equal expected
+        Colour.Opp input |> should equal expected
 
     // --- 3. Perspective / MyRank Logic ---
     [<Theory>]
@@ -48,11 +48,11 @@ module Player =
     [<Property(Arbitrary = [| typeof<PlayerGenerator> |])>]
     let ``PlayerOther is its own inverse`` (p: int) =
         // Applying PlayerOther twice should return the original player
-        p |> Player.PlayerOther |> Player.PlayerOther = p
+        p |> Colour.Opp |> Colour.Opp = p
 
     [<Property(Arbitrary = [| typeof<PlayerGenerator> |])>]
     let ``PlayerOther never returns the same player`` (p: int) =
-        p |> Player.PlayerOther <> p
+        p |> Colour.Opp <> p
 
     [<Property(Arbitrary = [| typeof<ChessDimGenerator> |])>]
     let ``MyRank for White is always equal to the input rank`` (r: int) =

@@ -18,20 +18,16 @@ module Piece =
     let [<Literal>] BKing = 14
 
     let colour (p: int) : int =
-        int p >>> 3
-
+        p >>> 3
     let kind (p: int) : int =
-        int p &&& 0b111
-
+        p &&& 0b111
     let toChar (p: int) : char =
         let c = PieceType.toChar (kind p)
         if colour p = 0 then Char.ToUpper c else c
-
     let fromChar (c: char) : int =
         let col = if Char.IsUpper c then 0 else 1
         let kind = PieceType.fromChar c
         (col <<< 3) ||| kind
-    
     let Parse(c : char) =
         match c with
         | 'P' -> WPawn
@@ -48,7 +44,6 @@ module Piece =
         | 'k' -> BKing
         | '.' -> EMPTY
         | _ -> failwith (c.ToString() + " is not a valid piece")
-    
     let ToStr(piece : int) =
         match piece with
         | WPawn -> "P"
@@ -65,7 +60,6 @@ module Piece =
         | BKing -> "k"
         | EMPTY -> "."
         | _ -> failwith ("not a valid piece")
-    
     let ToStr2(piece : int) =
         match piece with
         | WPawn -> "wP"
@@ -82,9 +76,7 @@ module Piece =
         | BKing -> "bK"
         | EMPTY -> "."
         | _ -> failwith ("not a valid piece")
-
     let ToPieceType(piece : int) = piece &&& 7 
-    
     let PieceToPlayer (piece : int) =
         if piece = EMPTY then 
             None 

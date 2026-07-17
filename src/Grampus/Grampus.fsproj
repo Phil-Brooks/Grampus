@@ -67,6 +67,9 @@
     <Compile Include="Move.fs" />
     <Compile Include="Board.fs" />
     <Compile Include="MoveGenerate.fs" />
+    <Compile Include="Notation.fs" />
+    <Compile Include="Assets.fs" />
+    <Compile Include="MoveHistoryPanel.fs" />
     <Compile Include="PnlBoard.fs" />
     <Compile Include="Form.fs" />
     <Compile Include="Program.fs" />

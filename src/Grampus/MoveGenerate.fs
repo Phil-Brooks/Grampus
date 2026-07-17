@@ -40,7 +40,7 @@ module MoveGenerate =
         // 3. Pawn Attacks
         // Note: If checking if a square is attacked by White, we look SOUTH (where a white pawn would come from)
         let attackedByPawn =
-            if attackerCol = Player.White then
+            if attackerCol = Colour.White then
                 // Check SW and SE from the square's perspective
                 [ (Dirn.S + Dirn.W, file > 0); (Dirn.S + Dirn.E, file < 7) ]
                 |> List.exists (fun (offset, validFile) ->
@@ -95,9 +95,9 @@ module MoveGenerate =
         else false    
     let isCheck (bd: Brd) (player: int) =
         let kingSq =
-            if player = Player.White then bd.WtKingPos
+            if player = Colour.White then bd.WtKingPos
             else bd.BkKingPos
-        let opponent = Player.PlayerOther player
+        let opponent = Colour.Opp player
         isSquareAttacked kingSq opponent bd
     let legal (bd : Brd) (mvs : Move list) =
         let me = bd.WhosTurn
@@ -106,9 +106,9 @@ module MoveGenerate =
             let nbd = bd |> Board.MoveApply(mv)
             // 2. The move is legal only if 'me' is NOT in check on that new board
             let kingSq =
-                if me = Player.White then nbd.WtKingPos
+                if me = Colour.White then nbd.WtKingPos
                 else nbd.BkKingPos
-            let opponent = Player.PlayerOther me
+            let opponent = Colour.Opp me
             not (isSquareAttacked kingSq opponent nbd) 
         )
     let WPposs (bd : Brd) (sq : int) = 
@@ -138,7 +138,7 @@ module MoveGenerate =
             if file <> File.H then
                 let pto = sq + Dirn.NE
                 let cappc = bd.[pto]
-                if cappc <> Piece.EMPTY && (Piece.colour cappc) = Player.Black then
+                if cappc <> Piece.EMPTY && (Piece.colour cappc) = Colour.Black then
                     yield! yieldPawnMoves sq pto cappc
                 elif pto = bd.EnPassant then
                     // Note: Recording BPawn as captured even though square is empty
@@ -147,7 +147,7 @@ module MoveGenerate =
             if file <> File.A then
                 let pto = sq + Dirn.NW
                 let cappc = bd.[pto]
-                if cappc <> Piece.EMPTY && (Piece.colour cappc) = Player.Black then
+                if cappc <> Piece.EMPTY && (Piece.colour cappc) = Colour.Black then
                     yield! yieldPawnMoves sq pto cappc
                 elif pto = bd.EnPassant then
                     yield Move.Create sq pto Piece.WPawn Piece.EMPTY
@@ -180,7 +180,7 @@ module MoveGenerate =
             if file <> File.H then
                 let pto = sq + Dirn.SE
                 let cappc = bd.[pto]
-                if cappc <> Piece.EMPTY && (Piece.colour cappc) = Player.White then
+                if cappc <> Piece.EMPTY && (Piece.colour cappc) = Colour.White then
                     yield! yieldPawnMoves sq pto cappc
                 elif pto = bd.EnPassant then
                     yield Move.Create sq pto Piece.BPawn Piece.EMPTY // Per your requirement
@@ -188,7 +188,7 @@ module MoveGenerate =
             if file <> File.A then
                 let pto = sq + Dirn.SW
                 let cappc = bd.[pto]
-                if cappc <> Piece.EMPTY && (Piece.colour cappc) = Player.White then
+                if cappc <> Piece.EMPTY && (Piece.colour cappc) = Colour.White then
                     yield! yieldPawnMoves sq pto cappc
                 elif pto = bd.EnPassant then
                     yield Move.Create sq pto Piece.BPawn Piece.EMPTY // Per your requirement
@@ -215,8 +215,8 @@ module MoveGenerate =
                         if targetPc = Piece.EMPTY || (Piece.colour targetPc) = enemyColor then
                             yield Move.Create sq targetSq myPiece targetPc
         ]    
-    let WNposs bd sq = NMoves bd sq Piece.WKnight Player.Black |> legal bd
-    let BNposs bd sq = NMoves bd sq Piece.BKnight Player.White |> legal bd
+    let WNposs bd sq = NMoves bd sq Piece.WKnight Colour.Black |> legal bd
+    let BNposs bd sq = NMoves bd sq Piece.BKnight Colour.White |> legal bd
     let slidingMoves (bd: Brd) (sq: int) (myPc: int) (enemyCol: int) (dirs: int[]) =
         [
             for dir in dirs do
@@ -249,12 +249,12 @@ module MoveGenerate =
                                     yield Move.Create sq nextSq myPc targetPc
                                 continueSliding <- false
         ]
-    let WBposs bd sq = slidingMoves bd sq Piece.WBishop Player.Black Dirn.AllDirectionsBishop |> legal bd
-    let BBposs bd sq = slidingMoves bd sq Piece.BBishop Player.White Dirn.AllDirectionsBishop |> legal bd
-    let WRposs bd sq = slidingMoves bd sq Piece.WRook Player.Black Dirn.AllDirectionsRook |> legal bd
-    let BRposs bd sq = slidingMoves bd sq Piece.BRook Player.White Dirn.AllDirectionsRook |> legal bd
-    let WQposs bd sq = slidingMoves bd sq Piece.WQueen Player.Black Dirn.AllDirectionsQueen |> legal bd
-    let BQposs bd sq = slidingMoves bd sq Piece.WQueen Player.White Dirn.AllDirectionsQueen |> legal bd
+    let WBposs bd sq = slidingMoves bd sq Piece.WBishop Colour.Black Dirn.AllDirectionsBishop |> legal bd
+    let BBposs bd sq = slidingMoves bd sq Piece.BBishop Colour.White Dirn.AllDirectionsBishop |> legal bd
+    let WRposs bd sq = slidingMoves bd sq Piece.WRook Colour.Black Dirn.AllDirectionsRook |> legal bd
+    let BRposs bd sq = slidingMoves bd sq Piece.BRook Colour.White Dirn.AllDirectionsRook |> legal bd
+    let WQposs bd sq = slidingMoves bd sq Piece.WQueen Colour.Black Dirn.AllDirectionsQueen |> legal bd
+    let BQposs bd sq = slidingMoves bd sq Piece.WQueen Colour.White Dirn.AllDirectionsQueen |> legal bd
     let WKposs (bd : Brd) (sq : int) =
         let startFile = Square.ToFile sq
         let startRank = Square.ToRank sq
@@ -267,7 +267,7 @@ module MoveGenerate =
                     // King can only move 1 file away. Prevents wrap-around.
                     if abs (nextFile - startFile) <= 1 then
                         let targetPc = bd.[nextSq]
-                        if targetPc = Piece.EMPTY || (Piece.colour targetPc) = Player.Black then
+                        if targetPc = Piece.EMPTY || (Piece.colour targetPc) = Colour.Black then
                             yield Move.Create sq nextSq Piece.WKing targetPc
             // 2. Castling (White)
             if sq = 4 && startRank = Rank.R1 then
@@ -298,7 +298,7 @@ module MoveGenerate =
                     let nextFile = Square.ToFile nextSq
                     if abs (nextFile - startFile) <= 1 then
                         let targetPc = bd.[nextSq]
-                        if targetPc = Piece.EMPTY || (Piece.colour targetPc) = Player.White then
+                        if targetPc = Piece.EMPTY || (Piece.colour targetPc) = Colour.White then
                             yield Move.Create sq nextSq Piece.BKing targetPc
             // 2. Castling (Black)
             if sq = 60 && startRank = Rank.R8 then
@@ -322,7 +322,7 @@ module MoveGenerate =
     let PossMoves (bd : Brd) (sq : int) =
         let player = bd.WhosTurn
         let pc = bd.[sq]
-        if player = Player.White then
+        if player = Colour.White then
             match pc with
             | Piece.WPawn -> WPposs bd sq
             | Piece.WKnight -> WNposs bd sq

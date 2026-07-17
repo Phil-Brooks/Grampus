@@ -3,99 +3,6 @@ namespace GrampusUI
 open System.Drawing
 open System.Windows.Forms
 open Grampus
-open System.Runtime.InteropServices
-
-module CursorHelper =
-    
-    [<StructLayout(LayoutKind.Sequential)>]
-    type IconInfo =
-        struct
-            val mutable fIcon: bool
-            val mutable xHotspot: int
-            val mutable yHotspot: int
-            val mutable hbmMask: nativeint
-            val mutable hbmColor: nativeint
-        end
-    [<DllImport("user32.dll")>]
-    extern bool GetIconInfo(nativeint hIcon, IconInfo& piconinfo)
-
-    [<DllImport("user32.dll")>]
-    extern nativeint CreateIconIndirect(IconInfo& piconinfo)
-
-    [<DllImport("user32.dll")>]
-    extern bool DestroyIcon(nativeint hIcon)
-
-    /// Creates a Cursor from a Bitmap with a specific hotspot
-    let createCursorFromBitmap (bmp: Bitmap) (xHot: int) (yHot: int) =
-        let hIcon = bmp.GetHicon()
-        let mutable tmp = IconInfo()
-        GetIconInfo(hIcon, &tmp)|>ignore
-    
-        tmp.xHotspot <- xHot
-        tmp.yHotspot <- yHot
-        tmp.fIcon <- false // 'false' makes it a cursor instead of an icon
-        let hCursor = CreateIconIndirect(&tmp)
-    
-        // Clean up the temporary icon handle created by GetHicon
-        DestroyIcon(hIcon) |> ignore
-    
-        new Cursor(hCursor)
-
-module Assets =
-    let private assembly = System.Reflection.Assembly.GetExecutingAssembly()
-    
-    let loadIcon (name: string) =
-        let path = "Grampus.Images." + name
-        let stream = assembly.GetManifestResourceStream(path)
-        if stream = null then 
-            failwithf "Resource not found: %s. Ensure it is marked as 'Embedded Resource'." path
-        new Icon(stream)
-
-    let loadImage (name: string) =
-        let path = "Grampus.Images." + name
-        let stream = assembly.GetManifestResourceStream(path)
-        if stream = null then 
-            failwithf "Resource not found: %s. Ensure it is marked as 'Embedded Resource'." path
-        new Bitmap(stream)
-    
-    let loadPiece (name: string) =
-        let path = "Grampus.Images.Merida." + name + ".png"
-        let stream = assembly.GetManifestResourceStream(path)
-        if stream = null then 
-            failwithf "Resource not found: %s. Ensure it is marked as 'Embedded Resource'." path
-        new Bitmap(stream)
-
-    let resizeBitmap (bmp: Bitmap) (newWidth: int) (newHeight: int) =
-        let newBmp = new Bitmap(newWidth, newHeight)
-        use g = Graphics.FromImage(newBmp)
-        // High quality scaling settings
-        g.InterpolationMode <- System.Drawing.Drawing2D.InterpolationMode.HighQualityBicubic
-        g.SmoothingMode <- System.Drawing.Drawing2D.SmoothingMode.HighQuality
-        g.PixelOffsetMode <- System.Drawing.Drawing2D.PixelOffsetMode.HighQuality
-        g.DrawImage(bmp, 0, 0, newWidth, newHeight)
-        newBmp
-    
-    let Back = loadImage "Back.jpg"
-    let Orient= loadImage "orient.png"
-    let Grampus = loadIcon "grampus.ico"
-    
-    let Pieces = 
-        [ "wP"; "wN"; "wB"; "wR"; "wQ"; "wK"; 
-          "bP"; "bN"; "bB"; "bR"; "bQ"; "bK" ]
-        |> List.map (fun code -> code, loadPiece code)
-        |> Map.ofList
-
-    let Cursors = 
-        [ "wP"; "wN"; "wB"; "wR"; "wQ"; "wK"; 
-          "bP"; "bN"; "bB"; "bR"; "bQ"; "bK" ]
-        |> List.map (fun code -> 
-            let originalBmp = Pieces.[code]
-            let cursorSize = 64 
-            let resizedBmp = resizeBitmap originalBmp cursorSize cursorSize
-            let cursor = CursorHelper.createCursorFromBitmap resizedBmp (cursorSize / 2) (cursorSize / 2)
-            resizedBmp.Dispose()
-            code, cursor)
-        |> Map.ofList
 
 [<AutoOpen>]
 module PnlBoardLib =
@@ -104,6 +11,11 @@ module PnlBoardLib =
     let pnlsz = 10 * sqsz
     type PnlBoard() as bd =
         inherit Panel(Width = pnlsz, Height = pnlsz)
+        
+        // 1. Define the event. It will pass (BoardBeforeMove, MoveRecord, Evaluation)
+        let moveMade = new Event<Brd * Move * float>()
+        
+        
         let mutable board = Grampus.Board.Start
         let mutable sqTo = -1
         let mutable cCur = Cursors.Default
@@ -177,9 +89,6 @@ module PnlBoardLib =
             do sqs |> Array.iteri setsq
                sqs |> Array.iter dlg.Controls.Add
             dlg.ShowDialog()
-        
-        //events
-        let mvEvt = new Event<_>()
         
         ///set pieces on squares
         let setpcsmvs() =
@@ -273,9 +182,10 @@ module PnlBoardLib =
                         psmvs
                         |> List.filter (fun m -> m.To = sqTo)
                     if mvl.Length = 1 then 
+                        let oldBoard = board
                         board <- board |> Board.MoveApply mvl.Head
                         setpcsmvs()
-                        mvl.Head |> mvEvt.Trigger
+                        moveMade.Trigger(oldBoard, mvl.Head, 0)
 
                     elif mvl.Length = 4 then 
                         prompctp <- PieceType.EMPTY // Reset before showing
@@ -288,9 +198,10 @@ module PnlBoardLib =
                         
                             match matchedMove with
                             | Some mv ->
+                                let oldBoard = board    
                                 board <- board |> Board.MoveApply mv
                                 setpcsmvs()
-                                mv |> mvEvt.Trigger
+                                moveMade.Trigger(oldBoard, mv, 0)
                             | None -> 
                                 // This shouldn't happen, but if it does, snap back
                                 p.Image <- oimg 
@@ -376,6 +287,13 @@ module PnlBoardLib =
         ///Orients the Board depending on whether White
         member bd.Orient() = orient()
         
-        //publish
-        ///Provides the Move made on the board
-        member __.MvMade = mvEvt.Publish
+    
+        // 2. Expose the event so the Form can see it
+        [<CLIEvent>]
+        member this.OnMoveMade = moveMade.Publish
+
+        // ... inside your mouse logic or engine logic where the move is finalized:
+        member private this.HandleMoveComplete(oldBoard, m, eval) =
+            // Update local board state...
+            // Then trigger the event:
+            moveMade.Trigger(oldBoard, m, eval)

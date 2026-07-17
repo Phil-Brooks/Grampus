@@ -11,7 +11,6 @@ module Square =
     let IsInBounds(pos : int) = pos >= 0 && pos <= 63
     let ToRank(pos : int) : int = pos / 8
     let ToFile(pos : int) : int = pos % 8
-    
     let DirectionTo (pto : int) (pfrom : int) =
         let rankfrom = int (pfrom |> ToRank)
         let filefrom = int (pfrom |> ToFile)
@@ -44,10 +43,8 @@ module Square =
                 else Dirn.SW
             else if filechange > 0 then Dirn.NE
             else Dirn.NW
-    
     let PositionInDirectionUnsafe (dir : int) (pos : int) : int =
         pos + dir
-    
     let PositionInDirection (dir : int) (pos : int) =
         if not (pos |> IsInBounds) then OUTOFBOUNDS
         else 

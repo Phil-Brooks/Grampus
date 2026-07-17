@@ -83,20 +83,6 @@ module Types =
                 else " b"
             
             bdstr + tomv
-    
-    /// <summary>Record type holding details of an unencoded move such as pieces the target square.</summary>
-    type pMove =
-        { Mtype : int
-          TargetSquare : int
-          Piece : int option
-          OriginFile : int option
-          OriginRank : int option
-          PromotedPiece : int option
-          IsCheck : bool
-          IsDoubleCheck : bool
-          IsCheckMate : bool
-          San : string }
-        override x.ToString() = x.San
 
     type Fen =
         { Pieceat : int list
@@ -108,3 +94,14 @@ module Types =
           Enpassant : int
           Fiftymove : int
           Fullmove : int }
+
+type PlayedMove = {
+    San : string
+    Eval : float option
+}
+
+type HistoryEntry = {
+    MoveNumber : int
+    White : PlayedMove
+    Black : PlayedMove option
+}

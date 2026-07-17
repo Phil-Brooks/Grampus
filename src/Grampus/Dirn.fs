@@ -25,9 +25,7 @@ module Dirn =
         [| NE; SE; SW; NW |]
     let AllDirectionsQueen =
         [| N; E; S; W; NE; SE; SW; NW |]
-    
     let Opposite(dir : int)  = -dir 
-    
     let MyNorth(player : int) =
         if player = 0 then N
         else S

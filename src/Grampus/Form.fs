@@ -1,6 +1,5 @@
 namespace GrampusUI
 
-open System.Drawing
 open System.Windows.Forms
 
 module Form =
@@ -10,6 +9,7 @@ module Form =
                      IsMdiContainer = true, Icon = Assets.Grampus)
 
         let bd = new PnlBoard(Dock = DockStyle.Fill)
+        let mh = new MoveHistoryPanel(Dock = DockStyle.Fill)
 
         let createToolbar() =
             let ts = new ToolStrip()
@@ -58,10 +58,18 @@ module Form =
         let rtbpnl =
             new Panel(Dock = DockStyle.Fill, BorderStyle = BorderStyle.Fixed3D)
         do 
+            bd.OnMoveMade.Add(fun (bdBefore, m, eval) -> 
+                mh.AddMove(bdBefore, m, eval)
+            )
+            
+            
+            
+            
             rtbpnl |> rtpnl.Controls.Add
             rtmpnl |> rtpnl.Controls.Add
             rttpnl |> rtpnl.Controls.Add
             rtpnl |> bgpnl.Controls.Add
+            mh |> lfbpnl.Controls.Add
             lfbpnl |> lfpnl.Controls.Add
             bd |> lftpnl.Controls.Add
             lftpnl |> lfpnl.Controls.Add
