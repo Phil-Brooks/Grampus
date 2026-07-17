@@ -44,7 +44,7 @@ module MoveGenerate =
         
         // Should be 4 moves: A7-A8(Q), A7-A8(R), A7-A8(B), A7-A8(N)
         moves.Length |> should equal 4
-        moves |> List.iter (fun m -> Move.IsPromotion m |> should be True)
+        moves |> List.iter (fun m -> Move.IsPromotion (Move.Int2Move m) |> should be True)
 
     // --- 5. Double Check ---
     [<Fact>]
@@ -65,10 +65,10 @@ module MoveGenerate =
         let fen = "rnbqkbnr/pppp1ppp/8/8/3pP3/8/PPPP1PPP/RNBQKBNR b KQkq e3 0 1"
         let bd = FEN.Parse fen |> Board.FromFEN
         
-        let pawnMoves = MoveGenerate.PossMoves bd D4
+        let pawnMoves = MoveGenerate.PossMoves bd D4|>List.map Move.Int2Move
         let epMove = pawnMoves |> List.find (fun m -> Move.IsEnPassant m)
         
-        Move.To epMove |> should equal E3
+        epMove.To |> should equal E3
 
     [<Fact>]
     let ``Pawn correctly attacks diagonal squares but not forward`` () =

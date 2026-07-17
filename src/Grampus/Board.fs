@@ -76,11 +76,13 @@ module Board =
         |> PieceAdd pos newPiece
     
     ///Make an encoded Move(move) for this Board(bd) and return the new Board
-    let MoveApply (move : int) (bd : Brd) =
-        let mfrom = move |> Move.From
-        let mto = move |> Move.To
-        let piece = move |> Move.MovingPiece
-        let capture = move |> Move.CapturedPiece
+    let MoveApply (mvi : int) (bd : Brd) =
+        let move = mvi |>Move.Int2Move
+        
+        let mfrom = move.From
+        let mto = move.To
+        let piece = move.Pc
+        let capture = move.CapPc
         
         let bd =
             if capture <> Piece.EMPTY then bd |> PieceRemove(mto)
