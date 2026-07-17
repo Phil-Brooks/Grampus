@@ -33,7 +33,7 @@ module Board =
         nextBd.WhosTurn |> should equal 1
 
     [<Fact>]
-    let ``MoveApply: Capture removes piece and updates bitboards`` () =
+    let ``MoveApply: Capture removes piece`` () =
         // Setup: White Knight on F3 captures Black Pawn on E5
         let bd = Board.EMPTY 
                  |> Board.PieceAdd F3 Piece.WKnight 

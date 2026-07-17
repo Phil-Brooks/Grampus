@@ -59,9 +59,3 @@ module Types =
         let recoveredFile = s % 8
         let recoveredRank = s / 8
         recoveredFile = f && recoveredRank = r
-
-    [<Property(Arbitrary = [| typeof<ChessDimGenerator> |])>]
-    let ``A square Bitboard always has exactly one bit set`` (s: int) =
-        // We use BitOperations.PopCount or a simple check
-        let bbValue = 1UL <<< s
-        System.Numerics.BitOperations.PopCount(bbValue) = 1

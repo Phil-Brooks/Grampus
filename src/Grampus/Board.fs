@@ -23,9 +23,6 @@ module Board =
                    elif i = int (mfrom) then Piece.EMPTY
                    else p)
         
-        let posBits =
-            (mfrom |> Square.ToBitboard) ||| (mto |> Square.ToBitboard)
-        
         let wtkingpos =
             if pieceType = PieceType.King && player = 0 then mto
             else bd.WtKingPos
@@ -47,8 +44,6 @@ module Board =
             |> Array.mapi (fun i p -> 
                    if i = int (pos) then piece
                    else p)
-        
-        let posBits = pos |> Square.ToBitboard
         
         let wtkingpos =
             if pieceType = PieceType.King && player = 0 then pos
@@ -73,8 +68,6 @@ module Board =
                    if i = pos then Piece.EMPTY
                    else p)
         
-        let notPosBits = ~~~(pos |> Square.ToBitboard)
-       
         { bd with PieceAt = pieceat }
     
     let private PieceChange pos newPiece (bd : Brd) =

@@ -78,22 +78,3 @@ module Square =
                 Sq(nf, nr)
             else OUTOFBOUNDS
     
-    let ToBitboard(pos : int) =
-        if pos |> IsInBounds then (1UL <<< pos) 
-        else 0UL
-    
-    let Between (pto : int) (pfrom : int) =
-        let dir = pfrom |> DirectionTo(pto)
-        
-        let rec getb f rv =
-            if f = pto then rv
-            else 
-                let nf = f |> PositionInDirectionUnsafe(dir)
-                let nrv = rv ||| (nf |> ToBitboard)
-                getb nf nrv
-        
-        let rv =
-            if int (dir) = 0 then 0UL
-            else getb pfrom 0UL
-        
-        rv &&& ~~~(pto |> ToBitboard)

@@ -48,20 +48,6 @@ module Square =
         Square.PositionInDirection Dirn.N A8 |> should equal OUTOFBOUNDS
         Square.PositionInDirection Dirn.W A1 |> should equal OUTOFBOUNDS
 
-    // --- 3. Geometric Logic (Between) ---
-
-    [<Fact>]
-    let ``Between returns correct bitmask for squares in between`` () =
-        // Between A1 and A4 should be A2 and A3
-        let bb = Square.Between A4 A1
-        let expected = (1UL <<< int A2) ||| (1UL <<< int A3) 
-        bb |> should equal expected
-
-    [<Fact>]
-    let ``Between returns Empty for adjacent squares or non-linear paths`` () =
-        Square.Between A2 A1 |> should equal Bitboard.Empty
-        Square.Between B3 A1 |> should equal Bitboard.Empty // Knight move has no "between"
-
     // --- 4. Property Based Testing ---
 
     [<Property(Arbitrary = [| typeof<ChessDimGenerator> |])>]
@@ -73,14 +59,6 @@ module Square =
         if Square.IsInBounds s then
             Sq(Square.ToFile s, Square.ToRank s) = s
         else true
-
-    [<Property(Arbitrary = [| typeof<ChessDimGenerator> |])>]
-    let ``ToBitboard popcount is always 1 for in-bounds squares`` (s: int) =
-        if Square.IsInBounds s then
-            let bb = Square.ToBitboard s
-            System.Numerics.BitOperations.PopCount(uint64 bb) = 1
-        else
-            Square.ToBitboard s = Bitboard.Empty
 
     [<Property(Arbitrary = [| typeof<ChessDimGenerator> |])>]
     let ``Square Round-trip: ToFile and ToRank recreate the original Square`` (sq: int) =
