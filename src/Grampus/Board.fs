@@ -9,7 +9,6 @@ module Board =
           WtPrBds = 0UL
           BkPrBds = 0UL
           PieceLocationsAll = 0UL
-          Checkers = 0UL
           WhosTurn = 0
           CastleRights = 0
           EnPassant = OUTOFBOUNDS
@@ -262,37 +261,9 @@ module Board =
                 { bd with Fiftymove = bd.Fiftymove + 1 }
             else { bd with Fiftymove = 0 }
         
-                // 1. Switch turns
         let bd = { bd with WhosTurn = bd.WhosTurn |> Player.PlayerOther }
         
-        // 2. Determine the current King's position safely
-        let kingPos = 
-            if bd.WhosTurn = 0 then bd.WtKingPos 
-            else bd.BkKingPos
-
-        // 3. Update Checkers ONLY if the king is actually on the board
-        let checkers =
-            if kingPos = OUTOFBOUNDS then 
-                Bitboard.Empty
-            else
-                // Find pieces of the PREVIOUS player that attack the CURRENT king
-                let opponent = bd.WhosTurn |> Player.PlayerOther
-                let opponentPieces = 
-                    if opponent = 0 then bd.WtPrBds 
-                    else bd.BkPrBds
-                
-                (bd |> AttacksToBoth kingPos) &&& opponentPieces
-
-        { bd with Checkers = checkers }
-    
-    ///Is there a check on Player(kingplayer) on the Board(bd)
-    let IsChck (kingplayer : int) (bd : Brd) =
-        let kingpos =
-            if kingplayer = 0 then bd.WtKingPos
-            else bd.BkKingPos
-        // Guard: If the king isn't on the board, he can't be in check
-        if kingpos = OUTOFBOUNDS then false
-        else bd |> SquareAttacked kingpos (kingplayer |> Player.PlayerOther)
+        bd
     
     ///Create a new Board given a Fen(fen)
     let FromFEN(fen : Fen) =
@@ -320,14 +291,7 @@ module Board =
                   WhosTurn = fen.Whosturn
                   EnPassant = fen.Enpassant
                   Fiftymove = fen.Fiftymove
-                  Fullmove = fen.Fullmove
-                  Checkers =
-                      bd
-                      |> AttacksToBoth(if fen.Whosturn = 0 then 
-                                           bd.WtKingPos
-                                       else bd.BkKingPos)
-                      &&& (if fen.Whosturn = 1 then bd.WtPrBds
-                           else bd.BkPrBds) }
+                  Fullmove = fen.Fullmove }
     
     ///The starting Board at the beginning of a game
     let Start = FEN.Start |> FromFEN

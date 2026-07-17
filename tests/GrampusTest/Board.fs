@@ -76,17 +76,6 @@ module Board =
         nextBd.PieceAt.[int D5] |> should equal Piece.EMPTY
         Bitboard.containsPos D5 nextBd.PieceLocationsAll |> should be False
 
-    // --- 4. Checks & Attacks ---
-
-    [<Fact>]
-    let ``IsChck correctly identifies king is under fire`` () =
-        // White King on E1, Black Rook on E8
-        let bd = Board.EMPTY 
-                 |> Board.PieceAdd E1 Piece.WKing 
-                 |> Board.PieceAdd E8 Piece.BRook
-        
-        Board.IsChck 0 bd |> should be True
-        Board.IsChck 1 bd |> should be False
 
     // --- 5. Property Based Testing (Invariants) ---
 
@@ -116,4 +105,3 @@ module Board =
         let nextBd = Board.MoveApply mv bd
         
         nextBd.PieceAt.[int A5] |> should equal Piece.WRook
-        nextBd.Checkers |> should equal Bitboard.Empty

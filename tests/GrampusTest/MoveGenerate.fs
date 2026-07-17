@@ -53,8 +53,6 @@ module MoveGenerate =
         let fen = "4r3/8/8/8/8/5n2/8/4K3 w - - 0 1"
         let bd = FEN.Parse fen |> Board.FromFEN
         
-        bd.Checkers |> Bitboard.bitCount |> should equal 2
-        
         let allMoves = getAllLegalMoves bd
         // All legal moves must be King moves
         allMoves |> List.iter (fun m -> 
