@@ -259,10 +259,7 @@ module PnlBoardLib =
                 
                 let pssqs =
                     psmvs
-                    |> List.map (fun m -> 
-                           m
-                           |> Move.To
-                           |> int)
+                    |> List.map Move.To
                 pssqs |> highlightsqs
                 let oimg = p.Image
                 p.Image <- null
@@ -274,10 +271,7 @@ module PnlBoardLib =
                    && (p.DoDragDrop(oimg, DragDropEffects.Move) = DragDropEffects.Move) then 
                     let mvl =
                         psmvs
-                        |> List.filter (fun m -> 
-                               m
-                               |> Move.To
-                               |> int = sqTo)
+                        |> List.filter (fun m -> (m|> Move.To) = sqTo)
                     if mvl.Length = 1 then 
                         board <- board |> Board.MoveApply mvl.Head
                         setpcsmvs()
