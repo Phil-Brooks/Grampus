@@ -64,7 +64,6 @@
     <Compile Include="Square.fs" />
     <Compile Include="Castle.fs" />
     <Compile Include="BitBoard.fs" />
-    <Compile Include="Attacks.fs" />
     <Compile Include="FEN.fs" />
     <Compile Include="Move.fs" />
     <Compile Include="Board.fs" />
