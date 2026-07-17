@@ -99,7 +99,7 @@ module MoveGenerate =
             else bd.BkKingPos
         let opponent = Player.PlayerOther player
         isSquareAttacked kingSq opponent bd
-    let legal (bd : Brd) (mvs : int list) =
+    let legal (bd : Brd) (mvs : Move list) =
         let me = bd.WhosTurn
         mvs |> List.filter (fun mv ->
             // 1. Create the board state that WOULD exist after this move

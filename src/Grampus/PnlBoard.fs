@@ -259,7 +259,7 @@ module PnlBoardLib =
                 
                 let pssqs =
                     psmvs
-                    |> List.map Move.To
+                    |> List.map (fun m -> m.To)
                 pssqs |> highlightsqs
                 let oimg = p.Image
                 p.Image <- null
@@ -271,7 +271,7 @@ module PnlBoardLib =
                    && (p.DoDragDrop(oimg, DragDropEffects.Move) = DragDropEffects.Move) then 
                     let mvl =
                         psmvs
-                        |> List.filter (fun m -> (m|> Move.To) = sqTo)
+                        |> List.filter (fun m -> m.To = sqTo)
                     if mvl.Length = 1 then 
                         board <- board |> Board.MoveApply mvl.Head
                         setpcsmvs()
@@ -284,7 +284,7 @@ module PnlBoardLib =
                     
                         if result = DialogResult.OK && prompctp <> PieceType.EMPTY then
                             // Use tryFind to safely locate the specific promotion move
-                            let matchedMove = mvl |> List.tryFind (fun mv -> Move.PromoteType mv = prompctp)
+                            let matchedMove = mvl |> List.tryFind (fun mv -> mv.Prom = prompctp)
                         
                             match matchedMove with
                             | Some mv ->

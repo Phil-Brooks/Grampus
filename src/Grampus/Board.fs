@@ -76,8 +76,7 @@ module Board =
         |> PieceAdd pos newPiece
     
     ///Make an encoded Move(move) for this Board(bd) and return the new Board
-    let MoveApply (mvi : int) (bd : Brd) =
-        let move = mvi |>Move.Int2Move
+    let MoveApply (move : Move) (bd : Brd) =
         
         let mfrom = move.From
         let mto = move.To

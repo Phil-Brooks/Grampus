@@ -29,7 +29,7 @@ module MoveGenerate =
         // Queen can move to E2, E3, E5, E6, E7, E8 (capture)
         // She CANNOT move to D4 or F4 (this would leave king in check)
         queenMoves |> List.iter (fun m -> 
-            (Move.To m |> Square.ToFile) |> should equal File.E)
+            (m.To |> Square.ToFile) |> should equal File.E)
         
         queenMoves.Length |> should equal 6
 
@@ -44,7 +44,7 @@ module MoveGenerate =
         
         // Should be 4 moves: A7-A8(Q), A7-A8(R), A7-A8(B), A7-A8(N)
         moves.Length |> should equal 4
-        moves |> List.iter (fun m -> Move.IsPromotion (Move.Int2Move m) |> should be True)
+        moves |> List.iter (fun m -> Move.IsPromotion m |> should be True)
 
     // --- 5. Double Check ---
     [<Fact>]
@@ -56,7 +56,7 @@ module MoveGenerate =
         let allMoves = getAllLegalMoves bd
         // All legal moves must be King moves
         allMoves |> List.iter (fun m -> 
-            Move.MovingPieceType m |> should equal PieceType.King)
+            m.Pc |> should equal PieceType.King)
 
     // --- 6. En Passant ---
     [<Fact>]
@@ -65,7 +65,7 @@ module MoveGenerate =
         let fen = "rnbqkbnr/pppp1ppp/8/8/3pP3/8/PPPP1PPP/RNBQKBNR b KQkq e3 0 1"
         let bd = FEN.Parse fen |> Board.FromFEN
         
-        let pawnMoves = MoveGenerate.PossMoves bd D4|>List.map Move.Int2Move
+        let pawnMoves = MoveGenerate.PossMoves bd D4
         let epMove = pawnMoves |> List.find (fun m -> Move.IsEnPassant m)
         
         epMove.To |> should equal E3
