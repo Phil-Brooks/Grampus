@@ -41,7 +41,6 @@ module Types =
           PieceAt : int[]
           WtKingPos : int
           BkKingPos : int
-          PieceTypes : uint64 list
           WhosTurn : int
           CastleRights : int
           EnPassant : int

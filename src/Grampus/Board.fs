@@ -5,7 +5,6 @@ module Board =
         { PieceAt = Array.create 64 0
           WtKingPos = OUTOFBOUNDS
           BkKingPos = OUTOFBOUNDS
-          PieceTypes = Array.create 7 0UL |> List.ofArray
           WhosTurn = 0
           CastleRights = 0
           EnPassant = OUTOFBOUNDS
@@ -27,12 +26,6 @@ module Board =
         let posBits =
             (mfrom |> Square.ToBitboard) ||| (mto |> Square.ToBitboard)
         
-        let piecetypes =
-            bd.PieceTypes
-            |> List.mapi (fun i p -> 
-                   if i = int (pieceType) then p ^^^ posBits
-                   else p)
-        
         let wtkingpos =
             if pieceType = PieceType.King && player = 0 then mto
             else bd.WtKingPos
@@ -42,7 +35,6 @@ module Board =
             else bd.BkKingPos
         
         { bd with PieceAt = pieceat
-                  PieceTypes = piecetypes
                   WtKingPos = wtkingpos
                   BkKingPos = bkkingpos }
     
@@ -58,12 +50,6 @@ module Board =
         
         let posBits = pos |> Square.ToBitboard
         
-        let piecetypes =
-            bd.PieceTypes
-            |> List.mapi (fun i p -> 
-                   if i = int (piece |> Piece.ToPieceType) then p ||| posBits
-                   else p)
-        
         let wtkingpos =
             if pieceType = PieceType.King && player = 0 then pos
             else bd.WtKingPos
@@ -73,7 +59,6 @@ module Board =
             else bd.BkKingPos
         
         { bd with PieceAt = pieceat
-                  PieceTypes = piecetypes
                   WtKingPos = wtkingpos
                   BkKingPos = bkkingpos }
     
@@ -89,15 +74,8 @@ module Board =
                    else p)
         
         let notPosBits = ~~~(pos |> Square.ToBitboard)
-        
-        let piecetypes =
-            bd.PieceTypes
-            |> List.mapi (fun i p -> 
-                   if i = int (pieceType) then p &&& notPosBits
-                   else p)
-        
-        { bd with PieceAt = pieceat
-                  PieceTypes = piecetypes }
+       
+        { bd with PieceAt = pieceat }
     
     let private PieceChange pos newPiece (bd : Brd) =
         bd
