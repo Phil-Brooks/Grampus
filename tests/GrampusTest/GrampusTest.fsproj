@@ -19,7 +19,6 @@
     <Compile Include="Move.fs" />
     <Compile Include="Board.fs" />
     <Compile Include="MoveGenerate.fs" />
-    <Compile Include="pMove.fs" />
   </ItemGroup>
 
   <ItemGroup>
