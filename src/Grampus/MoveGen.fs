@@ -141,6 +141,7 @@ module MoveGen =
                 if cappc <> EMPTY && (Piece.Colour cappc) = BLACK then
                     yield! yieldPawnMoves sq pto cappc
                 elif pto = bd.EnPassant then
+                    //TODO: fix this
                     // Note: Recording BPawn as captured even though square is empty
                     yield Move.Create sq pto WPAWN EMPTY 
             // 3. Captures (West)

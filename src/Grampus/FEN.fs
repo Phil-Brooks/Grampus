@@ -4,8 +4,7 @@ open System.Text
 open System.Text.RegularExpressions
 
 module FEN =
-    let Parse(sFEN : string) =
-        let pieceat = Array.create 64 EMPTY
+    let getMatch(sFEN : string) =
         let sbPattern = new StringBuilder()
         sbPattern.Append(@"(?<R8>[\w]{1,8})/") |> ignore
         sbPattern.Append(@"(?<R7>[\w]{1,8})/") |> ignore
@@ -26,6 +25,11 @@ module FEN =
         if matches.Count = 0 then failwith "No valid fen found"
         if matches.Count > 1 then failwith "Multiple FENs in string"
         let matchr = matches.[0]
+        matchr
+    
+    let Parse(sFEN : string) =
+        let pieceat = Array.create 64 EMPTY
+        let matchr = getMatch(sFEN)
         let sRanks =
             Rank.List 
             |> List.map 

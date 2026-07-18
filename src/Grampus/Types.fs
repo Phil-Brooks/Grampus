@@ -9,6 +9,7 @@ module Types =
     // Colours
     let [<Literal>] WHITE = 0
     let [<Literal>] BLACK = 1
+    //TODO : remove this type
     // PcTypes
     let [<Literal>] EMPTY = 0
     let [<Literal>] PAWN = 1
@@ -182,6 +183,7 @@ module Types =
             
             bdstr + tomv
 
+    //TODO : remove this type
     type Fen =
         { Pieceat : int list
           Whosturn : int
