@@ -5,7 +5,6 @@ open System.Windows.Forms
 open System.Runtime.InteropServices
 
 module CursorHelper =
-    
     [<StructLayout(LayoutKind.Sequential)>]
     type IconInfo =
         struct
@@ -17,15 +16,12 @@ module CursorHelper =
         end
     [<DllImport("user32.dll")>]
     extern bool GetIconInfo(nativeint hIcon, IconInfo& piconinfo)
-
     [<DllImport("user32.dll")>]
     extern nativeint CreateIconIndirect(IconInfo& piconinfo)
-
     [<DllImport("user32.dll")>]
     extern bool DestroyIcon(nativeint hIcon)
-
     /// Creates a Cursor from a Bitmap with a specific hotspot
-    let createCursorFromBitmap (bmp: Bitmap) (xHot: int) (yHot: int) =
+    let CreateCursorFromBitmap (bmp: Bitmap) (xHot: int) (yHot: int) =
         let hIcon = bmp.GetHicon()
         let mutable tmp = IconInfo()
         GetIconInfo(hIcon, &tmp)|>ignore
@@ -41,29 +37,25 @@ module CursorHelper =
         new Cursor(hCursor)
 
 module Assets =
-    let private assembly = System.Reflection.Assembly.GetExecutingAssembly()
-    
+    let assembly = System.Reflection.Assembly.GetExecutingAssembly()
     let loadIcon (name: string) =
         let path = "Grampus.Images." + name
         let stream = assembly.GetManifestResourceStream(path)
         if stream = null then 
             failwithf "Resource not found: %s. Ensure it is marked as 'Embedded Resource'." path
         new Icon(stream)
-
     let loadImage (name: string) =
         let path = "Grampus.Images." + name
         let stream = assembly.GetManifestResourceStream(path)
         if stream = null then 
             failwithf "Resource not found: %s. Ensure it is marked as 'Embedded Resource'." path
         new Bitmap(stream)
-    
     let loadPiece (name: string) =
         let path = "Grampus.Images.Merida." + name + ".png"
         let stream = assembly.GetManifestResourceStream(path)
         if stream = null then 
             failwithf "Resource not found: %s. Ensure it is marked as 'Embedded Resource'." path
         new Bitmap(stream)
-
     let resizeBitmap (bmp: Bitmap) (newWidth: int) (newHeight: int) =
         let newBmp = new Bitmap(newWidth, newHeight)
         use g = Graphics.FromImage(newBmp)
@@ -77,13 +69,11 @@ module Assets =
     let Back = loadImage "Back.jpg"
     let Orient= loadImage "orient.png"
     let Grampus = loadIcon "grampus.ico"
-    
     let Pieces = 
         [ "wP"; "wN"; "wB"; "wR"; "wQ"; "wK"; 
           "bP"; "bN"; "bB"; "bR"; "bQ"; "bK" ]
         |> List.map (fun code -> code, loadPiece code)
         |> Map.ofList
-
     let Cursors = 
         [ "wP"; "wN"; "wB"; "wR"; "wQ"; "wK"; 
           "bP"; "bN"; "bB"; "bR"; "bQ"; "bK" ]
@@ -91,7 +81,7 @@ module Assets =
             let originalBmp = Pieces.[code]
             let cursorSize = 64 
             let resizedBmp = resizeBitmap originalBmp cursorSize cursorSize
-            let cursor = CursorHelper.createCursorFromBitmap resizedBmp (cursorSize / 2) (cursorSize / 2)
+            let cursor = CursorHelper.CreateCursorFromBitmap resizedBmp (cursorSize / 2) (cursorSize / 2)
             resizedBmp.Dispose()
             code, cursor)
         |> Map.ofList

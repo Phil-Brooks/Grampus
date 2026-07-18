@@ -4,18 +4,16 @@ module Notation =
     
     let fileChar f = char (int 'a' + f)
     let rankChar r = char (int '1' + r)
-    
     let sqToAlg sq = 
         let f = sq % 8
         let r = sq / 8
         sprintf "%c%c" (fileChar f) (rankChar r)
-
     let getPieceChar pc =
         match pc % 8 with // using % 8 handles both white (1-6) and black (9-14)
         | 2 -> "N" | 3 -> "B" | 4 -> "R" | 5 -> "Q" | 6 -> "K"
         | _ -> "" // Pawns have no letter in SAN
 
-    let toSan (bd: Brd) (m: Move) =
+    let ToSan (bd: Brd) (m: Move) =
         // 1. Check Castling
         if (m.Pc % 8 = 6) && abs(m.To - m.From) = 2 then
             if m.To % 8 = 6 then "O-O" else "O-O-O"

@@ -2,7 +2,6 @@ namespace GrampusUI
 
 open System
 open System.Windows.Forms
-open Form
 
 module Main =
     [<EntryPoint; STAThread>]

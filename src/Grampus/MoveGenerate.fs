@@ -111,7 +111,7 @@ module MoveGenerate =
             let opponent = Colour.Opp me
             not (isSquareAttacked kingSq opponent nbd) 
         )
-    let WPposs (bd : Brd) (sq : int) = 
+    let wPposs (bd : Brd) (sq : int) = 
         let rank = Square.ToRank sq
         let file = Square.ToFile sq
         // Helper to generate either a single move or 4 promotion moves
@@ -153,7 +153,7 @@ module MoveGenerate =
                     yield Move.Create sq pto Piece.WPawn Piece.EMPTY
         ]
         moves |> legal bd  
-    let BPposs (bd : Brd) (sq : int) = 
+    let bPposs (bd : Brd) (sq : int) = 
         let rank = Square.ToRank sq
         let file = Square.ToFile sq
         // Helper to generate either a single move or 4 promotion moves
@@ -194,7 +194,7 @@ module MoveGenerate =
                     yield Move.Create sq pto Piece.BPawn Piece.EMPTY // Per your requirement
         ]
         moves |>  legal bd    
-    let NMoves (bd: Brd) (sq: int) (myPiece: int) (enemyColor: int) =
+    let nMoves (bd: Brd) (sq: int) (myPiece: int) (enemyColor: int) =
         let startFile = Square.ToFile sq
         [
             for dir in Dirn.AllDirectionsKnight do
@@ -215,8 +215,8 @@ module MoveGenerate =
                         if targetPc = Piece.EMPTY || (Piece.Colour targetPc) = enemyColor then
                             yield Move.Create sq targetSq myPiece targetPc
         ]    
-    let WNposs bd sq = NMoves bd sq Piece.WKnight Colour.Black |> legal bd
-    let BNposs bd sq = NMoves bd sq Piece.BKnight Colour.White |> legal bd
+    let wNposs bd sq = nMoves bd sq Piece.WKnight Colour.Black |> legal bd
+    let bNposs bd sq = nMoves bd sq Piece.BKnight Colour.White |> legal bd
     let slidingMoves (bd: Brd) (sq: int) (myPc: int) (enemyCol: int) (dirs: int[]) =
         [
             for dir in dirs do
@@ -249,13 +249,13 @@ module MoveGenerate =
                                     yield Move.Create sq nextSq myPc targetPc
                                 continueSliding <- false
         ]
-    let WBposs bd sq = slidingMoves bd sq Piece.WBishop Colour.Black Dirn.AllDirectionsBishop |> legal bd
-    let BBposs bd sq = slidingMoves bd sq Piece.BBishop Colour.White Dirn.AllDirectionsBishop |> legal bd
-    let WRposs bd sq = slidingMoves bd sq Piece.WRook Colour.Black Dirn.AllDirectionsRook |> legal bd
-    let BRposs bd sq = slidingMoves bd sq Piece.BRook Colour.White Dirn.AllDirectionsRook |> legal bd
-    let WQposs bd sq = slidingMoves bd sq Piece.WQueen Colour.Black Dirn.AllDirectionsQueen |> legal bd
-    let BQposs bd sq = slidingMoves bd sq Piece.WQueen Colour.White Dirn.AllDirectionsQueen |> legal bd
-    let WKposs (bd : Brd) (sq : int) =
+    let wBposs bd sq = slidingMoves bd sq Piece.WBishop Colour.Black Dirn.AllDirectionsBishop |> legal bd
+    let bBposs bd sq = slidingMoves bd sq Piece.BBishop Colour.White Dirn.AllDirectionsBishop |> legal bd
+    let wRposs bd sq = slidingMoves bd sq Piece.WRook Colour.Black Dirn.AllDirectionsRook |> legal bd
+    let bRposs bd sq = slidingMoves bd sq Piece.BRook Colour.White Dirn.AllDirectionsRook |> legal bd
+    let wQposs bd sq = slidingMoves bd sq Piece.WQueen Colour.Black Dirn.AllDirectionsQueen |> legal bd
+    let bQposs bd sq = slidingMoves bd sq Piece.WQueen Colour.White Dirn.AllDirectionsQueen |> legal bd
+    let wKposs (bd : Brd) (sq : int) =
         let startFile = Square.ToFile sq
         let startRank = Square.ToRank sq
         let moves = [
@@ -287,7 +287,7 @@ module MoveGenerate =
                    if not sqatt then yield Move.Create sq 2 Piece.WKing Piece.EMPTY
         ]
         moves |> legal bd
-    let BKposs (bd : Brd) (sq : int) =
+    let bKposs (bd : Brd) (sq : int) =
         let startFile = Square.ToFile sq
         let startRank = Square.ToRank sq
         let moves = [
@@ -324,19 +324,19 @@ module MoveGenerate =
         let pc = bd.[sq]
         if player = Colour.White then
             match pc with
-            | Piece.WPawn -> WPposs bd sq
-            | Piece.WKnight -> WNposs bd sq
-            | Piece.WBishop -> WBposs bd sq
-            | Piece.WRook -> WRposs bd sq
-            | Piece.WQueen -> WQposs bd sq
-            | Piece.WKing -> WKposs bd sq
+            | Piece.WPawn -> wPposs bd sq
+            | Piece.WKnight -> wNposs bd sq
+            | Piece.WBishop -> wBposs bd sq
+            | Piece.WRook -> wRposs bd sq
+            | Piece.WQueen -> wQposs bd sq
+            | Piece.WKing -> wKposs bd sq
             | _ -> []
         else
             match pc with
-            | Piece.BPawn -> BPposs bd sq
-            | Piece.BKnight -> BNposs bd sq
-            | Piece.BBishop -> BBposs bd sq
-            | Piece.BRook -> BRposs bd sq
-            | Piece.BQueen -> BQposs bd sq
-            | Piece.BKing -> BKposs bd sq
+            | Piece.BPawn -> bPposs bd sq
+            | Piece.BKnight -> bNposs bd sq
+            | Piece.BBishop -> bBposs bd sq
+            | Piece.BRook -> bRposs bd sq
+            | Piece.BQueen -> bQposs bd sq
+            | Piece.BKing -> bKposs bd sq
             | _ -> []
