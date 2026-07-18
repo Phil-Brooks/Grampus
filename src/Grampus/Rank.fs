@@ -22,7 +22,7 @@ module Rank =
         let ans = int c - firstChar
         if IsInBounds ans then ans
         else failwith (c.ToString() + " is not a valid rank")
-    let RankToString(rank : int) = toChar(rank).ToString()
+    let ToStr(rank : int) = toChar(rank).ToString()
     let MyRanks =
         [| [| R1; R2; R3; R4; R5; R6; R7; R8 |]
            [| R8; R7; R6; R5; R4; R3; R2; R1 |] |]

@@ -7,8 +7,7 @@ module Square =
             let file = File.fromChar(s.[0])
             let rank = Rank.fromChar(s.[1])
             Sq(file, rank)
-    
-    let IsInBounds(pos : int) = pos >= 0 && pos <= 63
+    let InBounds(pos : int) = pos >= 0 && pos <= 63
     let ToRank(pos : int) : int = pos / 8
     let ToFile(pos : int) : int = pos % 8
     let DirectionTo (pto : int) (pfrom : int) =
@@ -43,35 +42,6 @@ module Square =
                 else Dirn.SW
             else if filechange > 0 then Dirn.NE
             else Dirn.NW
-    let PositionInDirectionUnsafe (dir : int) (pos : int) : int =
+    let InDirn (dir : int) (pos : int) : int =
         pos + dir
-    let PositionInDirection (dir : int) (pos : int) =
-        if not (pos |> IsInBounds) then OUTOFBOUNDS
-        else 
-            let f = pos |> ToFile
-            let r = pos |> ToRank
-            
-            let nr, nf =
-                match dir with
-                | Dirn.N -> r + 1, f
-                | Dirn.E -> r, f + 1
-                | Dirn.S -> r - 1, f
-                | Dirn.W -> r, f - 1
-                | Dirn.NE -> r + 1, f + 1
-                | Dirn.SE -> r - 1, f + 1
-                | Dirn.SW -> r - 1, f - 1
-                | Dirn.NW -> r + 1, f - 1
-                | Dirn.NNE -> r + 2, f + 1
-                | Dirn.EEN -> r + 1, f + 2
-                | Dirn.EES -> r - 1, f + 2
-                | Dirn.SSE -> r - 2, f + 1
-                | Dirn.SSW -> r - 2, f - 1
-                | Dirn.WWS -> r - 1, f - 2
-                | Dirn.WWN -> r + 1, f - 2
-                | Dirn.NNW -> r + 2, f - 1
-                | _ -> Rank.EMPTY, File.EMPTY
-            if nr = Rank.EMPTY && nf = File.EMPTY then OUTOFBOUNDS
-            elif (nr |> Rank.IsInBounds) && (nf |> File.IsInBounds) then 
-                Sq(nf, nr)
-            else OUTOFBOUNDS
     

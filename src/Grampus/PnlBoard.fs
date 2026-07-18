@@ -19,7 +19,7 @@ module PnlBoardLib =
         let mutable board = Grampus.Board.Start
         let mutable sqTo = -1
         let mutable cCur = Cursors.Default
-        let mutable prompctp = PieceType.EMPTY
+        let mutable prompctp = PcType.EMPTY
         let mutable isw = true
         let bdpnl = new Panel(Dock = DockStyle.Top, Height = pnlsz)
         let sqpnl = new Panel(Width = pnlsz, Height = pnlsz, Left = 29, Top = 13)
@@ -78,8 +78,8 @@ module PnlBoardLib =
                             else bpcims.[i]
                 //events
                 let pctps =
-                    [ PieceType.Queen; PieceType.Rook; PieceType.Knight; 
-                      PieceType.Bishop ]
+                    [ PcType.Queen; PcType.Rook; PcType.Knight; 
+                      PcType.Bishop ]
                 sq.Click.Add(fun e -> 
                     prompctp <- pctps.[i]
                     dlg.DialogResult <- DialogResult.OK
@@ -188,11 +188,11 @@ module PnlBoardLib =
                         moveMade.Trigger(oldBoard, mvl.Head, 0)
 
                     elif mvl.Length = 4 then 
-                        prompctp <- PieceType.EMPTY // Reset before showing
+                        prompctp <- PcType.EMPTY // Reset before showing
                         refreshPromoImages()
                         let result = dlgprom()
                     
-                        if result = DialogResult.OK && prompctp <> PieceType.EMPTY then
+                        if result = DialogResult.OK && prompctp <> PcType.EMPTY then
                             // Use tryFind to safely locate the specific promotion move
                             let matchedMove = mvl |> List.tryFind (fun mv -> mv.Prom = prompctp)
                         

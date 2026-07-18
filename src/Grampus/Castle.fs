@@ -1,29 +1,27 @@
 namespace Grampus
 
 module Castle =
-    let [<Literal>] EMPTY = 0
-    let [<Literal>] WK   = 1
-    let [<Literal>] WQ   = 2
-    let [<Literal>] BK   = 4
-    let [<Literal>] BQ   = 8
-
-    let [<Literal>] White = 3 // (WK | WQ)
-    let [<Literal>] Black = 12 // (BK | BQ)
-    let [<Literal>] All   = 15
-
-    let fromString (s: string) =
+    let EMPTY =
+        {
+            WK = false
+            WQ = false
+            BK = false
+            BQ = false
+        }
+    let FromStr (s: string) =
         if s = "-" then EMPTY
         else
-            (if s.Contains "K" then WK else EMPTY)
-            ||| (if s.Contains "Q" then WQ else EMPTY)
-            ||| (if s.Contains "k" then BK else EMPTY)
-            ||| (if s.Contains "q" then BQ else EMPTY)
-
-    let toString (rights: int) =
+            {
+                WK = s.Contains "K"
+                WQ = s.Contains "Q"
+                BK = s.Contains "k"
+                BQ = s.Contains "q"
+            }
+    let ToStr (rights: Castle) =
         if rights = EMPTY then "-"
         else
-            let k = if rights &&& WK <> 0 then "K" else ""
-            let q = if rights &&& WQ <> 0 then "Q" else ""
-            let bk = if rights &&& BK <> 0 then "k" else ""
-            let bq = if rights &&& BQ <> 0 then "q" else ""
+            let k = if rights.WK then "K" else ""
+            let q = if rights.WQ then "Q" else ""
+            let bk = if rights.BK then "k" else ""
+            let bq = if rights.BQ then "q" else ""
             k + q + bk + bq

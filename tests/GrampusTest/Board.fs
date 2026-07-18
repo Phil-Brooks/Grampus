@@ -36,8 +36,8 @@ module Board =
     let ``MoveApply: Capture removes piece`` () =
         // Setup: White Knight on F3 captures Black Pawn on E5
         let bd = Board.EMPTY 
-                 |> Board.PieceAdd F3 Piece.WKnight 
-                 |> Board.PieceAdd E5 Piece.BPawn
+                 |> Board.pieceAdd F3 Piece.WKnight 
+                 |> Board.pieceAdd E5 Piece.BPawn
         let mv = Move.Create F3 E5 Piece.WKnight Piece.BPawn
         let nextBd = Board.MoveApply mv bd
         
@@ -55,14 +55,14 @@ module Board =
         
         nextBd.PieceAt.[int G1] |> should equal Piece.WKing
         nextBd.PieceAt.[int F1] |> should equal Piece.WRook
-        nextBd.CastleRights &&& Castle.WK |> should equal 0
+        nextBd.CastleRts.WK |> should equal false
 
     [<Fact>]
     let ``MoveApply: En Passant removes the correct pawn`` () =
         // White Pawn on E5, Black Pawn on D5, EP square is D6
         let bd = { Board.EMPTY with EnPassant = D6; WhosTurn = 0 }
-                 |> Board.PieceAdd E5 Piece.WPawn
-                 |> Board.PieceAdd D5 Piece.BPawn
+                 |> Board.pieceAdd E5 Piece.WPawn
+                 |> Board.pieceAdd D5 Piece.BPawn
         let mv = Move.Create E5 D6 Piece.WPawn Piece.EMPTY // exd6 e.p.
         let nextBd = Board.MoveApply mv bd
         
@@ -77,8 +77,8 @@ module Board =
     let ``MoveApply: Moving a piece on a kingless board does not crash`` () =
         // Setup: Just two rooks, no kings
         let bd = Board.EMPTY 
-                 |> Board.PieceAdd A1 Piece.WRook 
-                 |> Board.PieceAdd A8 Piece.BRook
+                 |> Board.pieceAdd A1 Piece.WRook 
+                 |> Board.pieceAdd A8 Piece.BRook
         let mv = Move.Create A1 A5 Piece.WRook Piece.EMPTY
         
         // This should not throw an exception

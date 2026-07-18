@@ -30,7 +30,7 @@ module FEN =
             Rank.List 
             |> List.map 
                    (fun r -> 
-                   matchr.Groups.["R" + (r |> Rank.RankToString)].Value)
+                   matchr.Groups.["R" + (r |> Rank.ToStr)].Value)
         let sPlayer = matchr.Groups.["Player"].Value
         let sCastle = matchr.Groups.["Castle"].Value
         let sEnpassant = matchr.Groups.["Enpassant"].Value
@@ -42,7 +42,7 @@ module FEN =
                     if ifl > 7 then 
                         failwith 
                             ("too many pieces in rank " 
-                             + (rank |> Rank.RankToString))
+                             + (rank |> Rank.ToStr))
                     let c = cl.Head
                     if "1234567890".IndexOf(c) >= 0 then 
                         getpc cl.Tail (ifl + System.Int32.Parse(c.ToString()))
@@ -51,17 +51,17 @@ module FEN =
                         getpc cl.Tail (ifl + 1)
             
             let srank =
-                sRanks.[System.Int32.Parse(rank |> Rank.RankToString) - 1]
+                sRanks.[System.Int32.Parse(rank |> Rank.ToStr) - 1]
             getpc (srank.ToCharArray() |> List.ofArray) 0
         let whosTurn =
             if sPlayer = "w" then 0
             elif sPlayer = "b" then 1
             else failwith (sPlayer + " is not a valid player")
         
-        let castleWS = sCastle.IndexOf("K") >= 0
-        let castleWL = sCastle.IndexOf("Q") >= 0
-        let castleBS = sCastle.IndexOf("k") >= 0
-        let castleBL = sCastle.IndexOf("q") >= 0
+        let castleWK = sCastle.IndexOf("K") >= 0
+        let castleWQ = sCastle.IndexOf("Q") >= 0
+        let castleBK = sCastle.IndexOf("k") >= 0
+        let castleBQ = sCastle.IndexOf("q") >= 0
         
         let enpassant =
             if sEnpassant <> "-" then Square.Parse(sEnpassant)
@@ -77,10 +77,10 @@ module FEN =
         
         { Pieceat = pieceat |> List.ofArray
           Whosturn = whosTurn
-          CastleWS = castleWS
-          CastleWL = castleWL
-          CastleBS = castleBS
-          CastleBL = castleBL
+          CastleWK = castleWK
+          CastleWQ = castleWQ
+          CastleBK = castleBK
+          CastleBQ = castleBQ
           Enpassant = enpassant
           Fiftymove = fiftyMove
           Fullmove = fullMove }

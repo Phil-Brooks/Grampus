@@ -43,26 +43,21 @@ module Square =
     let ``DirectionTo identifies correct compass direction`` (fromSq: int, toSq: int, expectedDir: int) =
         Square.DirectionTo toSq fromSq |> should equal expectedDir
 
-    [<Fact>]
-    let ``PositionInDirection returns OUTOFBOUNDS when walking off the board`` () =
-        Square.PositionInDirection Dirn.N A8 |> should equal OUTOFBOUNDS
-        Square.PositionInDirection Dirn.W A1 |> should equal OUTOFBOUNDS
-
     // --- 4. Property Based Testing ---
 
     [<Property(Arbitrary = [| typeof<ChessDimGenerator> |])>]
     let ``A square is in bounds if and only if it is between 0 and 63`` (s: int) =
-        Square.IsInBounds s = (s >= 0 && s <= 63)
+        Square.InBounds s = (s >= 0 && s <= 63)
 
     [<Property(Arbitrary = [| typeof<ChessDimGenerator> |])>]
     let ``Sq(ToFile(s), ToRank(s)) is identity`` (s: int) =
-        if Square.IsInBounds s then
+        if Square.InBounds s then
             Sq(Square.ToFile s, Square.ToRank s) = s
         else true
 
     [<Property(Arbitrary = [| typeof<ChessDimGenerator> |])>]
     let ``Square Round-trip: ToFile and ToRank recreate the original Square`` (sq: int) =
-        if Square.IsInBounds sq then
+        if Square.InBounds sq then
             let f = Square.ToFile sq
             let r = Square.ToRank sq
             Sq(f, r) = sq

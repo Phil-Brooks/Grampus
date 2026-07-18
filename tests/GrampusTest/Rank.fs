@@ -27,14 +27,14 @@ module Rank =
     [<InlineData(0s, "1")>]
     [<InlineData(7s, "8")>]
     let ``RankToString returns correct chess notation`` (rank: int, expected: string) =
-        Rank.RankToString rank |> should equal expected
+        Rank.ToStr rank |> should equal expected
 
     // --- 3. Property Based Testing ---
 
     [<Property(Arbitrary = [| typeof<ChessDimGenerator> |])>]
     let ``Rank Round-trip: Parse(RankToString(r)) equals r`` (r: int) =
         // Property: Converting a rank to a string and back to a rank should be an identity function
-        let s = Rank.RankToString r
+        let s = Rank.ToStr r
         Rank.fromChar s.[0] = r
 
     [<Property(Arbitrary = [| typeof<ChessDimGenerator> |])>]

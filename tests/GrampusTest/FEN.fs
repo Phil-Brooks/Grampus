@@ -29,15 +29,15 @@ module FEN =
     [<Theory>]
     [<MemberData(nameof(FenTestData))>]
     let ``Parse correctly extracts metadata from FEN string`` 
-        (fenStr: string, turn, cwS, cwL, cbS, cbL, ep, fifty, full) =
+        (fenStr: string, turn, cwK, cwQ, cbK, cbQ, ep, fifty, full) =
         
         let result = FEN.Parse fenStr
         
         result.Whosturn |> should equal turn
-        result.CastleWS |> should equal cwS
-        result.CastleWL |> should equal cwL
-        result.CastleBS |> should equal cbS
-        result.CastleBL |> should equal cbL
+        result.CastleWK |> should equal cwK
+        result.CastleWQ |> should equal cwQ
+        result.CastleBK |> should equal cbK
+        result.CastleBQ |> should equal cbQ
         result.Enpassant |> should equal ep
         result.Fiftymove |> should equal fifty
         result.Fullmove |> should equal full

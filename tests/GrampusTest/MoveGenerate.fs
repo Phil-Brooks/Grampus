@@ -56,7 +56,7 @@ module MoveGenerate =
         let allMoves = getAllLegalMoves bd
         // All legal moves must be King moves
         allMoves |> List.iter (fun m -> 
-            m.Pc |> should equal PieceType.King)
+            m.Pc |> should equal PcType.King)
 
     // --- 6. En Passant ---
     [<Fact>]

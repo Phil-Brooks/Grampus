@@ -15,7 +15,7 @@ module MoveGenerate =
                     let fileDiff = abs (targetFile - file)
                     if fileDiff = 1 || fileDiff = 2 then
                         let pc = bd.[targetSq]
-                        Piece.colour pc = attackerCol && (Piece.ToPieceType pc = PieceType.Knight)
+                        Piece.Colour pc = attackerCol && (Piece.ToPcType pc = PcType.Knight)
                     else false
                 else false
             )
@@ -30,7 +30,7 @@ module MoveGenerate =
                     let targetFile = Square.ToFile targetSq
                     if abs (targetFile - file) <= 1 then
                         let pc = bd.[targetSq]
-                        Piece.colour pc = attackerCol && (Piece.ToPieceType pc = PieceType.King)
+                        Piece.Colour pc = attackerCol && (Piece.ToPcType pc = PcType.King)
                     else false
                 else false
             )
@@ -82,16 +82,16 @@ module MoveGenerate =
                             let pc = bd.[nextSq]
                             if pc <> Piece.EMPTY then
                                 hitObstacle <- true // Hit something, stop the ray
-                                if Piece.colour pc = attackerCol && List.contains (Piece.ToPieceType pc) allowedTypes then
+                                if Piece.Colour pc = attackerCol && List.contains (Piece.ToPcType pc) allowedTypes then
                                     foundAttacker <- true
                             currentSq <- nextSq
                 foundAttacker
             )
 
         // Check diagonals (Bishops/Queens)
-        if checkSliding Dirn.AllDirectionsBishop [ PieceType.Bishop; PieceType.Queen ] then true
+        if checkSliding Dirn.AllDirectionsBishop [ PcType.Bishop; PcType.Queen ] then true
         // Check straights (Rooks/Queens)
-        elif checkSliding Dirn.AllDirectionsRook [ PieceType.Rook; PieceType.Queen ] then true
+        elif checkSliding Dirn.AllDirectionsRook [ PcType.Rook; PcType.Queen ] then true
         else false    
     let isCheck (bd: Brd) (player: int) =
         let kingSq =
@@ -117,10 +117,10 @@ module MoveGenerate =
         // Helper to generate either a single move or 4 promotion moves
         let yieldPawnMoves fromSq toSq capturedPc = [
             if Square.ToRank toSq = Rank.R8 then
-                yield Move.CreateProm fromSq toSq Piece.WPawn capturedPc PieceType.Queen
-                yield Move.CreateProm fromSq toSq Piece.WPawn capturedPc PieceType.Rook
-                yield Move.CreateProm fromSq toSq Piece.WPawn capturedPc PieceType.Bishop
-                yield Move.CreateProm fromSq toSq Piece.WPawn capturedPc PieceType.Knight
+                yield Move.CreateProm fromSq toSq Piece.WPawn capturedPc PcType.Queen
+                yield Move.CreateProm fromSq toSq Piece.WPawn capturedPc PcType.Rook
+                yield Move.CreateProm fromSq toSq Piece.WPawn capturedPc PcType.Bishop
+                yield Move.CreateProm fromSq toSq Piece.WPawn capturedPc PcType.Knight
             else
                 yield Move.Create fromSq toSq Piece.WPawn capturedPc
         ]
@@ -138,7 +138,7 @@ module MoveGenerate =
             if file <> File.H then
                 let pto = sq + Dirn.NE
                 let cappc = bd.[pto]
-                if cappc <> Piece.EMPTY && (Piece.colour cappc) = Colour.Black then
+                if cappc <> Piece.EMPTY && (Piece.Colour cappc) = Colour.Black then
                     yield! yieldPawnMoves sq pto cappc
                 elif pto = bd.EnPassant then
                     // Note: Recording BPawn as captured even though square is empty
@@ -147,7 +147,7 @@ module MoveGenerate =
             if file <> File.A then
                 let pto = sq + Dirn.NW
                 let cappc = bd.[pto]
-                if cappc <> Piece.EMPTY && (Piece.colour cappc) = Colour.Black then
+                if cappc <> Piece.EMPTY && (Piece.Colour cappc) = Colour.Black then
                     yield! yieldPawnMoves sq pto cappc
                 elif pto = bd.EnPassant then
                     yield Move.Create sq pto Piece.WPawn Piece.EMPTY
@@ -159,10 +159,10 @@ module MoveGenerate =
         // Helper to generate either a single move or 4 promotion moves
         let yieldPawnMoves fromSq toSq capturedPc = [
             if Square.ToRank toSq = Rank.R1 then
-                yield Move.CreateProm fromSq toSq Piece.BPawn capturedPc PieceType.Queen
-                yield Move.CreateProm fromSq toSq Piece.BPawn capturedPc PieceType.Rook
-                yield Move.CreateProm fromSq toSq Piece.BPawn capturedPc PieceType.Bishop
-                yield Move.CreateProm fromSq toSq Piece.BPawn capturedPc PieceType.Knight
+                yield Move.CreateProm fromSq toSq Piece.BPawn capturedPc PcType.Queen
+                yield Move.CreateProm fromSq toSq Piece.BPawn capturedPc PcType.Rook
+                yield Move.CreateProm fromSq toSq Piece.BPawn capturedPc PcType.Bishop
+                yield Move.CreateProm fromSq toSq Piece.BPawn capturedPc PcType.Knight
             else
                 yield Move.Create fromSq toSq Piece.BPawn capturedPc
         ]
@@ -180,7 +180,7 @@ module MoveGenerate =
             if file <> File.H then
                 let pto = sq + Dirn.SE
                 let cappc = bd.[pto]
-                if cappc <> Piece.EMPTY && (Piece.colour cappc) = Colour.White then
+                if cappc <> Piece.EMPTY && (Piece.Colour cappc) = Colour.White then
                     yield! yieldPawnMoves sq pto cappc
                 elif pto = bd.EnPassant then
                     yield Move.Create sq pto Piece.BPawn Piece.EMPTY // Per your requirement
@@ -188,7 +188,7 @@ module MoveGenerate =
             if file <> File.A then
                 let pto = sq + Dirn.SW
                 let cappc = bd.[pto]
-                if cappc <> Piece.EMPTY && (Piece.colour cappc) = Colour.White then
+                if cappc <> Piece.EMPTY && (Piece.Colour cappc) = Colour.White then
                     yield! yieldPawnMoves sq pto cappc
                 elif pto = bd.EnPassant then
                     yield Move.Create sq pto Piece.BPawn Piece.EMPTY // Per your requirement
@@ -212,7 +212,7 @@ module MoveGenerate =
                 
                     if isValid then
                         let targetPc = bd.[targetSq]
-                        if targetPc = Piece.EMPTY || (Piece.colour targetPc) = enemyColor then
+                        if targetPc = Piece.EMPTY || (Piece.Colour targetPc) = enemyColor then
                             yield Move.Create sq targetSq myPiece targetPc
         ]    
     let WNposs bd sq = NMoves bd sq Piece.WKnight Colour.Black |> legal bd
@@ -245,7 +245,7 @@ module MoveGenerate =
                                 yield Move.Create sq nextSq myPc Piece.EMPTY
                                 currentSq <- nextSq
                             else
-                                if (Piece.colour targetPc) = enemyCol then
+                                if (Piece.Colour targetPc) = enemyCol then
                                     yield Move.Create sq nextSq myPc targetPc
                                 continueSliding <- false
         ]
@@ -267,19 +267,19 @@ module MoveGenerate =
                     // King can only move 1 file away. Prevents wrap-around.
                     if abs (nextFile - startFile) <= 1 then
                         let targetPc = bd.[nextSq]
-                        if targetPc = Piece.EMPTY || (Piece.colour targetPc) = Colour.Black then
+                        if targetPc = Piece.EMPTY || (Piece.Colour targetPc) = Colour.Black then
                             yield Move.Create sq nextSq Piece.WKing targetPc
             // 2. Castling (White)
             if sq = 4 && startRank = Rank.R1 then
                 // Kingside (O-O)
-                if (bd.CastleRights &&& Castle.WK) <> 0 && bd.[5] = Piece.EMPTY &&  bd.[6] = Piece.EMPTY then
+                if bd.CastleRts.WK && bd.[5] = Piece.EMPTY &&  bd.[6] = Piece.EMPTY then
                    let sqatt =
                         bd |> isSquareAttacked E1 1
                         || bd |> isSquareAttacked F1 1
                         || bd |> isSquareAttacked G1 1
                    if not sqatt then yield Move.Create sq 6 Piece.WKing Piece.EMPTY
                 // Queenside (O-O-O)
-                if (bd.CastleRights &&& Castle.WQ) <> 0 && bd.[3] = Piece.EMPTY && bd.[2] = Piece.EMPTY && bd.[1] = Piece.EMPTY then
+                if bd.CastleRts.WQ && bd.[3] = Piece.EMPTY && bd.[2] = Piece.EMPTY && bd.[1] = Piece.EMPTY then
                    let sqatt =
                         bd |> isSquareAttacked E1 1
                         || bd |> isSquareAttacked D1 1
@@ -298,19 +298,19 @@ module MoveGenerate =
                     let nextFile = Square.ToFile nextSq
                     if abs (nextFile - startFile) <= 1 then
                         let targetPc = bd.[nextSq]
-                        if targetPc = Piece.EMPTY || (Piece.colour targetPc) = Colour.White then
+                        if targetPc = Piece.EMPTY || (Piece.Colour targetPc) = Colour.White then
                             yield Move.Create sq nextSq Piece.BKing targetPc
             // 2. Castling (Black)
             if sq = 60 && startRank = Rank.R8 then
                 // Kingside
-                if (bd.CastleRights &&& Castle.BK) <> 0 && bd.[61] = Piece.EMPTY && bd.[62] = Piece.EMPTY then
+                if bd.CastleRts.BK && bd.[61] = Piece.EMPTY && bd.[62] = Piece.EMPTY then
                    let sqatt =
                         bd |> isSquareAttacked E8 0
                         || bd |> isSquareAttacked F8 0
                         || bd |> isSquareAttacked G8 0
                    if not sqatt then yield Move.Create sq 62 Piece.BKing Piece.EMPTY
                 // Queenside
-                if (bd.CastleRights &&& Castle.BQ) <> 0 && bd.[59] = Piece.EMPTY && bd.[58] = Piece.EMPTY && bd.[57] = Piece.EMPTY then
+                if bd.CastleRts.BQ && bd.[59] = Piece.EMPTY && bd.[58] = Piece.EMPTY && bd.[57] = Piece.EMPTY then
                    let sqatt =
                         bd |> isSquareAttacked E8 0
                         || bd |> isSquareAttacked D8 0

@@ -41,6 +41,13 @@ module Types =
             CapPc : int
             Prom : int
         }
+    type Castle =
+        {
+            WK : bool
+            WQ : bool
+            BK : bool
+            BQ : bool
+        }
     
     /// <summary>Record type holding board details such as pieces on each square.</summary>
     type Brd =
@@ -49,7 +56,7 @@ module Types =
           WtKingPos : int
           BkKingPos : int
           WhosTurn : int
-          CastleRights : int
+          CastleRts : Castle
           EnPassant : int
           Fiftymove : int
           Fullmove : int }
@@ -87,10 +94,10 @@ module Types =
     type Fen =
         { Pieceat : int list
           Whosturn : int
-          CastleWS : bool
-          CastleWL : bool
-          CastleBS : bool
-          CastleBL : bool
+          CastleWK : bool
+          CastleWQ : bool
+          CastleBK : bool
+          CastleBQ : bool
           Enpassant : int
           Fiftymove : int
           Fullmove : int }

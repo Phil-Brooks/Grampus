@@ -49,7 +49,7 @@ module Piece =
 
     [<Property(Arbitrary = [| typeof<PieceGenerator> |])>]
     let ``PieceToPlayer logic is consistent`` (p: int) =
-        match Piece.PieceToPlayer p with
+        match Piece.ToColour p with
         | None -> p = Piece.EMPTY
         | Some player ->
             match player with
@@ -58,12 +58,12 @@ module Piece =
             | _ -> false // Handles values like enum<Player>(2)
     
     [<Property(Arbitrary = [| typeof<PieceGenerator> |])>]
-    let ``ToPieceType ignores color bit`` (p: int) =
+    let ``ToPcType ignores color bit`` (p: int) =
         if p = Piece.EMPTY then 
-            Piece.ToPieceType p = PieceType.EMPTY
+            Piece.ToPcType p = PcType.EMPTY
         else
-            let pt = Piece.ToPieceType p
-            // Property: PieceType should be between 1 (Pawn) and 6 (King)
+            let pt = Piece.ToPcType p
+            // Property: PcType should be between 1 (Pawn) and 6 (King)
             int pt >= 1 && int pt <= 6
 
     [<Property>]
@@ -71,6 +71,6 @@ module Piece =
         let validChars = "PNBRQKpnbrqk."
         if validChars.Contains(c) then
             let p = Piece.Parse c
-            p = Piece.EMPTY || (Piece.PieceToPlayer p).IsSome
+            p = Piece.EMPTY || (Piece.ToColour p).IsSome
         else
             true // FsCheck will generate random chars; we only care about valid ones here

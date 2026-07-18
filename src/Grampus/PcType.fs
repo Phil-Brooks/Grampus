@@ -1,6 +1,6 @@
 namespace Grampus
 
-module PieceType =
+module PcType =
     let [<Literal>] EMPTY = 0
     let [<Literal>] Pawn = 1
     let [<Literal>] Knight = 2
@@ -24,5 +24,5 @@ module PieceType =
         | 'q' | 'Q' -> Queen
         | 'k' | 'K' -> King
         | _ -> invalidArg "c" $"Invalid piece type char: {c}"
-    let ForPlayer (player : int) (pt : int) : int =
-        pt ||| (player <<< 3)
+    let Piece (colour : int) (pt : int) : int =
+        pt ||| (colour <<< 3)

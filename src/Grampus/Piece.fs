@@ -1,7 +1,5 @@
 namespace Grampus
 
-open System
-
 module Piece =
     let [<Literal>] EMPTY = 0
     let [<Literal>] WPawn = 1
@@ -17,17 +15,9 @@ module Piece =
     let [<Literal>] BQueen = 13
     let [<Literal>] BKing = 14
 
-    let colour (p: int) : int =
+    let Colour (p: int) : int =
         p >>> 3
-    let kind (p: int) : int =
-        p &&& 0b111
-    let toChar (p: int) : char =
-        let c = PieceType.toChar (kind p)
-        if colour p = 0 then Char.ToUpper c else c
-    let fromChar (c: char) : int =
-        let col = if Char.IsUpper c then 0 else 1
-        let kind = PieceType.fromChar c
-        (col <<< 3) ||| kind
+    let ToPcType(piece : int) = piece &&& 7 
     let Parse(c : char) =
         match c with
         | 'P' -> WPawn
@@ -76,8 +66,7 @@ module Piece =
         | BKing -> "bK"
         | EMPTY -> "."
         | _ -> failwith ("not a valid piece")
-    let ToPieceType(piece : int) = piece &&& 7 
-    let PieceToPlayer (piece : int) =
+    let ToColour (piece : int) =
         if piece = EMPTY then 
             None 
         else

@@ -36,7 +36,7 @@ module Move =
     [<Fact>]
     let ``Move.CreateProm correctly encodes promotion data`` () =
         // White Pawn on A7 captures on B8 and promotes to Queen
-        let f, t, p, c, prom = A7, B8, Piece.WPawn, Piece.BRook, PieceType.Queen
+        let f, t, p, c, prom = A7, B8, Piece.WPawn, Piece.BRook, PcType.Queen
         let mv = Move.CreateProm f t p c prom
         
         mv.From |> should equal f
@@ -73,7 +73,7 @@ module Move =
     [<Property(Arbitrary = [| typeof<ChessDimGenerator>; typeof<PieceGenerator> |])>]
     let ``Move deconstruction is always the inverse of Move creation`` (f: int) (t: int) (p: int) =
         // Only test valid squares (0-63)
-        if Square.IsInBounds f && Square.IsInBounds t then
+        if Square.InBounds f && Square.InBounds t then
             let mv = Move.Create f t p Piece.EMPTY
             mv.From = f && mv.To = t && mv.Pc = p
         else true
@@ -82,6 +82,6 @@ module Move =
     let ``MovingPlayer matches the color of the moving piece`` (p: int) =
         if p <> Piece.EMPTY then
             let mv = Move.Create E2 E4 p Piece.EMPTY
-            let player = Move.MovingPlayer mv
-            Piece.PieceToPlayer p = Some player
+            let colour = Move.Colour mv
+            Piece.ToColour p = Some colour
         else true
