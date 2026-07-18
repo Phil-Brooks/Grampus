@@ -8,7 +8,7 @@ type PnlBoard() as bd =
     inherit Panel(Width = pnlsz, Height = pnlsz)
         
     // 1. Define the event. It will pass (BoardBeforeMove, MoveRecord, Evaluation)
-    let moveMade = new Event<Brd * Move * float>()
+    let moveMade = new Event<Brd * Move>()
         
     let mutable board = Grampus.Board.Start
     let mutable sqTo = -1
@@ -116,7 +116,7 @@ type PnlBoard() as bd =
         if e.Button = MouseButtons.Left then 
             let sqFrom = System.Convert.ToInt32(p.Tag)
             let sqf : int = sqFrom
-            let psmvs = sqf |> MoveGenerate.PossMoves board
+            let psmvs = sqf |> MoveGen.PossMoves board
             let pssqs = psmvs |> List.map (fun m -> m.To)
             pssqs |> highlightsqs
             let oimg = p.Image
@@ -131,7 +131,7 @@ type PnlBoard() as bd =
                     let oldBoard = board
                     board <- board |> Board.MoveApply mvl.Head
                     setpcsmvs()
-                    moveMade.Trigger(oldBoard, mvl.Head, 0)
+                    moveMade.Trigger(oldBoard, mvl.Head)
                 elif mvl.Length = 4 then 
                     prompctp <- PcType.EMPTY // Reset before showing
                     refreshPromoImages()
@@ -144,7 +144,7 @@ type PnlBoard() as bd =
                             let oldBoard = board    
                             board <- board |> Board.MoveApply mv
                             setpcsmvs()
-                            moveMade.Trigger(oldBoard, mv, 0)
+                            moveMade.Trigger(oldBoard, mv)
                         | None -> 
                             // This shouldn't happen, but if it does, snap back
                             p.Image <- oimg 

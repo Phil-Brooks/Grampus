@@ -66,8 +66,8 @@
     <Compile Include="FEN.fs" />
     <Compile Include="Move.fs" />
     <Compile Include="Board.fs" />
-    <Compile Include="MoveGenerate.fs" />
-    <Compile Include="Notation.fs" />
+    <Compile Include="MoveGen.fs" />
+    <Compile Include="San.fs" />
     <Compile Include="TypesUI.fs" />
     <Compile Include="Assets.fs" />
     <Compile Include="MoveHistoryPanel.fs" />

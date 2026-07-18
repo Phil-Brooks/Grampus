@@ -7,7 +7,7 @@ open Grampus
 module MoveGenerate =
 
     let getAllLegalMoves bd =
-        SQUARES |> List.collect (MoveGenerate.PossMoves bd)
+        SQUARES |> List.collect (MoveGen.PossMoves bd)
 
     // --- 1. Starting Position (The 20-Move Rule) ---
     [<Fact>]
@@ -24,7 +24,7 @@ module MoveGenerate =
         let fen = "4r3/8/8/8/4Q3/8/8/4K3 w - - 0 1"
         let bd = FEN.Parse fen |> Board.FromFEN
         
-        let queenMoves = MoveGenerate.PossMoves bd E4
+        let queenMoves = MoveGen.PossMoves bd E4
         
         // Queen can move to E2, E3, E5, E6, E7, E8 (capture)
         // She CANNOT move to D4 or F4 (this would leave king in check)
@@ -40,7 +40,7 @@ module MoveGenerate =
         let fen = "8/P7/k7/8/8/8/8/4K3 w - - 0 1"
         let bd = FEN.Parse fen |> Board.FromFEN
         
-        let moves = MoveGenerate.PossMoves bd A7
+        let moves = MoveGen.PossMoves bd A7
         
         // Should be 4 moves: A7-A8(Q), A7-A8(R), A7-A8(B), A7-A8(N)
         moves.Length |> should equal 4
@@ -65,7 +65,7 @@ module MoveGenerate =
         let fen = "rnbqkbnr/pppp1ppp/8/8/3pP3/8/PPPP1PPP/RNBQKBNR b KQkq e3 0 1"
         let bd = FEN.Parse fen |> Board.FromFEN
         
-        let pawnMoves = MoveGenerate.PossMoves bd D4
+        let pawnMoves = MoveGen.PossMoves bd D4
         let epMove = pawnMoves |> List.find (fun m -> Move.IsEnPassant m)
         
         epMove.To |> should equal E3
@@ -77,11 +77,11 @@ module MoveGenerate =
         let bd = FEN.Parse fen |> Board.FromFEN
         
         // Squares d5 attacks (c4 and e4)
-        MoveGenerate.isSquareAttacked C4 Colour.Black bd |> should be True
-        MoveGenerate.isSquareAttacked E4 Colour.Black bd |> should be True
+        MoveGen.isSquareAttacked C4 Colour.Black bd |> should be True
+        MoveGen.isSquareAttacked E4 Colour.Black bd |> should be True
         
         // Square directly in front is NOT attacked by a pawn
-        MoveGenerate.isSquareAttacked D4 Colour.Black bd |> should be False
+        MoveGen.isSquareAttacked D4 Colour.Black bd |> should be False
 
     [<Fact>]
     let ``Knight attacks jumping over pieces`` () =
@@ -90,25 +90,25 @@ module MoveGenerate =
         let bd = FEN.Parse fen |> Board.FromFEN
         
         // Knight should jump over the pawns to attack e4 and b1
-        MoveGenerate.isSquareAttacked E4 Colour.Black bd |> should be True
-        MoveGenerate.isSquareAttacked B1 Colour.Black bd |> should be True
+        MoveGen.isSquareAttacked E4 Colour.Black bd |> should be True
+        MoveGen.isSquareAttacked B1 Colour.Black bd |> should be True
         
         // Random square
-        MoveGenerate.isSquareAttacked H8 Colour.Black bd |> should be False
+        MoveGen.isSquareAttacked H8 Colour.Black bd |> should be False
 
     [<Fact>]
     let ``Sliding attacks are blocked by intervening pieces`` () =
         // Black Rook on a8, White King on a1
         let fen = "r7/8/8/8/8/8/8/K7 w - - 0 1"
         let bd1 = FEN.Parse fen |> Board.FromFEN
-        MoveGenerate.isSquareAttacked A1 Colour.Black bd1 |> should be True
+        MoveGen.isSquareAttacked A1 Colour.Black bd1 |> should be True
 
         // Now place a blocker on a5
         let fenBlocked = "r7/8/8/p7/8/8/8/K7 w - - 0 1"
         let bd2 = FEN.Parse fenBlocked |> Board.FromFEN
         
         // The Rook no longer attacks A1 because the pawn is in the way
-        MoveGenerate.isSquareAttacked A1 Colour.Black bd2 |> should be False
+        MoveGen.isSquareAttacked A1 Colour.Black bd2 |> should be False
 
     [<Fact>]
     let ``Knight attack does not wrap around the board edge`` () =
@@ -117,12 +117,12 @@ module MoveGenerate =
         let bd = FEN.Parse fen |> Board.FromFEN
         
         // Square f2 is a legal jump
-        MoveGenerate.isSquareAttacked F2 Colour.White bd |> should be True
+        MoveGen.isSquareAttacked F2 Colour.White bd |> should be True
         
         // Square a2 (Index 8) is 15 away from h1. 
         // 7 + 15 = 22, but it's on a different side of the board.
         // It should NOT be attacked.
-        MoveGenerate.isSquareAttacked A2 Colour.White bd |> should be False
+        MoveGen.isSquareAttacked A2 Colour.White bd |> should be False
 
     [<Fact>]
     let ``Bishop attacks correctly on diagonals`` () =
@@ -130,9 +130,9 @@ module MoveGenerate =
         let fen = "8/8/8/8/3B4/8/8/4k3 b - - 0 1"
         let bd = FEN.Parse fen |> Board.FromFEN
         
-        MoveGenerate.isSquareAttacked G7 Colour.White bd |> should be True
-        MoveGenerate.isSquareAttacked A1 Colour.White bd |> should be True
-        MoveGenerate.isSquareAttacked D5 Colour.White bd |> should be False // Straight line
+        MoveGen.isSquareAttacked G7 Colour.White bd |> should be True
+        MoveGen.isSquareAttacked A1 Colour.White bd |> should be True
+        MoveGen.isSquareAttacked D5 Colour.White bd |> should be False // Straight line
 
     [<Fact>]
     let ``King attacks adjacent squares`` () =
@@ -140,7 +140,7 @@ module MoveGenerate =
         let fen = "8/8/8/8/8/8/8/4K3 w - - 0 1"
         let bd = FEN.Parse fen |> Board.FromFEN
         
-        MoveGenerate.isSquareAttacked D1 Colour.White bd |> should be True
-        MoveGenerate.isSquareAttacked D2 Colour.White bd |> should be True
-        MoveGenerate.isSquareAttacked E2 Colour.White bd |> should be True
-        MoveGenerate.isSquareAttacked E3 Colour.White bd |> should be False // Too far
+        MoveGen.isSquareAttacked D1 Colour.White bd |> should be True
+        MoveGen.isSquareAttacked D2 Colour.White bd |> should be True
+        MoveGen.isSquareAttacked E2 Colour.White bd |> should be True
+        MoveGen.isSquareAttacked E3 Colour.White bd |> should be False // Too far

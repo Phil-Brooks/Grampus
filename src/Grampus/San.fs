@@ -1,6 +1,6 @@
 namespace Grampus
 
-module Notation =
+module San =
     
     let fileChar f = char (int 'a' + f)
     let rankChar r = char (int '1' + r)
@@ -18,14 +18,15 @@ module Notation =
         if (m.Pc % 8 = 6) && abs(m.To - m.From) = 2 then
             if m.To % 8 = 6 then "O-O" else "O-O-O"
         else
-            let piece = getPieceChar m.Pc
-            let capture = if m.CapPc <> 0 then "x" else ""
+            let pieceChar = getPieceChar m.Pc
             let target = sqToAlg m.To
-            
-            // Special pawn capture notation (e.g., exd5)
-            if piece = "" && m.CapPc <> 0 then
+            let promo = if m.Prom <> 0 then "=" + (getPieceChar m.Prom) else ""
+        
+            // Special pawn capture notation (e.g., exd5 or hxg1=Q)
+            if pieceChar = "" && m.CapPc <> 0 then
                 let fromFile = fileChar (m.From % 8)
-                sprintf "%cx%s" fromFile target
+                sprintf "%cx%s%s" fromFile target promo
             else
-                let promo = if m.Prom <> 0 then "=" + (getPieceChar m.Prom) else ""
-                sprintf "%s%s%s%s" piece capture target promo
+                // Standard piece moves, pawn advances, and piece captures
+                let capture = if m.CapPc <> 0 then "x" else ""
+                sprintf "%s%s%s%s" pieceChar capture target promo

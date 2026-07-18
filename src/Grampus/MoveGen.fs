@@ -1,6 +1,6 @@
 namespace Grampus
 
-module MoveGenerate =
+module MoveGen =
     
     let isSquareAttacked (sq : int) (attackerCol : int) (bd : Brd) =
         let file = Square.ToFile sq

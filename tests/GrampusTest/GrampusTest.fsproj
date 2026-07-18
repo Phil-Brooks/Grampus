@@ -18,7 +18,8 @@
     <Compile Include="FEN.fs" />
     <Compile Include="Move.fs" />
     <Compile Include="Board.fs" />
-    <Compile Include="MoveGenerate.fs" />
+    <Compile Include="MoveGen.fs" />
+    <Compile Include="San.fs" />
   </ItemGroup>
 
   <ItemGroup>

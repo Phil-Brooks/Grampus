@@ -6,25 +6,80 @@ namespace Grampus
 /// </namespacedoc>
 /// <summary>Holds all the main types used by Grampus.</summary>
 module Types =
-    
-    let A1, B1, C1, D1, E1, F1, G1, H1 =
-        0, 1, 2, 3, 4, 5, 6, 7
-    let A2, B2, C2, D2, E2, F2, G2, H2 =
-        A1 + 8, B1 + 8, C1 + 8, D1 + 8, E1 + 8, F1 + 8, G1 + 8, H1 + 8
-    let A3, B3, C3, D3, E3, F3, G3, H3 =
-        A2 + 8, B2 + 8, C2 + 8, D2 + 8, E2 + 8, F2 + 8, G2 + 8, H2 + 8
-    let A4, B4, C4, D4, E4, F4, G4, H4 =
-        A3 + 8, B3 + 8, C3 + 8, D3 + 8, E3 + 8, F3 + 8, G3 + 8, H3 + 8
-    let A5, B5, C5, D5, E5, F5, G5, H5 =
-        A4 + 8, B4 + 8, C4 + 8, D4 + 8, E4 + 8, F4 + 8, G4 + 8, H4 + 8
-    let A6, B6, C6, D6, E6, F6, G6, H6 =
-        A5 + 8, B5 + 8, C5 + 8, D5 + 8, E5 + 8, F5 + 8, G5 + 8, H5 + 8
+    let [<Literal>] A1 = 0
+    let [<Literal>] B1 = 1
+    let [<Literal>] C1 = 2
+    let [<Literal>] D1 = 3
+    let [<Literal>] E1 = 4
+    let [<Literal>] F1 = 5
+    let [<Literal>] G1 = 6
+    let [<Literal>] H1 = 7
 
-    let A7, B7, C7, D7, E7, F7, G7, H7 =
-        A6 + 8, B6 + 8, C6 + 8, D6 + 8, E6 + 8, F6 + 8, G6 + 8, H6 + 8
-    let A8, B8, C8, D8, E8, F8, G8, H8 =
-        A7 + 8, B7 + 8, C7 + 8, D7 + 8, E7 + 8, F7 + 8, G7 + 8, H7 + 8
-    let OUTOFBOUNDS : int = 64
+    let [<Literal>] A2 = 8
+    let [<Literal>] B2 = 9
+    let [<Literal>] C2 = 10
+    let [<Literal>] D2 = 11
+    let [<Literal>] E2 = 12
+    let [<Literal>] F2 = 13
+    let [<Literal>] G2 = 14
+    let [<Literal>] H2 = 15
+
+    let [<Literal>] A3 = 16
+    let [<Literal>] B3 = 17
+    let [<Literal>] C3 = 18
+    let [<Literal>] D3 = 19
+    let [<Literal>] E3 = 20
+    let [<Literal>] F3 = 21
+    let [<Literal>] G3 = 22
+    let [<Literal>] H3 = 23
+
+    let [<Literal>] A4 = 24
+    let [<Literal>] B4 = 25
+    let [<Literal>] C4 = 26
+    let [<Literal>] D4 = 27
+    let [<Literal>] E4 = 28
+    let [<Literal>] F4 = 29
+    let [<Literal>] G4 = 30
+    let [<Literal>] H4 = 31
+
+    let [<Literal>] A5 = 32
+    let [<Literal>] B5 = 33
+    let [<Literal>] C5 = 34
+    let [<Literal>] D5 = 35
+    let [<Literal>] E5 = 36
+    let [<Literal>] F5 = 37
+    let [<Literal>] G5 = 38
+    let [<Literal>] H5 = 39
+
+    let [<Literal>] A6 = 40
+    let [<Literal>] B6 = 41
+    let [<Literal>] C6 = 42
+    let [<Literal>] D6 = 43
+    let [<Literal>] E6 = 44
+    let [<Literal>] F6 = 45
+    let [<Literal>] G6 = 46
+    let [<Literal>] H6 = 47
+
+    let [<Literal>] A7 = 48
+    let [<Literal>] B7 = 49
+    let [<Literal>] C7 = 50
+    let [<Literal>] D7 = 51
+    let [<Literal>] E7 = 52
+    let [<Literal>] F7 = 53
+    let [<Literal>] G7 = 54
+    let [<Literal>] H7 = 55
+
+    let [<Literal>] A8 = 56
+    let [<Literal>] B8 = 57
+    let [<Literal>] C8 = 58
+    let [<Literal>] D8 = 59
+    let [<Literal>] E8 = 60
+    let [<Literal>] F8 = 61
+    let [<Literal>] G8 = 62
+    let [<Literal>] H8 = 63
+
+    let [<Literal>] OUTOFBOUNDS = 64 
+
     let SQUARES =
         [ A1; B1; C1; D1; E1; F1; G1; H1; A2; B2; C2; D2; E2; F2; G2; H2; A3; B3; 
           C3; D3; E3; F3; G3; H3; A4; B4; C4; D4; E4; F4; G4; H4; A5; B5; C5; D5; 

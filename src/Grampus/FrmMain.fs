@@ -37,7 +37,7 @@ type FrmMain() as this =
     let rtmpnl = new Panel(Dock = DockStyle.Top, BorderStyle = BorderStyle.Fixed3D, Height = 100)
     let rtbpnl = new Panel(Dock = DockStyle.Fill, BorderStyle = BorderStyle.Fixed3D)
     do 
-        bd.OnMoveMade.Add(fun (bdBefore, m, eval) -> mh.AddMove(bdBefore, m, eval))
+        bd.OnMoveMade.Add(fun (bdBefore, m) -> mh.AddMove(bdBefore, m))
             
         rtbpnl |> rtpnl.Controls.Add
         rtmpnl |> rtpnl.Controls.Add
