@@ -13,10 +13,10 @@ module Move =
     let MoveTestData : obj array seq =
         seq {
             // [| from; to; movingPiece; capturedPiece |]
-            yield [| E2; E4; Piece.WPawn; Piece.EMPTY |]
-            yield [| B1; C3; Piece.WKnight; Piece.EMPTY |]
-            yield [| D7; D5; Piece.BPawn; Piece.EMPTY |]
-            yield [| F3; E5; Piece.WKnight; Piece.BPawn |] // Capture
+            yield [| E2; E4; WPAWN; EMPTY |]
+            yield [| B1; C3; WKNIGHT; EMPTY |]
+            yield [| D7; D5; BPAWN; EMPTY |]
+            yield [| F3; E5; WKNIGHT; BPAWN |] // Capture
         }
 
     // --- 2. Functional Tests ---
@@ -30,13 +30,13 @@ module Move =
         mv.To |> should equal t
         mv.Pc |> should equal p
         mv.CapPc |> should equal c
-        Move.IsCapture mv |> should equal (c <> Piece.EMPTY)
+        Move.IsCapture mv |> should equal (c <> EMPTY)
         Move.IsPromotion mv |> should be False
 
     [<Fact>]
     let ``Move.CreateProm correctly encodes promotion data`` () =
         // White Pawn on A7 captures on B8 and promotes to Queen
-        let f, t, p, c, prom = A7, B8, Piece.WPawn, Piece.BRook, PcType.Queen
+        let f, t, p, c, prom = A7, B8, WPAWN, BROOK, QUEEN
         let mv = Move.CreateProm f t p c prom
         
         mv.From |> should equal f
@@ -44,28 +44,28 @@ module Move =
         mv.Pc |> should equal p
         Move.IsPromotion mv |> should be True
         mv.Prom |> should equal prom
-        Move.Promote mv |> should equal Piece.WQueen
+        Move.Promote mv |> should equal WQUEEN
 
     [<Fact>]
     let ``IsCastle identifies king moves of two squares`` () =
         // White King E1 to G1
-        let mv = Move.Create E1 G1 Piece.WKing Piece.EMPTY
+        let mv = Move.Create E1 G1 WKING EMPTY
         Move.IsCastle mv |> should be True
         
         // White King E1 to F1 (Not a castle)
-        let mv2 = Move.Create E1 F1 Piece.WKing Piece.EMPTY
+        let mv2 = Move.Create E1 F1 WKING EMPTY
         Move.IsCastle mv2 |> should be False
 
     [<Fact>]
     let ``IsEnPassant identifies pawn diagonal moves without captures`` () =
         // White Pawn capturing at E6 from D5 (EP) 
         // Note: In your logic, EP is a diagonal move where CapturedPiece is EMPTY
-        let mv = Move.Create D5 E6 Piece.WPawn Piece.EMPTY
+        let mv = Move.Create D5 E6 WPAWN EMPTY
         Move.IsEnPassant mv |> should be True
 
     [<Fact>]
     let ``IsPawnDoubleJump identifies 16 square vertical moves`` () =
-        let mv = Move.Create E2 E4 Piece.WPawn Piece.EMPTY
+        let mv = Move.Create E2 E4 WPAWN EMPTY
         Move.IsPawnDoubleJump mv |> should be True
 
     // --- 3. Property Based Testing ---
@@ -74,14 +74,14 @@ module Move =
     let ``Move deconstruction is always the inverse of Move creation`` (f: int) (t: int) (p: int) =
         // Only test valid squares (0-63)
         if Square.InBounds f && Square.InBounds t then
-            let mv = Move.Create f t p Piece.EMPTY
+            let mv = Move.Create f t p EMPTY
             mv.From = f && mv.To = t && mv.Pc = p
         else true
 
     [<Property(Arbitrary = [| typeof<PieceGenerator> |])>]
     let ``MovingPlayer matches the color of the moving piece`` (p: int) =
-        if p <> Piece.EMPTY then
-            let mv = Move.Create E2 E4 p Piece.EMPTY
+        if p <> EMPTY then
+            let mv = Move.Create E2 E4 p EMPTY
             let colour = Move.Colour mv
             Piece.ToColour p = Some colour
         else true

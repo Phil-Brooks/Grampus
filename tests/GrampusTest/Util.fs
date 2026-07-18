@@ -11,15 +11,15 @@ module Util =
     // --- 2. Arithmetic Operators ---
     [<Fact>]
     let ``Rank arithmetic operators work correctly`` () =
-        Rank.R1 + 1 |> should equal Rank.R2
-        Rank.R8 - 7 |> should equal Rank.R1
-        Rank.R4 + 2 |> should equal Rank.R6
+        R1 + 1 |> should equal R2
+        R8 - 7 |> should equal R1
+        R4 + 2 |> should equal R6
 
     [<Fact>]
     let ``File arithmetic operators work correctly`` () =
-        File.A + 1 |> should equal File.B
-        File.H - 7 |> should equal File.A
-        File.C + 3 |> should equal File.F
+        A + 1 |> should equal B
+        H - 7 |> should equal A
+        C + 3 |> should equal F
 
     // --- 3. Property Based Testing (FsCheck) ---
     // Using the ChessDimGenerator we created for TypesTests

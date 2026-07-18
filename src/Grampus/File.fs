@@ -1,14 +1,6 @@
 namespace Grampus
 
 module File =
-    let [<Literal>] A = 0
-    let [<Literal>] B = 1
-    let [<Literal>] C = 2
-    let [<Literal>] D = 3
-    let [<Literal>] E = 4
-    let [<Literal>] F = 5
-    let [<Literal>] G = 6
-    let [<Literal>] H = 7
 
     let NAMES = [ "a"; "b"; "c"; "d"; "e"; "f"; "g"; "h" ]
     let EMPTY = 8

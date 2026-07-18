@@ -47,17 +47,17 @@ module FEN =
         let result = FEN.Parse FEN.StartStr
         
         // Check corners
-        result.Pieceat.[int A1] |> should equal Piece.WRook
-        result.Pieceat.[int H1] |> should equal Piece.WRook
-        result.Pieceat.[int A8] |> should equal Piece.BRook
-        result.Pieceat.[int H8] |> should equal Piece.BRook
+        result.Pieceat.[int A1] |> should equal WROOK
+        result.Pieceat.[int H1] |> should equal WROOK
+        result.Pieceat.[int A8] |> should equal BROOK
+        result.Pieceat.[int H8] |> should equal BROOK
         
         // Check Kings
-        result.Pieceat.[int E1] |> should equal Piece.WKing
-        result.Pieceat.[int E8] |> should equal Piece.BKing
+        result.Pieceat.[int E1] |> should equal WKING
+        result.Pieceat.[int E8] |> should equal BKING
         
         // Check an empty square in the middle
-        result.Pieceat.[int D4] |> should equal Piece.EMPTY
+        result.Pieceat.[int D4] |> should equal EMPTY
 
     [<Fact>]
     let ``Parse handles numeric empty square notation (e.g., 8)`` () =
@@ -66,7 +66,7 @@ module FEN =
         let result = FEN.Parse fen
         
         [A4..H4] |> List.iter (fun sq -> 
-            result.Pieceat.[int sq] |> should equal Piece.EMPTY)
+            result.Pieceat.[int sq] |> should equal EMPTY)
 
     [<Fact>]
     let ``Parse throws exception for invalid FEN`` () =

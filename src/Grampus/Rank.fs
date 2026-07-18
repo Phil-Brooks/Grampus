@@ -1,16 +1,6 @@
 namespace Grampus
 
 module Rank =
-    let [<Literal>] R1 = 0
-    let [<Literal>] R2 = 1
-    let [<Literal>] R3 = 2
-    let [<Literal>] R4 = 3
-    let [<Literal>] R5 = 4
-    let [<Literal>] R6 = 5
-    let [<Literal>] R7 = 6
-    let [<Literal>] R8 = 7
-    
-    let EMPTY = 8
     let List = [ R1; R2; R3; R4; R5; R6; R7; R8 ]
     let firstChar = int '1'
     /// Converts a Rank to its character representation ('1'–'8').

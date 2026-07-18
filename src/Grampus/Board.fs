@@ -1,7 +1,7 @@
 namespace Grampus
 
 module Board =
-    let EMPTY =
+    let EMP =
         { PieceAt = Array.create 64 0
           WtKingPos = OUTOFBOUNDS
           BkKingPos = OUTOFBOUNDS
@@ -19,15 +19,15 @@ module Board =
             bd.PieceAt
             |> Array.mapi (fun i p -> 
                    if i = int (mto) then piece
-                   elif i = int (mfrom) then Piece.EMPTY
+                   elif i = int (mfrom) then EMPTY
                    else p)
         
         let wtkingpos =
-            if pieceType = PcType.King && player = 0 then mto
+            if pieceType = KING && player = 0 then mto
             else bd.WtKingPos
         
         let bkkingpos =
-            if pieceType = PcType.King && player = 1 then mto
+            if pieceType = KING && player = 1 then mto
             else bd.BkKingPos
         
         { bd with PieceAt = pieceat
@@ -44,11 +44,11 @@ module Board =
                    else p)
         
         let wtkingpos =
-            if pieceType = PcType.King && player = 0 then pos
+            if pieceType = KING && player = 0 then pos
             else bd.WtKingPos
         
         let bkkingpos =
-            if pieceType = PcType.King && player = 1 then pos
+            if pieceType = KING && player = 1 then pos
             else bd.BkKingPos
         
         { bd with PieceAt = pieceat
@@ -62,7 +62,7 @@ module Board =
         let pieceat =
             bd.PieceAt
             |> Array.mapi (fun i p -> 
-                   if i = pos then Piece.EMPTY
+                   if i = pos then EMPTY
                    else p)
         
         { bd with PieceAt = pieceat }
@@ -77,32 +77,32 @@ module Board =
         let piece = move.Pc
         let capture = move.CapPc
         let mutable bd = ibd
-        if capture <> Piece.EMPTY then bd <- bd |> pieceRemove(mto)
+        if capture <> EMPTY then bd <- bd |> pieceRemove(mto)
         bd <- bd |> pieceMove mfrom mto
         if move |> Move.IsPromotion then 
             bd <- bd |> pieceChange mto (move |> Move.Promote)
         if move |> Move.IsCastle then 
-            if piece = Piece.WKing && mto = G1 then bd <- bd |> pieceMove H1 F1
-            elif piece = Piece.WKing && mto = C1 then bd <- bd |> pieceMove A1 D1
-            elif piece = Piece.BKing && mto = G8 then bd <- bd |> pieceMove H8 F8
-            elif piece = Piece.BKing && mto = C8 then bd <- bd |> pieceMove A8 D8
+            if piece = WKING&& mto = G1 then bd <- bd |> pieceMove H1 F1
+            elif piece = WKING&& mto = C1 then bd <- bd |> pieceMove A1 D1
+            elif piece = BKING && mto = G8 then bd <- bd |> pieceMove H8 F8
+            elif piece = BKING && mto = C8 then bd <- bd |> pieceMove A8 D8
         if bd.CastleRts <> Castle.EMPTY then 
             if mfrom = H1 then 
                 bd <- { bd with CastleRts = {bd.CastleRts with Castle.WK = false }}
             elif mfrom = A1 then 
                 bd <- { bd with CastleRts = {bd.CastleRts with Castle.WQ = false }}
-            elif piece = Piece.WKing then 
+            elif piece = WKING then 
                 bd <- { bd with CastleRts = {bd.CastleRts with Castle.WK = false; Castle.WQ = false }}
             elif mfrom = H8 then 
                 bd <- { bd with CastleRts = {bd.CastleRts with Castle.BK = false }}
             elif mfrom = A8 then 
                 bd <- { bd with CastleRts = {bd.CastleRts with Castle.BQ = false }}
-            elif piece = Piece.BKing then 
+            elif piece = BKING then 
                 bd <- { bd with CastleRts = {bd.CastleRts with Castle.BK = false; Castle.BQ = false }}
         if move |> Move.IsEnPassant then 
-            let epf = mto |> Square.ToFile
-            let epr = move |> Move.Colour |> Rank.MyRank(Rank.R5)
-            let epsq = Sq(epf,epr)
+            let epf = mto |> FL
+            let epr = move |> Move.Colour |> Rank.MyRank(R5)
+            let epsq = SQ(epf,epr)
             bd <- bd |> pieceRemove epsq        
         if bd.EnPassant |> Square.InBounds then 
             bd <- { bd with EnPassant = OUTOFBOUNDS }
@@ -111,20 +111,20 @@ module Board =
             bd <- { bd with EnPassant = ep }
         if bd.WhosTurn = 1 then 
             bd <- { bd with Fullmove = bd.Fullmove + 1 }
-        if piece <> Piece.WPawn && piece <> Piece.BPawn && capture = Piece.EMPTY then 
+        if piece <> WPAWN && piece <> BPAWN && capture = EMPTY then 
             bd <- { bd with Fiftymove = bd.Fiftymove + 1 }
         else bd <- { bd with Fiftymove = 0 }
         bd <- { bd with WhosTurn = bd.WhosTurn |> Colour.Opp }
         bd
     ///Create a new Board given a Fen(fen)
     let FromFEN(fen : Fen) =
-        let bd = EMPTY
+        let bd = EMP
         let rec addpc posl ibd =
             if List.isEmpty posl then ibd
             else 
                 let pos = posl.Head
                 let pc = fen.Pieceat.[int (pos)]
-                if pc = Piece.EMPTY then addpc posl.Tail ibd
+                if pc = EMPTY then addpc posl.Tail ibd
                 else addpc posl.Tail (ibd |> pieceAdd pos pc)
         let bd = addpc SQUARES bd
         { bd with CastleRts =

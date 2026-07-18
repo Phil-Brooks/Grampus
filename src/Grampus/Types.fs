@@ -6,6 +6,49 @@ namespace Grampus
 /// </namespacedoc>
 /// <summary>Holds all the main types used by Grampus.</summary>
 module Types =
+    // Colours
+    let [<Literal>] WHITE = 0
+    let [<Literal>] BLACK = 1
+    // PcTypes
+    let [<Literal>] EMPTY = 0
+    let [<Literal>] PAWN = 1
+    let [<Literal>] KNIGHT = 2
+    let [<Literal>] BISHOP = 3
+    let [<Literal>] ROOK = 4
+    let [<Literal>] QUEEN = 5
+    let [<Literal>] KING = 6
+    // Pieces
+    let [<Literal>] WPAWN = 1
+    let [<Literal>] WKNIGHT = 2
+    let [<Literal>] WBISHOP = 3
+    let [<Literal>] WROOK = 4
+    let [<Literal>] WQUEEN = 5
+    let [<Literal>] WKING = 6
+    let [<Literal>] BPAWN = 9
+    let [<Literal>] BKNIGHT = 10
+    let [<Literal>] BBISHOP = 11
+    let [<Literal>] BROOK = 12
+    let [<Literal>] BQUEEN = 13
+    let [<Literal>] BKING = 14
+    // Ranks
+    let [<Literal>] R1 = 0
+    let [<Literal>] R2 = 1
+    let [<Literal>] R3 = 2
+    let [<Literal>] R4 = 3
+    let [<Literal>] R5 = 4
+    let [<Literal>] R6 = 5
+    let [<Literal>] R7 = 6
+    let [<Literal>] R8 = 7
+    // Files
+    let [<Literal>] A = 0
+    let [<Literal>] B = 1
+    let [<Literal>] C = 2
+    let [<Literal>] D = 3
+    let [<Literal>] E = 4
+    let [<Literal>] F = 5
+    let [<Literal>] G = 6
+    let [<Literal>] H = 7
+    // Squares
     let [<Literal>] A1 = 0
     let [<Literal>] B1 = 1
     let [<Literal>] C1 = 2
@@ -14,7 +57,6 @@ module Types =
     let [<Literal>] F1 = 5
     let [<Literal>] G1 = 6
     let [<Literal>] H1 = 7
-
     let [<Literal>] A2 = 8
     let [<Literal>] B2 = 9
     let [<Literal>] C2 = 10
@@ -23,7 +65,6 @@ module Types =
     let [<Literal>] F2 = 13
     let [<Literal>] G2 = 14
     let [<Literal>] H2 = 15
-
     let [<Literal>] A3 = 16
     let [<Literal>] B3 = 17
     let [<Literal>] C3 = 18
@@ -32,7 +73,6 @@ module Types =
     let [<Literal>] F3 = 21
     let [<Literal>] G3 = 22
     let [<Literal>] H3 = 23
-
     let [<Literal>] A4 = 24
     let [<Literal>] B4 = 25
     let [<Literal>] C4 = 26
@@ -41,7 +81,6 @@ module Types =
     let [<Literal>] F4 = 29
     let [<Literal>] G4 = 30
     let [<Literal>] H4 = 31
-
     let [<Literal>] A5 = 32
     let [<Literal>] B5 = 33
     let [<Literal>] C5 = 34
@@ -50,7 +89,6 @@ module Types =
     let [<Literal>] F5 = 37
     let [<Literal>] G5 = 38
     let [<Literal>] H5 = 39
-
     let [<Literal>] A6 = 40
     let [<Literal>] B6 = 41
     let [<Literal>] C6 = 42
@@ -59,7 +97,6 @@ module Types =
     let [<Literal>] F6 = 45
     let [<Literal>] G6 = 46
     let [<Literal>] H6 = 47
-
     let [<Literal>] A7 = 48
     let [<Literal>] B7 = 49
     let [<Literal>] C7 = 50
@@ -68,7 +105,6 @@ module Types =
     let [<Literal>] F7 = 53
     let [<Literal>] G7 = 54
     let [<Literal>] H7 = 55
-
     let [<Literal>] A8 = 56
     let [<Literal>] B8 = 57
     let [<Literal>] C8 = 58
@@ -77,16 +113,16 @@ module Types =
     let [<Literal>] F8 = 61
     let [<Literal>] G8 = 62
     let [<Literal>] H8 = 63
-
     let [<Literal>] OUTOFBOUNDS = 64 
-
     let SQUARES =
         [ A1; B1; C1; D1; E1; F1; G1; H1; A2; B2; C2; D2; E2; F2; G2; H2; A3; B3; 
           C3; D3; E3; F3; G3; H3; A4; B4; C4; D4; E4; F4; G4; H4; A5; B5; C5; D5; 
           E5; F5; G5; H5; A6; B6; C6; D6; E6; F6; G6; H6; A7; B7; C7; D7; E7; F7; 
           G7; H7; A8; B8; C8; D8; E8; F8; G8; H8 ]
-    
-    let Sq(f : int, r : int) : int = r * 8 + f
+    // functions
+    let SQ(f : int, r : int) : int = r * 8 + f
+    let RNK (sq : int) = sq / 8
+    let FL (sq : int) = sq % 8
    
     type Move =
         {

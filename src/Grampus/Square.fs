@@ -6,15 +6,13 @@ module Square =
         else 
             let file = File.fromChar(s.[0])
             let rank = Rank.fromChar(s.[1])
-            Sq(file, rank)
+            SQ(file, rank)
     let InBounds(pos : int) = pos >= 0 && pos <= 63
-    let ToRank(pos : int) : int = pos / 8
-    let ToFile(pos : int) : int = pos % 8
     let DirectionTo (pto : int) (pfrom : int) =
-        let rankfrom = int (pfrom |> ToRank)
-        let filefrom = int (pfrom |> ToFile)
-        let rankto = int (pto |> ToRank)
-        let fileto = int (pto |> ToFile)
+        let rankfrom = int (pfrom |> RNK)
+        let filefrom = int (pfrom |> FL)
+        let rankto = int (pto |> RNK)
+        let fileto = int (pto |> FL)
         if fileto = filefrom then 
             if rankfrom < rankto then Dirn.N
             else Dirn.S

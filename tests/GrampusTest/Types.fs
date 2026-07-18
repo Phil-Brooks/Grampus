@@ -35,27 +35,27 @@ module Types =
     [<InlineData(7, 7, 63)>]  // H8
     [<InlineData(4, 3, 28)>]  // E4
     let ``Sq function calculates correct index``(f, r, expected) =
-        Sq(f, r) |> should equal expected
+        SQ(f, r) |> should equal expected
 
     // --- 3. Bitboard Constant Verification ---
 
     // --- 4. Board Representation ---
     [<Fact>]
     let ``BrdEMP string representation is correct``() =
-        let str = Board.EMPTY.ToString()
+        let str = Board.EMP.ToString()
         // Should be 64 dots followed by " w"
         str |> should equal ((String.replicate 64 ".") + " w")
 
     // --- 5. Property Based Testing (FsCheck) ---
     
     [<Property(Arbitrary = [| typeof<ChessDimGenerator> |])>]
-    let ``Any Sq(f, r) is always within 0-63`` (f: int) (r: int) =
-        let s = Sq(f, r)
+    let ``Any SQ(f, r) is always within 0-63`` (f: int) (r: int) =
+        let s = SQ(f, r)
         s >= 0 && s <= 63
 
     [<Property(Arbitrary = [| typeof<ChessDimGenerator> |])>]
-    let ``Sq function is reversible (Modulo 8)`` (f: int) (r: int) =
-        let s = Sq(f, r)
-        let recoveredFile = s % 8
-        let recoveredRank = s / 8
+    let ``SQ function is reversible (Modulo 8)`` (f: int) (r: int) =
+        let s = SQ(f, r)
+        let recoveredFile = FL s
+        let recoveredRank = RNK s
         recoveredFile = f && recoveredRank = r

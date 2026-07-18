@@ -1,14 +1,6 @@
 namespace Grampus
 
 module PcType =
-    let [<Literal>] EMPTY = 0
-    let [<Literal>] Pawn = 1
-    let [<Literal>] Knight = 2
-    let [<Literal>] Bishop = 3
-    let [<Literal>] Rook = 4
-    let [<Literal>] Queen = 5
-    let [<Literal>] King = 6
-    
     // Precomputed char table for speed
     let chars = [| '-'; 'p'; 'n'; 'b'; 'r'; 'q'; 'k' |]
     /// Converts a PieceType to its character representation ('p'..'k').
@@ -17,12 +9,12 @@ module PcType =
     /// Converts a character to a PieceType.
     let fromChar (c: char) : int =
         match c with
-        | 'p' | 'P' -> Pawn
-        | 'n' | 'N' -> Knight
-        | 'b' | 'B' -> Bishop
-        | 'r' | 'R' -> Rook
-        | 'q' | 'Q' -> Queen
-        | 'k' | 'K' -> King
+        | 'p' | 'P' -> PAWN
+        | 'n' | 'N' -> KNIGHT
+        | 'b' | 'B' -> BISHOP
+        | 'r' | 'R' -> ROOK
+        | 'q' | 'Q' -> QUEEN
+        | 'k' | 'K' -> KING
         | _ -> invalidArg "c" $"Invalid piece type char: {c}"
     let Piece (colour : int) (pt : int) : int =
         pt ||| (colour <<< 3)

@@ -5,7 +5,7 @@ open System.Text.RegularExpressions
 
 module FEN =
     let Parse(sFEN : string) =
-        let pieceat = Array.create 64 Piece.EMPTY
+        let pieceat = Array.create 64 EMPTY
         let sbPattern = new StringBuilder()
         sbPattern.Append(@"(?<R8>[\w]{1,8})/") |> ignore
         sbPattern.Append(@"(?<R7>[\w]{1,8})/") |> ignore
@@ -47,7 +47,7 @@ module FEN =
                     if "1234567890".IndexOf(c) >= 0 then 
                         getpc cl.Tail (ifl + System.Int32.Parse(c.ToString()))
                     else 
-                        pieceat.[Sq(ifl, rank)] <- Piece.Parse(c) //OK
+                        pieceat.[SQ(ifl, rank)] <- Piece.Parse(c) //OK
                         getpc cl.Tail (ifl + 1)
             
             let srank =

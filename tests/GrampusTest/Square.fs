@@ -33,8 +33,8 @@ module Square =
     [<InlineData(63s, 7s, 7s)>] // H8 -> File 7, Rank 7
     [<InlineData(28s, 4s, 3s)>] // E4 -> File 4, Rank 3
     let ``ToRank and ToFile deconstruct correctly`` (sq: int, expectedFile: int, expectedRank: int) =
-        Square.ToRank sq |> should equal expectedRank
-        Square.ToFile sq |> should equal expectedFile
+        RNK sq |> should equal expectedRank
+        FL sq |> should equal expectedFile
 
     // --- 2. Directional Logic ---
 
@@ -52,13 +52,13 @@ module Square =
     [<Property(Arbitrary = [| typeof<ChessDimGenerator> |])>]
     let ``Sq(ToFile(s), ToRank(s)) is identity`` (s: int) =
         if Square.InBounds s then
-            Sq(Square.ToFile s, Square.ToRank s) = s
+            SQ(FL s, RNK s) = s
         else true
 
     [<Property(Arbitrary = [| typeof<ChessDimGenerator> |])>]
     let ``Square Round-trip: ToFile and ToRank recreate the original Square`` (sq: int) =
         if Square.InBounds sq then
-            let f = Square.ToFile sq
-            let r = Square.ToRank sq
-            Sq(f, r) = sq
+            let f = FL sq
+            let r = RNK sq
+            SQ(f, r) = sq
         else true

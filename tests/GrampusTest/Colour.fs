@@ -15,12 +15,12 @@ module Player =
     // 1. Create a static property that returns a sequence of object arrays
     let PerspectiveData : obj array seq =
         seq {
-            yield [| Rank.R1; 0; Rank.R1 |]
-            yield [| Rank.R8; 0; Rank.R8 |]
-            yield [| Rank.R1; 1; Rank.R8 |]
-            yield [| Rank.R2; 1; Rank.R7 |]
-            yield [| Rank.R7; 1; Rank.R2 |]
-            yield [| Rank.R8; 1; Rank.R1 |]
+            yield [| R1; 0; R1 |]
+            yield [| R8; 0; R8 |]
+            yield [| R1; 1; R8 |]
+            yield [| R2; 1; R7 |]
+            yield [| R7; 1; R2 |]
+            yield [| R8; 1; R1 |]
         }
 
     // --- 1. Constant & Collection Verification ---

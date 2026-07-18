@@ -10,8 +10,8 @@ open Grampus
 type PcTypeGenerator =
     static member PcType() =
         Gen.elements [ 
-            PcType.Pawn; PcType.Knight; PcType.Bishop; 
-            PcType.Rook; PcType.Queen; PcType.King 
+            PAWN; KNIGHT; BISHOP; 
+            ROOK; QUEEN; KING 
         ] |> Arb.fromGen
 
 
@@ -20,13 +20,13 @@ module PcType =
     // --- 1. Parsing Tests ---
 
     [<Theory>]
-    [<InlineData('P', PcType.Pawn)>]
-    [<InlineData('p', PcType.Pawn)>] // Verify case-insensitivity
-    [<InlineData('N', PcType.Knight)>]
-    [<InlineData('b', PcType.Bishop)>]
-    [<InlineData('R', PcType.Rook)>]
-    [<InlineData('Q', PcType.Queen)>]
-    [<InlineData('k', PcType.King)>]
+    [<InlineData('P', PAWN)>]
+    [<InlineData('p', PAWN)>] // Verify case-insensitivity
+    [<InlineData('N', KNIGHT)>]
+    [<InlineData('b', BISHOP)>]
+    [<InlineData('R', ROOK)>]
+    [<InlineData('Q', QUEEN)>]
+    [<InlineData('k', KING)>]
     let ``Parse returns correct PcType regardless of case`` (c: char, expected: int) =
         PcType.fromChar c |> should equal expected
 
@@ -37,11 +37,11 @@ module PcType =
     // --- 2. ForPlayer (Bit-packing) Tests ---
 
     [<Theory>]
-    [<InlineData(0, PcType.Pawn, Piece.WPawn)>]     // 1 | (0 << 3) = 1
-    [<InlineData(1, PcType.Pawn, Piece.BPawn)>]     // 1 | (1 << 3) = 9
-    [<InlineData(0, PcType.King, Piece.WKing)>]     // 6 | (0 << 3) = 6
-    [<InlineData(1, PcType.King, Piece.BKing)>]     // 6 | (1 << 3) = 14
-    [<InlineData(1, PcType.Queen, Piece.BQueen)>]   // 5 | (1 << 3) = 13
+    [<InlineData(0, PAWN, WPAWN)>]     // 1 | (0 << 3) = 1
+    [<InlineData(1, PAWN, BPAWN)>]     // 1 | (1 << 3) = 9
+    [<InlineData(0, KING, WKING)>]     // 6 | (0 << 3) = 6
+    [<InlineData(1, KING, BKING)>]     // 6 | (1 << 3) = 14
+    [<InlineData(1, QUEEN, BQUEEN)>]   // 5 | (1 << 3) = 13
     let ``ForPlayer correctly packs colour and type into a Piece`` (colour: int, pt: int, expected: int) =
         PcType.Piece colour pt |> should equal expected
 

@@ -11,9 +11,9 @@ open Grampus
 type PieceGenerator =
     static member Piece() =
         Gen.elements [ 
-            Piece.WPawn; Piece.WKnight; Piece.WBishop; Piece.WRook; Piece.WQueen; Piece.WKing;
-            Piece.BPawn; Piece.BKnight; Piece.BBishop; Piece.BRook; Piece.BQueen; Piece.BKing;
-            Piece.EMPTY 
+            WPAWN; WKNIGHT; WBISHOP; WROOK; WQUEEN; WKING;
+            BPAWN; BKNIGHT; BBISHOP; BROOK; BQUEEN; BKING;
+            EMPTY 
         ] |> Arb.fromGen
 
 module Piece =
@@ -21,10 +21,10 @@ module Piece =
     // --- 1. Exhaustive Unit Tests (Theory) ---
     
     [<Theory>]
-    [<InlineData('P', Piece.WPawn)>]
-    [<InlineData('k', Piece.BKing)>]
-    [<InlineData('n', Piece.BKnight)>]
-    [<InlineData('.', Piece.EMPTY)>]
+    [<InlineData('P', WPAWN)>]
+    [<InlineData('k', BKING)>]
+    [<InlineData('n', BKNIGHT)>]
+    [<InlineData('.', EMPTY)>]
     let ``Parse returns correct Piece for valid char``(input: char, expected: int) =
         Piece.Parse input |> should equal expected
 
@@ -33,9 +33,9 @@ module Piece =
         (fun () -> Piece.Parse 'Z' |> ignore) |> should throw typeof<System.Exception>
 
     [<Theory>]
-    [<InlineData(Piece.WPawn, "P")>]
-    [<InlineData(Piece.BQueen, "q")>]
-    [<InlineData(Piece.EMPTY, ".")>]
+    [<InlineData(WPAWN, "P")>]
+    [<InlineData(BQUEEN, "q")>]
+    [<InlineData(EMPTY, ".")>]
     let ``ToStr returns correct string for Piece``(input, expected) =
         Piece.ToStr input |> should equal expected
 
@@ -50,7 +50,7 @@ module Piece =
     [<Property(Arbitrary = [| typeof<PieceGenerator> |])>]
     let ``PieceToPlayer logic is consistent`` (p: int) =
         match Piece.ToColour p with
-        | None -> p = Piece.EMPTY
+        | None -> p = EMPTY
         | Some player ->
             match player with
             | 0 -> (int p > 0 && int p < 8)
@@ -59,8 +59,8 @@ module Piece =
     
     [<Property(Arbitrary = [| typeof<PieceGenerator> |])>]
     let ``ToPcType ignores color bit`` (p: int) =
-        if p = Piece.EMPTY then 
-            Piece.ToPcType p = PcType.EMPTY
+        if p = EMPTY then 
+            Piece.ToPcType p = EMPTY
         else
             let pt = Piece.ToPcType p
             // Property: PcType should be between 1 (Pawn) and 6 (King)
@@ -71,6 +71,6 @@ module Piece =
         let validChars = "PNBRQKpnbrqk."
         if validChars.Contains(c) then
             let p = Piece.Parse c
-            p = Piece.EMPTY || (Piece.ToColour p).IsSome
+            p = EMPTY || (Piece.ToColour p).IsSome
         else
             true // FsCheck will generate random chars; we only care about valid ones here

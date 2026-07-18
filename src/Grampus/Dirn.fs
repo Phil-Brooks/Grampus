@@ -27,5 +27,5 @@ module Dirn =
         [| N; E; S; W; NE; SE; SW; NW |]
     let Opposite(dir : int)  = -dir 
     let MyNorth(colour : int) =
-        if colour = Colour.White then N
+        if colour = WHITE then N
         else S

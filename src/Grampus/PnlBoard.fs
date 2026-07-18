@@ -13,7 +13,7 @@ type PnlBoard() as bd =
     let mutable board = Grampus.Board.Start
     let mutable sqTo = -1
     let mutable cCur = Cursors.Default
-    let mutable prompctp = PcType.EMPTY
+    let mutable prompctp = EMPTY
     let mutable isw = true
     
     let bdpnl = new Panel(Dock = DockStyle.Top, Height = pnlsz)
@@ -45,7 +45,7 @@ type PnlBoard() as bd =
             sq.Left <- i * sqsz + 1
             sq.Image <- if board.WhosTurn = 0 then wpcims.[i] else bpcims.[i]
             //events
-            let pctps = [ PcType.Queen; PcType.Rook; PcType.Knight; PcType.Bishop ]
+            let pctps = [ QUEEN; ROOK; KNIGHT; BISHOP ]
             sq.Click.Add(fun e -> 
                 prompctp <- pctps.[i]
                 dlg.DialogResult <- DialogResult.OK
@@ -71,8 +71,8 @@ type PnlBoard() as bd =
     let orient() =
         isw <- not isw
         let possq i (sq : PictureBox) =
-            let r = Square.ToRank i
-            let f = Square.ToFile i
+            let r = RNK i
+            let f = FL i
             if not isw then 
                 sq.Top <- r * sqsz + 1
                 sq.Left <- 7 * sqsz - f * sqsz + 1
@@ -90,7 +90,7 @@ type PnlBoard() as bd =
                 else l.Top <- i * sqsz + 16)
     ///highlight possible squares
     let highlightsqs sl =
-        let odd i = (i % 8 + i / 8) % 2 = 0
+        let odd i = ((FL i) + (RNK i)) % 2 = 0
         let cl i = if odd i then Color.Green else Color.PaleGreen
         let hl i = if odd i then Color.YellowGreen else Color.Yellow
         sqs |> Array.iteri (fun i sq -> sqs.[i].BackColor <- cl i)
@@ -133,10 +133,10 @@ type PnlBoard() as bd =
                     setpcsmvs()
                     moveMade.Trigger(oldBoard, mvl.Head)
                 elif mvl.Length = 4 then 
-                    prompctp <- PcType.EMPTY // Reset before showing
+                    prompctp <- EMPTY // Reset before showing
                     refreshPromoImages()
                     let result = dlgprom()
-                    if result = DialogResult.OK && prompctp <> PcType.EMPTY then
+                    if result = DialogResult.OK && prompctp <> EMPTY then
                         // Use tryFind to safely locate the specific promotion move
                         let matchedMove = mvl |> List.tryFind (fun mv -> mv.Prom = prompctp)
                         match matchedMove with
@@ -183,8 +183,8 @@ type PnlBoard() as bd =
         rlbls.[i] <- lbl
     ///set board colours and position of squares
     let setsq i sqi =
-        let r = Square.ToRank i
-        let f = Square.ToFile i
+        let r = RNK i
+        let f = FL i
         let sq = new PictureBox(Height = sqsz, Width = sqsz, SizeMode = PictureBoxSizeMode.Zoom)
         sq.BackColor <- if (f + r) % 2 = 0 then Color.Green else Color.PaleGreen
         sq.Left <- f * sqsz + 1
