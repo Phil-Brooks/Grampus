@@ -12,64 +12,35 @@ module Board =
           Fullmove = 0 }
     let pieceMove (mfrom : int) mto (bd : Brd) =
         let piece = bd.PieceAt.[mfrom]
-        let player = (piece |> Piece.ToColour).Value
-        let pieceType = piece |> Piece.ToPcType
-        
-        let pieceat =
-            bd.PieceAt
-            |> Array.mapi (fun i p -> 
-                   if i = int (mto) then piece
-                   elif i = int (mfrom) then EMPTY
-                   else p)
-        
-        let wtkingpos =
-            if pieceType = KING && player = 0 then mto
-            else bd.WtKingPos
-        
-        let bkkingpos =
-            if pieceType = KING && player = 1 then mto
-            else bd.BkKingPos
-        
-        { bd with PieceAt = pieceat
-                  WtKingPos = wtkingpos
-                  BkKingPos = bkkingpos }
-    let pieceAdd pos (piece : int) (bd : Brd) =
-        let player = (piece |> Piece.ToColour).Value
-        let pieceType = piece |> Piece.ToPcType
-        
-        let pieceat =
-            bd.PieceAt
-            |> Array.mapi (fun i p -> 
-                   if i = int (pos) then piece
-                   else p)
-        
-        let wtkingpos =
-            if pieceType = KING && player = 0 then pos
-            else bd.WtKingPos
-        
-        let bkkingpos =
-            if pieceType = KING && player = 1 then pos
-            else bd.BkKingPos
-        
-        { bd with PieceAt = pieceat
-                  WtKingPos = wtkingpos
-                  BkKingPos = bkkingpos }
-    let pieceRemove (pos : int) (bd : Brd) =
-        let piece = bd.PieceAt.[pos]
-        let player = (piece |> Piece.ToColour).Value
-        let pieceType = piece |> Piece.ToPcType
-        
-        let pieceat =
-            bd.PieceAt
-            |> Array.mapi (fun i p -> 
-                   if i = pos then EMPTY
-                   else p)
-        
-        { bd with PieceAt = pieceat }
-    let pieceChange pos newPiece (bd : Brd) =
+        let pieceAt = bd.PieceAt|>Array.copy
+        let mutable wtKingPos = bd.WtKingPos
+        let mutable bkKingPos = bd.BkKingPos
+        pieceAt.[mfrom] <- EMPTY
+        pieceAt.[mto] <- piece
+        if piece = WKING then wtKingPos <- mto
+        if piece = BKING then bkKingPos <- mto
+        { bd with PieceAt = pieceAt; WtKingPos = wtKingPos; BkKingPos = bkKingPos }
+    let pieceAdd mto (piece : int) (bd : Brd) =
+        let pieceAt = bd.PieceAt|>Array.copy
+        let mutable wtKingPos = bd.WtKingPos
+        let mutable bkKingPos = bd.BkKingPos
+        pieceAt.[mto] <- piece
+        if piece = WKING then wtKingPos <- mto
+        if piece = BKING then bkKingPos <- mto
+        { bd with PieceAt = pieceAt; WtKingPos = wtKingPos; BkKingPos = bkKingPos }
+    let pieceRemove mfrom (bd : Brd) =
+        let piece = bd.PieceAt.[mfrom]
+        let pieceAt = bd.PieceAt|>Array.copy
+        let mutable wtKingPos = bd.WtKingPos
+        let mutable bkKingPos = bd.BkKingPos
+        pieceAt.[mfrom] <- EMPTY
+        if piece = WKING then wtKingPos <- OUTOFBOUNDS
+        if piece = BKING then bkKingPos <- OUTOFBOUNDS
+        { bd with PieceAt = pieceAt; WtKingPos = wtKingPos; BkKingPos = bkKingPos }
+    let pieceChange mfrom newPiece (bd : Brd) =
         bd
-        |> pieceRemove(pos)
-        |> pieceAdd pos newPiece
+        |> pieceRemove mfrom
+        |> pieceAdd mfrom newPiece
     ///Make an encoded Move(move) for this Board(bd) and return the new Board
     let MoveApply (move : Move) (ibd : Brd) =
         let mfrom = move.From
