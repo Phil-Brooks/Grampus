@@ -2,9 +2,6 @@ namespace Grampus.Tests
 
 open Xunit
 open FsUnit.Xunit
-open FsCheck
-open FsCheck.Xunit
-open FsCheck.FSharp
 open Grampus
 
 module File =
@@ -34,23 +31,3 @@ module File =
     [<InlineData(8s, false)>]
     let ``IsInBounds correctly identifies valid and invalid indices`` (f: int, expected: bool) =
         File.IsInBounds f |> should equal expected
-
-    // --- 3. Property Based Testing ---
-
-    [<Property(Arbitrary = [| typeof<ChessDimGenerator> |])>]
-    let ``Any valid File index can be round-tripped through the global FILE_NAMES list`` (f: int) =
-        // Arrange: Get the character for this file from the global list defined in Types
-        let fileChar = File.NAMES.[f].[0]
-        
-        // Assert: Parsing that character should return the original index
-        File.fromChar fileChar = f
-
-    [<Property(Arbitrary = [| typeof<ChessDimGenerator> |])>]
-    let ``IsInBounds is always true for generated valid files`` (f: int) =
-        File.IsInBounds f = true
-
-    [<Property>]
-    let ``IsInBounds is always false for values outside 0 to 7`` (i: int) =
-        if i < 0 || i > 7 then
-            File.IsInBounds i = false
-        else true

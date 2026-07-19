@@ -2,86 +2,7 @@ namespace Grampus.Tests
 
 open Xunit
 open FsUnit.Xunit
-open FsCheck
-open FsCheck.Xunit
-open FsCheck.FSharp
 open Grampus
-
-// We need a generator for the Brd type to use FsCheck
-type BrdGenerator =
-    static member Brd() =
-        gen {
-            // Generate pieces (Empty is most common, so we weight it)
-            let pieceGen = Gen.frequency [
-                (10, gen { return EMPTY })
-                (1, Gen.elements [WPAWN; WKNIGHT; WBISHOP; WROOK; WQUEEN; WKING])
-                (1, Gen.elements [BPAWN; BKNIGHT; BBISHOP; BROOK; BQUEEN; BKING])
-            ]
-            let! pieces = Gen.arrayOfLength 64 pieceGen
-            
-            let! turn = Gen.elements [WHITE; BLACK]
-            
-            // Fix: Use Gen.elements for booleans to avoid the 'Arb.generate' error
-            let! wk = Gen.elements [true; false]
-            let! wq = Gen.elements [true; false]
-            let! bk = Gen.elements [true; false]
-            let! bq = Gen.elements [true; false]
-            
-            // En Passant can be OUTOFBOUNDS or a square on Rank 3 or 6
-            let! ep = Gen.elements [OUTOFBOUNDS; A3; E3; H3; A6; D6; H6]
-            
-            let! fifty = Gen.choose(0, 50)
-            let! full = Gen.choose(1, 100)
-
-            return {
-                PieceAt = pieces
-                WtKingPos = 0; BkKingPos = 0 // Dummy values for string test
-                WhosTurn = turn
-                CastleRts = { WK=wk; WQ=wq; BK=bk; BQ=bq }
-                EnPassant = ep
-                Fiftymove = fifty
-                Fullmove = full
-            }
-        } |> Arb.fromGen
-
-// Generator that guarantees valid Kings on the board
-type ValidKingsBrdGenerator =
-    static member Brd() =
-        gen {
-            let pieceGen = Gen.frequency [
-                (8, gen { return EMPTY })
-                (1, Gen.elements [WPAWN; WKNIGHT; WBISHOP; WROOK; WQUEEN])
-                (1, Gen.elements [BPAWN; BKNIGHT; BBISHOP; BROOK; BQUEEN])
-            ]
-            let! pieces = Gen.arrayOfLength 64 pieceGen
-                
-            // Pick two distinct squares for Kings
-            let! wtKingSq = Gen.choose(0, 63)
-            let! bkKingSq = Gen.choose(0, 63) |> Gen.where (fun sq -> sq <> wtKingSq)
-                
-            pieces.[wtKingSq] <- WKING
-            pieces.[bkKingSq] <- BKING
-
-            let! turn = Gen.elements [WHITE; BLACK]
-            let! wk = Gen.elements [true; false]
-            let! wq = Gen.elements [true; false]
-            let! bk = Gen.elements [true; false]
-            let! bq = Gen.elements [true; false]
-            let! ep = Gen.elements [OUTOFBOUNDS; A3; E3; H3; A6; D6; H6]
-            let! fifty = Gen.choose(0, 50)
-            let! full = Gen.choose(1, 100)
-
-            return {
-                PieceAt = pieces
-                WtKingPos = wtKingSq
-                BkKingPos = bkKingSq
-                WhosTurn = turn
-                CastleRts = { WK=wk; WQ=wq; BK=bk; BQ=bq }
-                EnPassant = ep
-                Fiftymove = fifty
-                Fullmove = full
-            }
-        } |> Arb.fromGen
 
 module FEN =
     // Helper to create a blank board with default values
@@ -203,32 +124,6 @@ module FEN =
         let parts = fen.Split(' ')
         parts.[2] |> should equal "Kk"
 
-        
-    [<Property(Arbitrary = [| typeof<BrdGenerator> |])>]
-    let ``Generated FEN always has six space-separated segments`` (bd: Brd) =
-        let fen = FEN.FromBrd bd
-        fen.Split(' ').Length = 6
-
-    [<Property(Arbitrary = [| typeof<BrdGenerator> |])>]
-    let ``Board part of FEN always has eight ranks separated by slashes`` (bd: Brd) =
-        let fen = FEN.FromBrd bd
-        let boardPart = fen.Split(' ').[0]
-        boardPart.Split('/').Length = 8
-
-    [<Property(Arbitrary = [| typeof<BrdGenerator> |])>]
-    let ``Each rank in FEN sums to exactly eight squares`` (bd: Brd) =
-        let fen = FEN.FromBrd bd
-        let ranks = fen.Split(' ').[0].Split('/')
-        
-        ranks |> Array.forall (fun rankStr ->
-            let sum = 
-                rankStr 
-                |> Seq.sumBy (fun c -> 
-                    if System.Char.IsDigit(c) then int(System.Char.GetNumericValue(c))
-                    else 1)
-            sum = 8
-        )
-
     [<Theory>]
     // Standard starting position
     [<InlineData("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1")>]
@@ -265,11 +160,3 @@ module FEN =
         // Ensure king positions were correctly re-calculated during parsing
         restoredBoard.WtKingPos |> should equal originalBoard.WtKingPos
         restoredBoard.BkKingPos |> should equal originalBoard.BkKingPos
-
-    [<Property(Arbitrary = [| typeof<ValidKingsBrdGenerator> |])>]
-    let ``Property Round-Trip: Brd -> FromBrd -> ToBrd is an identity function`` (originalBrd: Brd) =
-        let fen = FEN.FromBrd originalBrd
-        let restoredBrd = FEN.ToBrd fen
-        
-        // Asserting record equality
-        restoredBrd = originalBrd

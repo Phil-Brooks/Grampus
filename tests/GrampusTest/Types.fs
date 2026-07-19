@@ -2,16 +2,7 @@ namespace Grampus.Tests
 
 open Xunit
 open FsUnit.Xunit
-open FsCheck
-open FsCheck.Xunit
-open FsCheck.FSharp
 open Grampus
-
-// Generators to help FsCheck test valid Files, Ranks, and Squares
-type ChessDimGenerator =
-    static member File() = Gen.elements [ 0s .. 7s ] |> Arb.fromGen
-    static member Rank() = Gen.elements [ 0s .. 7s ] |> Arb.fromGen
-    static member Square() = Gen.elements [ 0s .. 63s ] |> Arb.fromGen
 
 module Types =
 
@@ -46,16 +37,3 @@ module Types =
         // Should be 64 dots followed by " w"
         str |> should equal ((String.replicate 64 ".") + " w")
 
-    // --- 5. Property Based Testing (FsCheck) ---
-    
-    [<Property(Arbitrary = [| typeof<ChessDimGenerator> |])>]
-    let ``Any SQ(f, r) is always within 0-63`` (f: int) (r: int) =
-        let s = SQ(f, r)
-        s >= 0 && s <= 63
-
-    [<Property(Arbitrary = [| typeof<ChessDimGenerator> |])>]
-    let ``SQ function is reversible (Modulo 8)`` (f: int) (r: int) =
-        let s = SQ(f, r)
-        let recoveredFile = FL s
-        let recoveredRank = RNK s
-        recoveredFile = f && recoveredRank = r

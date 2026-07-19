@@ -10,7 +10,7 @@ module Board =
           EnPassant = OUTOFBOUNDS
           Fiftymove = 0
           Fullmove = 0 }
-    //simply move apply code
+    /// simple move apply code
     let MoveApply (move : Move) (bd : Brd) =
         let mfrom = move.From
         let mto = move.To
@@ -78,5 +78,5 @@ module Board =
           Fiftymove = fiftyMove
           Fullmove = fullMove
         }
-    ///The starting Board at the beginning of a game
+    /// The starting Board at the beginning of a game
     let Start = FEN.StartStr |> FEN.ToBrd

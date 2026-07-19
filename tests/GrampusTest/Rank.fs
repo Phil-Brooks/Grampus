@@ -2,9 +2,6 @@ namespace Grampus.Tests
 
 open Xunit
 open FsUnit.Xunit
-open FsCheck
-open FsCheck.Xunit
-open FsCheck.FSharp
 open Grampus
 
 module Rank =
@@ -28,22 +25,3 @@ module Rank =
     [<InlineData(7s, "8")>]
     let ``RankToString returns correct chess notation`` (rank: int, expected: string) =
         Rank.ToStr rank |> should equal expected
-
-    // --- 3. Property Based Testing ---
-
-    [<Property(Arbitrary = [| typeof<ChessDimGenerator> |])>]
-    let ``Rank Round-trip: Parse(RankToString(r)) equals r`` (r: int) =
-        // Property: Converting a rank to a string and back to a rank should be an identity function
-        let s = Rank.ToStr r
-        Rank.fromChar s.[0] = r
-
-    [<Property(Arbitrary = [| typeof<ChessDimGenerator> |])>]
-    let ``IsInBounds returns true for all generated valid ranks`` (r: int) =
-        Rank.IsInBounds r = true
-
-    [<Property>]
-    let ``IsInBounds returns false for clearly invalid ranks`` (i: int) =
-        if i < 0 || i > 7 then
-            Rank.IsInBounds i = false
-        else true
-

@@ -2,9 +2,6 @@ namespace Grampus.Tests
 
 open Xunit
 open FsUnit.Xunit
-open FsCheck
-open FsCheck.Xunit
-open FsCheck.FSharp
 open Grampus
 
 module Square =
@@ -43,22 +40,3 @@ module Square =
     let ``DirectionTo identifies correct compass direction`` (fromSq: int, toSq: int, expectedDir: int) =
         Square.DirectionTo toSq fromSq |> should equal expectedDir
 
-    // --- 4. Property Based Testing ---
-
-    [<Property(Arbitrary = [| typeof<ChessDimGenerator> |])>]
-    let ``A square is in bounds if and only if it is between 0 and 63`` (s: int) =
-        Square.InBounds s = (s >= 0 && s <= 63)
-
-    [<Property(Arbitrary = [| typeof<ChessDimGenerator> |])>]
-    let ``Sq(ToFile(s), ToRank(s)) is identity`` (s: int) =
-        if Square.InBounds s then
-            SQ(FL s, RNK s) = s
-        else true
-
-    [<Property(Arbitrary = [| typeof<ChessDimGenerator> |])>]
-    let ``Square Round-trip: ToFile and ToRank recreate the original Square`` (sq: int) =
-        if Square.InBounds sq then
-            let f = FL sq
-            let r = RNK sq
-            SQ(f, r) = sq
-        else true

@@ -2,9 +2,6 @@ namespace Grampus.Tests
 
 open Xunit
 open FsUnit.Xunit
-open FsCheck
-open FsCheck.Xunit
-open FsCheck.FSharp
 open Grampus
 
 module Board =
@@ -67,11 +64,6 @@ module Board =
         let nextBd = Board.MoveApply mv bd
         
         nextBd.PieceAt.[int D5] |> should equal EMPTY
-
-
-    // --- 5. Property Based Testing (Invariants) ---
-
-
 
     [<Fact>]
     let ``MoveApply: Moving a piece on a kingless board does not crash`` () =

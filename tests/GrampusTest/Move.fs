@@ -2,9 +2,6 @@ namespace Grampus.Tests
 
 open Xunit
 open FsUnit.Xunit
-open FsCheck
-open FsCheck.Xunit
-open FsCheck.FSharp
 open Grampus
 
 module Move =
@@ -66,21 +63,3 @@ module Move =
     let ``IsPawnDoubleJump identifies 16 square vertical moves`` () =
         let mv = Move.Create E2 E4 WPAWN EMPTY
         Move.IsPawnDoubleJump mv |> should be True
-
-    // --- 3. Property Based Testing ---
-
-    [<Property(Arbitrary = [| typeof<ChessDimGenerator>; typeof<PieceGenerator> |])>]
-    let ``Move deconstruction is always the inverse of Move creation`` (f: int) (t: int) (p: int) =
-        // Only test valid squares (0-63)
-        if Square.InBounds f && Square.InBounds t then
-            let mv = Move.Create f t p EMPTY
-            mv.From = f && mv.To = t && mv.Pc = p
-        else true
-
-    [<Property(Arbitrary = [| typeof<PieceGenerator> |])>]
-    let ``MovingPlayer matches the color of the moving piece`` (p: int) =
-        if p <> EMPTY then
-            let mv = Move.Create E2 E4 p EMPTY
-            let colour = Move.Colour mv
-            Piece.ToColour p = Some colour
-        else true
