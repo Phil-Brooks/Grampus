@@ -2,6 +2,7 @@ namespace Grampus
 
 open System
 
+//TODO: unit test
 module UciParser =
     let parseScore (parts: string[]) =
         let idx = parts |> Array.tryFindIndex (fun x -> x = "score")

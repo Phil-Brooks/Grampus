@@ -53,8 +53,8 @@ module Board =
         let mv = Move.Create E1 G1 WKING EMPTY // O-O
         let nextBd = Board.MoveApply mv bd
         
-        nextBd.PieceAt.[int G1] |> should equal WKING
-        nextBd.PieceAt.[int F1] |> should equal WROOK
+        nextBd.PieceAt.[G1] |> should equal WKING
+        nextBd.PieceAt.[F1] |> should equal WROOK
         nextBd.CastleRts.WK |> should equal false
 
     [<Fact>]

@@ -8,6 +8,7 @@ type EngineRequest =
     | StopSearch
     | Quit
 
+//TODO: unit test
 module Engine =
     let spawn (path: string) (onMsg: EngineMsg -> unit) =
         MailboxProcessor<EngineRequest>.Start(fun inbox ->
