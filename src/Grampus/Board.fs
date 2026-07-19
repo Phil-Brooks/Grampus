@@ -10,37 +10,6 @@ module Board =
           EnPassant = OUTOFBOUNDS
           Fiftymove = 0
           Fullmove = 0 }
-    let pieceMove (mfrom : int) mto (bd : Brd) =
-        let piece = bd.PieceAt.[mfrom]
-        let pieceAt = bd.PieceAt|>Array.copy
-        let mutable wtKingPos = bd.WtKingPos
-        let mutable bkKingPos = bd.BkKingPos
-        pieceAt.[mfrom] <- EMPTY
-        pieceAt.[mto] <- piece
-        if piece = WKING then wtKingPos <- mto
-        if piece = BKING then bkKingPos <- mto
-        { bd with PieceAt = pieceAt; WtKingPos = wtKingPos; BkKingPos = bkKingPos }
-    let pieceAdd mto (piece : int) (bd : Brd) =
-        let pieceAt = bd.PieceAt|>Array.copy
-        let mutable wtKingPos = bd.WtKingPos
-        let mutable bkKingPos = bd.BkKingPos
-        pieceAt.[mto] <- piece
-        if piece = WKING then wtKingPos <- mto
-        if piece = BKING then bkKingPos <- mto
-        { bd with PieceAt = pieceAt; WtKingPos = wtKingPos; BkKingPos = bkKingPos }
-    let pieceRemove mfrom (bd : Brd) =
-        let piece = bd.PieceAt.[mfrom]
-        let pieceAt = bd.PieceAt|>Array.copy
-        let mutable wtKingPos = bd.WtKingPos
-        let mutable bkKingPos = bd.BkKingPos
-        pieceAt.[mfrom] <- EMPTY
-        if piece = WKING then wtKingPos <- OUTOFBOUNDS
-        if piece = BKING then bkKingPos <- OUTOFBOUNDS
-        { bd with PieceAt = pieceAt; WtKingPos = wtKingPos; BkKingPos = bkKingPos }
-    let pieceChange mfrom newPiece (bd : Brd) =
-        bd
-        |> pieceRemove mfrom
-        |> pieceAdd mfrom newPiece
     //simply move apply code
     let MoveApply (move : Move) (bd : Brd) =
         let mfrom = move.From

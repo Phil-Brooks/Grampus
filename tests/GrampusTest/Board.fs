@@ -35,9 +35,9 @@ module Board =
     [<Fact>]
     let ``MoveApply: Capture removes piece`` () =
         // Setup: White Knight on F3 captures Black Pawn on E5
-        let bd = Board.EMP 
-                 |> Board.pieceAdd F3 WKNIGHT 
-                 |> Board.pieceAdd E5 BPAWN
+        let bd = Board.EMP
+        bd.PieceAt.[F3] <- WKNIGHT
+        bd.PieceAt.[E5] <- BPAWN
         let mv = Move.Create F3 E5 WKNIGHT BPAWN
         let nextBd = Board.MoveApply mv bd
         
@@ -61,8 +61,8 @@ module Board =
     let ``MoveApply: En Passant removes the correct pawn`` () =
         // White Pawn on E5, Black Pawn on D5, EP square is D6
         let bd = { Board.EMP with EnPassant = D6; WhosTurn = 0 }
-                 |> Board.pieceAdd E5 WPAWN
-                 |> Board.pieceAdd D5 BPAWN
+        bd.PieceAt.[E5] <- WPAWN
+        bd.PieceAt.[D5] <- BPAWN
         let mv = Move.CreateEp E5 D6 WPAWN BPAWN // exd6 e.p.
         let nextBd = Board.MoveApply mv bd
         
@@ -77,8 +77,8 @@ module Board =
     let ``MoveApply: Moving a piece on a kingless board does not crash`` () =
         // Setup: Just two rooks, no kings
         let bd = Board.EMP 
-                 |> Board.pieceAdd A1 WROOK 
-                 |> Board.pieceAdd A8 BROOK
+        bd.PieceAt.[A1] <- WROOK
+        bd.PieceAt.[A8] <- BROOK
         let mv = Move.Create A1 A5 WROOK EMPTY
         
         // This should not throw an exception
