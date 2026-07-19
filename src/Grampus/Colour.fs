@@ -2,8 +2,8 @@ namespace Grampus
 
 module Colour =
     /// Converts a Colour to its character representation ('w' or 'b').
-    let toChar (c: int) =
-        if c = WHITE then 'w' else 'b'
+    let toChar (c: int) = if c = WHITE then 'w' else 'b'
+    let ToStr (c: int) = if c = WHITE then "w" else "b"
     /// Converts a character ('w' or 'b') to a Colour.
     let fromChar c =
         match c with

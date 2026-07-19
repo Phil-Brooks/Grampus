@@ -65,6 +65,6 @@ module San =
 
     [<Fact>]
     let ``sqToAlg converts indices to algebraic notation`` () =
-        San.sqToAlg A1 |> should equal "a1"
-        San.sqToAlg H8 |> should equal "h8"
-        San.sqToAlg E4 |> should equal "e4"
+        Square.ToStr A1 |> should equal "a1"
+        Square.ToStr H8 |> should equal "h8"
+        Square.ToStr E4 |> should equal "e4"

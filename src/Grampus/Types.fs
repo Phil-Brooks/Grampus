@@ -191,3 +191,20 @@ module Types =
         White : PlayedMove
         Black : PlayedMove option
     }
+
+    type Score = 
+        | Centipawns of int
+        | MateIn of int
+        | Unknown
+
+    type Analysis = {
+        Depth : int
+        Score : Score
+        Nodes : int64
+        Pv    : string list // List of moves in UCI format (e2e4, etc)
+    }
+
+    type EngineMsg = 
+        | Info of Analysis
+        | BestMove of string
+        | Ready

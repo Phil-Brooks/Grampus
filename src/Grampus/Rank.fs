@@ -16,5 +16,5 @@ module Rank =
     let MyRanks =
         [| [| R1; R2; R3; R4; R5; R6; R7; R8 |]
            [| R8; R7; R6; R5; R4; R3; R2; R1 |] |]
-    let MyRank (rank : int) (player : int) =
-        MyRanks.[player].[rank]
+    let MyRank (rank : int) (colour : int) =
+        MyRanks.[colour].[rank]

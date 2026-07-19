@@ -7,7 +7,13 @@ module Square =
             let file = File.fromChar(s.[0])
             let rank = Rank.fromChar(s.[1])
             SQ(file, rank)
-    let InBounds(pos : int) = pos >= 0 && pos <= 63
+    let ToStr(sq :int) =
+        if sq = OUTOFBOUNDS then "-"
+        else
+            let f = FL sq
+            let r = RNK sq
+            (f |> File.ToStr) + (r |> Rank.ToStr)
+    let InBounds(sq : int) = sq >= 0 && sq <= 63
     let DirectionTo (pto : int) (pfrom : int) =
         let rankfrom = int (pfrom |> RNK)
         let filefrom = int (pfrom |> FL)
@@ -40,6 +46,6 @@ module Square =
                 else Dirn.SW
             else if filechange > 0 then Dirn.NE
             else Dirn.NW
-    let InDirn (dir : int) (pos : int) : int =
-        pos + dir
+    let InDirn (dir : int) (sq : int) : int =
+        sq + dir
     

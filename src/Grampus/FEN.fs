@@ -26,7 +26,6 @@ module FEN =
         if matches.Count > 1 then failwith "Multiple FENs in string"
         let matchr = matches.[0]
         matchr
-    
     let ToBrd(sFEN : string) =
         let pieceat = Array.create 64 EMPTY
         let mutable wtKingPos = OUTOFBOUNDS
@@ -74,3 +73,26 @@ module FEN =
           Fullmove = fullMove
         }
     let StartStr = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"
+    let FromBrd(bd: Brd) =
+        let ranks = Rank.List |> List.rev
+        let files = File.List
+        let fenRanks = ranks |> List.map (fun r ->
+            let mutable emptyCount = 0
+            let mutable rankStr = ""
+            for f in files do
+                let pc = bd.PieceAt.[SQ(f, r)]
+                if pc = EMPTY then 
+                    emptyCount <- emptyCount + 1
+                else
+                    if emptyCount > 0 then 
+                        rankStr <- rankStr + string emptyCount
+                        emptyCount <- 0
+                    rankStr <- rankStr + (pc|>Piece.ToStr)
+            if emptyCount > 0 then rankStr <- rankStr + string emptyCount
+            rankStr
+        )
+        let boardPart = String.concat "/" fenRanks
+        let turn = bd.WhosTurn |> Colour.ToStr
+        let castles = bd.CastleRts |> Castle.ToStr
+        let ep = bd.EnPassant |> Square.ToStr
+        sprintf "%s %s %s %s %d %d" boardPart turn castles ep bd.Fiftymove bd.Fullmove
