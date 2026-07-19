@@ -36,7 +36,7 @@ module Move =
     [<Fact>]
     let ``Move.CreateProm correctly encodes promotion data`` () =
         // White Pawn on A7 captures on B8 and promotes to Queen
-        let f, t, p, c, prom = A7, B8, WPAWN, BROOK, QUEEN
+        let f, t, p, c, prom = A7, B8, WPAWN, BROOK, WQUEEN
         let mv = Move.CreateProm f t p c prom
         
         mv.From |> should equal f
@@ -44,7 +44,6 @@ module Move =
         mv.Pc |> should equal p
         Move.IsPromotion mv |> should be True
         mv.Prom |> should equal prom
-        Move.Promote mv |> should equal WQUEEN
 
     [<Fact>]
     let ``IsCastle identifies king moves of two squares`` () =

@@ -1,31 +1,27 @@
 namespace Grampus
 
 module Move =
-    let CreateProm (pfrom : int) (pto : int) (piece : int) (captured : int) (promoteType : int) =
+    let CreateProm (pfrom : int) (pto : int) (piece : int) (captured : int) (promote : int) =
         {
             From = pfrom
             To = pto
             Pc = piece
             CapPc = captured
-            Prom = promoteType
+            Prom = promote
         }
     let Create (pfrom : int) (pto : int) (piece : int)  (captured : int) =
         CreateProm pfrom pto piece captured EMPTY
     let IsCapture(move : Move) = move.CapPc <> EMPTY
     let IsPromotion(move : Move) = move.Prom <> EMPTY
     let Colour(move : Move) = move.Pc |> Piece.Colour
-    let Promote(move : Move) =
-        if move.Prom = EMPTY then EMPTY
-        else move.Prom |> PcType.Piece(move |> Colour)
     let IsEnPassant(move : Move) =
-        move.Pc|>Piece.ToPcType = PAWN
+        (move.Pc = WPAWN || move.Pc = BPAWN)
         //TODO: should change this!
         && not (move |> IsCapture)
         && (move.From |> FL) <> (move.To|> FL)
     let IsCastle(move : Move) =
-        move.Pc|>Piece.ToPcType = KING && abs (move.From - move.To) = 2
+        (move.Pc = WKING || move.Pc = BKING) && abs (move.From - move.To) = 2
     let IsPawnDoubleJump(move : Move) =
-        move.Pc|>Piece.ToPcType = PAWN
+        (move.Pc = WPAWN || move.Pc = BPAWN)
         && abs (move.From - move.To) = 16
-    let PcType(move : int) = move >>> 12 &&& 0x7
 

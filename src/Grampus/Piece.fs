@@ -3,10 +3,9 @@ namespace Grampus
 module Piece =
     let Colour (p: int) : int =
         p >>> 3
-    let ToPcType(piece : int) = piece &&& 7 
     let Parse(c : char) =
         match c with
-        | 'P' -> PAWN
+        | 'P' -> WPAWN
         | 'N' -> WKNIGHT
         | 'B' -> WBISHOP
         | 'R' -> WROOK
@@ -22,7 +21,7 @@ module Piece =
         | _ -> failwith (c.ToString() + " is not a valid piece")
     let ToStr(piece : int) =
         match piece with
-        | PAWN -> "P"
+        | WPAWN -> "P"
         | WKNIGHT -> "N"
         | WBISHOP -> "B"
         | WROOK -> "R"
@@ -38,7 +37,7 @@ module Piece =
         | _ -> failwith ("not a valid piece")
     let ToStr2(piece : int) =
         match piece with
-        | PAWN -> "wP"
+        | WPAWN -> "wP"
         | WKNIGHT -> "wN"
         | WBISHOP -> "wB"
         | WROOK -> "wR"

@@ -15,7 +15,7 @@ module MoveGen =
                     let fileDiff = abs (targetFile - file)
                     if fileDiff = 1 || fileDiff = 2 then
                         let pc = bd.[targetSq]
-                        Piece.Colour pc = attackerCol && (Piece.ToPcType pc = KNIGHT)
+                        Piece.Colour pc = attackerCol && (pc = WKNIGHT || pc = BKNIGHT)
                     else false
                 else false
             )
@@ -30,7 +30,7 @@ module MoveGen =
                     let targetFile = FL targetSq
                     if abs (targetFile - file) <= 1 then
                         let pc = bd.[targetSq]
-                        Piece.Colour pc = attackerCol && (Piece.ToPcType pc = KING)
+                        Piece.Colour pc = attackerCol && (pc = WKING || pc = BKING)
                     else false
                 else false
             )
@@ -82,16 +82,16 @@ module MoveGen =
                             let pc = bd.[nextSq]
                             if pc <> EMPTY then
                                 hitObstacle <- true // Hit something, stop the ray
-                                if Piece.Colour pc = attackerCol && List.contains (Piece.ToPcType pc) allowedTypes then
+                                if Piece.Colour pc = attackerCol && List.contains pc allowedTypes then
                                     foundAttacker <- true
                             currentSq <- nextSq
                 foundAttacker
             )
 
         // Check diagonals (Bishops/Queens)
-        if checkSliding Dirn.AllDirectionsBishop [ BISHOP; QUEEN ] then true
+        if checkSliding Dirn.AllDirectionsBishop [ WBISHOP; WQUEEN; BBISHOP; BQUEEN ] then true
         // Check straights (Rooks/Queens)
-        elif checkSliding Dirn.AllDirectionsRook [ ROOK; QUEEN ] then true
+        elif checkSliding Dirn.AllDirectionsRook [ WROOK; WQUEEN; BROOK; BQUEEN ] then true
         else false    
     let isCheck (bd: Brd) (player: int) =
         let kingSq =
@@ -117,10 +117,10 @@ module MoveGen =
         // Helper to generate either a single move or 4 promotion moves
         let yieldPawnMoves fromSq toSq capturedPc = [
             if RNK toSq = R8 then
-                yield Move.CreateProm fromSq toSq WPAWN capturedPc QUEEN
-                yield Move.CreateProm fromSq toSq WPAWN capturedPc ROOK
-                yield Move.CreateProm fromSq toSq WPAWN capturedPc BISHOP
-                yield Move.CreateProm fromSq toSq WPAWN capturedPc KNIGHT
+                yield Move.CreateProm fromSq toSq WPAWN capturedPc WQUEEN
+                yield Move.CreateProm fromSq toSq WPAWN capturedPc WROOK
+                yield Move.CreateProm fromSq toSq WPAWN capturedPc WBISHOP
+                yield Move.CreateProm fromSq toSq WPAWN capturedPc WKNIGHT
             else
                 yield Move.Create fromSq toSq WPAWN capturedPc
         ]
@@ -160,10 +160,10 @@ module MoveGen =
         // Helper to generate either a single move or 4 promotion moves
         let yieldPawnMoves fromSq toSq capturedPc = [
             if RNK toSq = R1 then
-                yield Move.CreateProm fromSq toSq BPAWN capturedPc QUEEN
-                yield Move.CreateProm fromSq toSq BPAWN capturedPc ROOK
-                yield Move.CreateProm fromSq toSq BPAWN capturedPc BISHOP
-                yield Move.CreateProm fromSq toSq BPAWN capturedPc KNIGHT
+                yield Move.CreateProm fromSq toSq BPAWN capturedPc BQUEEN
+                yield Move.CreateProm fromSq toSq BPAWN capturedPc BROOK
+                yield Move.CreateProm fromSq toSq BPAWN capturedPc BBISHOP
+                yield Move.CreateProm fromSq toSq BPAWN capturedPc BKNIGHT
             else
                 yield Move.Create fromSq toSq BPAWN capturedPc
         ]

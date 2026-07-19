@@ -57,7 +57,6 @@
     <Compile Include="Types.fs" />
     <Compile Include="Colour.fs" />
     <Compile Include="Dirn.fs" />
-    <Compile Include="PcType.fs" />
     <Compile Include="Piece.fs" />
     <Compile Include="Rank.fs" />
     <Compile Include="File.fs" />

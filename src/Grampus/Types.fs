@@ -9,16 +9,8 @@ module Types =
     // Colours
     let [<Literal>] WHITE = 0
     let [<Literal>] BLACK = 1
-    //TODO : remove this type
-    // PcTypes
-    let [<Literal>] EMPTY = 0
-    let [<Literal>] PAWN = 1
-    let [<Literal>] KNIGHT = 2
-    let [<Literal>] BISHOP = 3
-    let [<Literal>] ROOK = 4
-    let [<Literal>] QUEEN = 5
-    let [<Literal>] KING = 6
     // Pieces
+    let [<Literal>] EMPTY = 0
     let [<Literal>] WPAWN = 1
     let [<Literal>] WKNIGHT = 2
     let [<Literal>] WBISHOP = 3

@@ -13,7 +13,7 @@ module San =
         | _ -> "" // Pawns have no letter in SAN
     let ToSan (bd: Brd) (m: Move) =
         // 1. Check Castling
-        if (m.Pc % 8 = KING) && abs(m.To - m.From) = 2 then
+        if (m.Pc = WKING || m.Pc = BKING) && abs(m.To - m.From) = 2 then
             if m.To|>FL = G then "O-O" else "O-O-O"
         else
             let pieceChar = getPieceChar m.Pc

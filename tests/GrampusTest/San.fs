@@ -58,7 +58,7 @@ module San =
     [<InlineData(A7, A8, 1, 0, 5, "a8=Q")>] // Pawn to Queen
     [<InlineData(B7, B8, 1, 0, 2, "b8=N")>] // Pawn to Knight
     // Black Promotions with Capture
-    [<InlineData(H2, G1, 9, 2, 5, "hxg1=Q")>] // Pawn takes Knight and promotes
+    [<InlineData(H2, G1, 9, 2, 13, "hxg1=Q")>] // Pawn takes Knight and promotes
     let ``ToSan handles promotions`` (fromSq, toSq, pc, cap, prom, expected) =
         let m = makeMove fromSq toSq pc cap prom
         San.ToSan emptyBoard m |> should equal expected

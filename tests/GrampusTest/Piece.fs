@@ -57,15 +57,6 @@ module Piece =
             | 1 -> (int p > 8)
             | _ -> false // Handles values like enum<Player>(2)
     
-    [<Property(Arbitrary = [| typeof<PieceGenerator> |])>]
-    let ``ToPcType ignores color bit`` (p: int) =
-        if p = EMPTY then 
-            Piece.ToPcType p = EMPTY
-        else
-            let pt = Piece.ToPcType p
-            // Property: PcType should be between 1 (Pawn) and 6 (King)
-            int pt >= 1 && int pt <= 6
-
     [<Property>]
     let ``Any valid char from Parse must result in a valid PieceToPlayer or EMPTY`` (c: char) =
         let validChars = "PNBRQKpnbrqk."

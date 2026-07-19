@@ -13,7 +13,7 @@ type PnlBoard() as bd =
     let mutable board = Grampus.Board.Start
     let mutable sqTo = -1
     let mutable cCur = Cursors.Default
-    let mutable prompctp = EMPTY
+    let mutable prompc = EMPTY
     let mutable isw = true
     
     let bdpnl = new Panel(Dock = DockStyle.Top, Height = pnlsz)
@@ -43,11 +43,11 @@ type PnlBoard() as bd =
             sq.BackColor <- if i % 2 = 0 then Color.Green else Color.PaleGreen
             sq.Top <- 1
             sq.Left <- i * sqsz + 1
-            sq.Image <- if board.WhosTurn = 0 then wpcims.[i] else bpcims.[i]
+            sq.Image <- if board.WhosTurn = WHITE then wpcims.[i] else bpcims.[i]
             //events
-            let pctps = [ QUEEN; ROOK; KNIGHT; BISHOP ]
+            let pctps = if board.WhosTurn = WHITE then [ WQUEEN; WROOK; WKNIGHT; WBISHOP ] else [ BQUEEN; BROOK; BKNIGHT; BBISHOP ]
             sq.Click.Add(fun e -> 
-                prompctp <- pctps.[i]
+                prompc <- pctps.[i]
                 dlg.DialogResult <- DialogResult.OK
                 dlg.Close())
             sqs.[i] <- sq
@@ -105,12 +105,6 @@ type PnlBoard() as bd =
     let dragDrop (p : PictureBox, e) =
         sqTo <- System.Convert.ToInt32(p.Tag)
         sqpnl.Cursor <- Cursors.Default
-    let refreshPromoImages() =
-        let pcre = if board.WhosTurn = 0 then "w" else "b"
-        sqs.[0].Image <- Assets.Pieces[pcre + "Q"]
-        sqs.[1].Image <- Assets.Pieces[pcre + "R"]
-        sqs.[2].Image <- Assets.Pieces[pcre + "N"]
-        sqs.[3].Image <- Assets.Pieces[pcre + "B"]
     /// Action for Mouse Down
     let mouseDown (p : PictureBox, e : MouseEventArgs) =
         if e.Button = MouseButtons.Left then 
@@ -133,12 +127,11 @@ type PnlBoard() as bd =
                     setpcsmvs()
                     moveMade.Trigger(oldBoard, mvl.Head)
                 elif mvl.Length = 4 then 
-                    prompctp <- EMPTY // Reset before showing
-                    refreshPromoImages()
+                    prompc <- EMPTY // Reset before showing
                     let result = dlgprom()
-                    if result = DialogResult.OK && prompctp <> EMPTY then
+                    if result = DialogResult.OK && prompc <> EMPTY then
                         // Use tryFind to safely locate the specific promotion move
-                        let matchedMove = mvl |> List.tryFind (fun mv -> mv.Prom = prompctp)
+                        let matchedMove = mvl |> List.tryFind (fun mv -> mv.Prom = prompc)
                         match matchedMove with
                         | Some mv ->
                             let oldBoard = board    

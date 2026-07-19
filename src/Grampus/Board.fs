@@ -51,7 +51,7 @@ module Board =
         if capture <> EMPTY then bd <- bd |> pieceRemove(mto)
         bd <- bd |> pieceMove mfrom mto
         if move |> Move.IsPromotion then 
-            bd <- bd |> pieceChange mto (move |> Move.Promote)
+            bd <- bd |> pieceChange mto move.Prom
         if move |> Move.IsCastle then 
             if piece = WKING&& mto = G1 then bd <- bd |> pieceMove H1 F1
             elif piece = WKING&& mto = C1 then bd <- bd |> pieceMove A1 D1
