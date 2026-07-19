@@ -112,6 +112,11 @@ module Types =
           C3; D3; E3; F3; G3; H3; A4; B4; C4; D4; E4; F4; G4; H4; A5; B5; C5; D5; 
           E5; F5; G5; H5; A6; B6; C6; D6; E6; F6; G6; H6; A7; B7; C7; D7; E7; F7; 
           G7; H7; A8; B8; C8; D8; E8; F8; G8; H8 ]
+    // MvTypes
+    let [<Literal>] SIMPLE = 0
+    let [<Literal>] ENPASSANT = 1
+    
+    
     // functions
     let SQ(f : int, r : int) : int = r * 8 + f
     let RNK (sq : int) = sq / 8
@@ -119,6 +124,7 @@ module Types =
    
     type Move =
         {
+            MvType : int
             From : int
             To : int
             Pc : int
@@ -175,13 +181,13 @@ module Types =
             
             bdstr + tomv
 
-type PlayedMove = {
-    San : string
-    Eval : float option
-}
+    type PlayedMove = {
+        San : string
+        Eval : float option
+    }
 
-type HistoryEntry = {
-    MoveNumber : int
-    White : PlayedMove
-    Black : PlayedMove option
-}
+    type HistoryEntry = {
+        MoveNumber : int
+        White : PlayedMove
+        Black : PlayedMove option
+    }

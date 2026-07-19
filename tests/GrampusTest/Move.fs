@@ -59,7 +59,7 @@ module Move =
     let ``IsEnPassant identifies pawn diagonal moves without captures`` () =
         // White Pawn capturing at E6 from D5 (EP) 
         // Note: In your logic, EP is a diagonal move where CapturedPiece is EMPTY
-        let mv = Move.Create D5 E6 WPAWN EMPTY
+        let mv = Move.CreateEp D5 E6 WPAWN BPAWN
         Move.IsEnPassant mv |> should be True
 
     [<Fact>]

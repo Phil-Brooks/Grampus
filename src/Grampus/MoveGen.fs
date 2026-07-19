@@ -141,9 +141,7 @@ module MoveGen =
                 if cappc <> EMPTY && (Piece.Colour cappc) = BLACK then
                     yield! yieldPawnMoves sq pto cappc
                 elif pto = bd.EnPassant then
-                    //TODO: fix this
-                    // Note: Recording BPawn as captured even though square is empty
-                    yield Move.Create sq pto WPAWN EMPTY 
+                    yield Move.CreateEp sq pto WPAWN BPAWN 
             // 3. Captures (West)
             if file <> A then
                 let pto = sq + Dirn.NW
@@ -151,7 +149,7 @@ module MoveGen =
                 if cappc <> EMPTY && (Piece.Colour cappc) = BLACK then
                     yield! yieldPawnMoves sq pto cappc
                 elif pto = bd.EnPassant then
-                    yield Move.Create sq pto WPAWN EMPTY
+                    yield Move.CreateEp sq pto WPAWN BPAWN
         ]
         moves |> legal bd  
     let bPposs (bd : Brd) (sq : int) = 
@@ -184,7 +182,7 @@ module MoveGen =
                 if cappc <> EMPTY && (Piece.Colour cappc) = WHITE then
                     yield! yieldPawnMoves sq pto cappc
                 elif pto = bd.EnPassant then
-                    yield Move.Create sq pto BPAWN EMPTY // Per your requirement
+                    yield Move.CreateEp sq pto BPAWN WPAWN
             // 3. Captures South-West (Diagonal Left)
             if file <> A then
                 let pto = sq + Dirn.SW
@@ -192,7 +190,7 @@ module MoveGen =
                 if cappc <> EMPTY && (Piece.Colour cappc) = WHITE then
                     yield! yieldPawnMoves sq pto cappc
                 elif pto = bd.EnPassant then
-                    yield Move.Create sq pto BPAWN EMPTY // Per your requirement
+                    yield Move.CreateEp sq pto BPAWN WPAWN
         ]
         moves |>  legal bd    
     let nMoves (bd: Brd) (sq: int) (myPiece: int) (enemyColor: int) =

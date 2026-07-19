@@ -63,7 +63,7 @@ module Board =
         let bd = { Board.EMP with EnPassant = D6; WhosTurn = 0 }
                  |> Board.pieceAdd E5 WPAWN
                  |> Board.pieceAdd D5 BPAWN
-        let mv = Move.Create E5 D6 WPAWN EMPTY // exd6 e.p.
+        let mv = Move.CreateEp E5 D6 WPAWN BPAWN // exd6 e.p.
         let nextBd = Board.MoveApply mv bd
         
         nextBd.PieceAt.[int D5] |> should equal EMPTY
