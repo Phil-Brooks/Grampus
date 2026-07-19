@@ -49,7 +49,7 @@ module Board =
     let ``MoveApply: White King Side Castle moves both King and Rook`` () =
         // Setup a position where White can castle
         let fenStr = "rnbqk2r/pppppppp/8/8/8/8/PPPPPPPP/RNBQK2R w KQkq - 0 1"
-        let bd = FEN.Parse fenStr |> Board.FromFEN
+        let bd = FEN.ToBrd fenStr
         let mv = Move.Create E1 G1 WKING EMPTY // O-O
         let nextBd = Board.MoveApply mv bd
         

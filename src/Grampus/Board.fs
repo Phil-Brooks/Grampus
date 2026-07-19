@@ -116,27 +116,5 @@ module Board =
         else bd <- { bd with Fiftymove = 0 }
         bd <- { bd with WhosTurn = bd.WhosTurn |> Colour.Opp }
         bd
-    ///Create a new Board given a Fen(fen)
-    let FromFEN(fen : Fen) =
-        let bd = EMP
-        let rec addpc posl ibd =
-            if List.isEmpty posl then ibd
-            else 
-                let pos = posl.Head
-                let pc = fen.Pieceat.[int (pos)]
-                if pc = EMPTY then addpc posl.Tail ibd
-                else addpc posl.Tail (ibd |> pieceAdd pos pc)
-        let bd = addpc SQUARES bd
-        { bd with CastleRts =
-                              {
-                                WK = fen.CastleWK
-                                WQ = fen.CastleWQ
-                                BK = fen.CastleBK
-                                BQ = fen.CastleBQ
-                              }
-                  WhosTurn = fen.Whosturn
-                  EnPassant = fen.Enpassant
-                  Fiftymove = fen.Fiftymove
-                  Fullmove = fen.Fullmove }
     ///The starting Board at the beginning of a game
-    let Start = FEN.Start |> FromFEN
+    let Start = FEN.StartStr |> FEN.ToBrd

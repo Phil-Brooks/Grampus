@@ -183,18 +183,6 @@ module Types =
             
             bdstr + tomv
 
-    //TODO : remove this type
-    type Fen =
-        { Pieceat : int list
-          Whosturn : int
-          CastleWK : bool
-          CastleWQ : bool
-          CastleBK : bool
-          CastleBQ : bool
-          Enpassant : int
-          Fiftymove : int
-          Fullmove : int }
-
 type PlayedMove = {
     San : string
     Eval : float option

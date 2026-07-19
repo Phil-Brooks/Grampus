@@ -22,7 +22,7 @@ module MoveGenerate =
         // Setup: White King on E1, White Queen on E4, Black Rook on E8
         // The Queen is pinned to the King and should only be able to move along the E-file
         let fen = "4r3/8/8/8/4Q3/8/8/4K3 w - - 0 1"
-        let bd = FEN.Parse fen |> Board.FromFEN
+        let bd = FEN.ToBrd fen
         
         let queenMoves = MoveGen.PossMoves bd E4
         
@@ -38,7 +38,7 @@ module MoveGenerate =
     let ``Pawn reaching 8th rank generates 4 promotion moves`` () =
         // White Pawn on A7, nothing in the way on A8
         let fen = "8/P7/k7/8/8/8/8/4K3 w - - 0 1"
-        let bd = FEN.Parse fen |> Board.FromFEN
+        let bd = FEN.ToBrd fen
         
         let moves = MoveGen.PossMoves bd A7
         
@@ -51,7 +51,7 @@ module MoveGenerate =
     let ``Only King can move during a double check`` () =
         // White King is in check by Black Knight and Black Rook simultaneously
         let fen = "4r3/8/8/8/8/5n2/8/4K3 w - - 0 1"
-        let bd = FEN.Parse fen |> Board.FromFEN
+        let bd = FEN.ToBrd fen
         
         let allMoves = getAllLegalMoves bd
         // All legal moves must be King moves
@@ -63,7 +63,7 @@ module MoveGenerate =
     let ``En Passant is generated correctly`` () =
         // White just played e2-e4, Black pawn is on d4. Black can play exd3 e.p.
         let fen = "rnbqkbnr/pppp1ppp/8/8/3pP3/8/PPPP1PPP/RNBQKBNR b KQkq e3 0 1"
-        let bd = FEN.Parse fen |> Board.FromFEN
+        let bd = FEN.ToBrd fen
         
         let pawnMoves = MoveGen.PossMoves bd D4
         let epMove = pawnMoves |> List.find (fun m -> Move.IsEnPassant m)
@@ -74,7 +74,7 @@ module MoveGenerate =
     let ``Pawn correctly attacks diagonal squares but not forward`` () =
         // Black pawn on d5
         let fen = "8/8/8/3p4/8/8/8/4K3 w - - 0 1"
-        let bd = FEN.Parse fen |> Board.FromFEN
+        let bd = FEN.ToBrd fen
         
         // Squares d5 attacks (c4 and e4)
         MoveGen.isSquareAttacked C4 BLACK bd |> should be True
@@ -87,7 +87,7 @@ module MoveGenerate =
     let ``Knight attacks jumping over pieces`` () =
         // Black Knight on c3, White pawns surrounding it
         let fen = "8/8/8/8/8/2n5/1PPP4/1PKP4 w - - 0 1"
-        let bd = FEN.Parse fen |> Board.FromFEN
+        let bd = FEN.ToBrd fen
         
         // Knight should jump over the pawns to attack e4 and b1
         MoveGen.isSquareAttacked E4 BLACK bd |> should be True
@@ -100,12 +100,12 @@ module MoveGenerate =
     let ``Sliding attacks are blocked by intervening pieces`` () =
         // Black Rook on a8, White King on a1
         let fen = "r7/8/8/8/8/8/8/K7 w - - 0 1"
-        let bd1 = FEN.Parse fen |> Board.FromFEN
+        let bd1 = FEN.ToBrd fen
         MoveGen.isSquareAttacked A1 BLACK bd1 |> should be True
 
         // Now place a blocker on a5
         let fenBlocked = "r7/8/8/p7/8/8/8/K7 w - - 0 1"
-        let bd2 = FEN.Parse fenBlocked |> Board.FromFEN
+        let bd2 = FEN.ToBrd fenBlocked
         
         // The Rook no longer attacks A1 because the pawn is in the way
         MoveGen.isSquareAttacked A1 BLACK bd2 |> should be False
@@ -114,7 +114,7 @@ module MoveGenerate =
     let ``Knight attack does not wrap around the board edge`` () =
         // White Knight on h1 (Index 7)
         let fen = "k7/8/8/K7/8/8/8/7N w - - 0 1"
-        let bd = FEN.Parse fen |> Board.FromFEN
+        let bd = FEN.ToBrd fen
         
         // Square f2 is a legal jump
         MoveGen.isSquareAttacked F2 WHITE bd |> should be True
@@ -128,8 +128,7 @@ module MoveGenerate =
     let ``Bishop attacks correctly on diagonals`` () =
         // White Bishop on d4
         let fen = "8/8/8/8/3B4/8/8/4k3 b - - 0 1"
-        let bd = FEN.Parse fen |> Board.FromFEN
-        
+        let bd = FEN.ToBrd fen
         MoveGen.isSquareAttacked G7 WHITE bd |> should be True
         MoveGen.isSquareAttacked A1 WHITE bd |> should be True
         MoveGen.isSquareAttacked D5 WHITE bd |> should be False // Straight line
@@ -138,7 +137,7 @@ module MoveGenerate =
     let ``King attacks adjacent squares`` () =
         // White King on e1
         let fen = "8/8/8/8/8/8/8/4K3 w - - 0 1"
-        let bd = FEN.Parse fen |> Board.FromFEN
+        let bd = FEN.ToBrd fen
         
         MoveGen.isSquareAttacked D1 WHITE bd |> should be True
         MoveGen.isSquareAttacked D2 WHITE bd |> should be True

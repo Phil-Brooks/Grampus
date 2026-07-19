@@ -31,47 +31,47 @@ module FEN =
     let ``Parse correctly extracts metadata from FEN string`` 
         (fenStr: string, turn, cwK, cwQ, cbK, cbQ, ep, fifty, full) =
         
-        let result = FEN.Parse fenStr
+        let result = FEN.ToBrd fenStr
         
-        result.Whosturn |> should equal turn
-        result.CastleWK |> should equal cwK
-        result.CastleWQ |> should equal cwQ
-        result.CastleBK |> should equal cbK
-        result.CastleBQ |> should equal cbQ
-        result.Enpassant |> should equal ep
+        result.WhosTurn |> should equal turn
+        result.CastleRts.WK |> should equal cwK
+        result.CastleRts.WQ |> should equal cwQ
+        result.CastleRts.BK |> should equal cbK
+        result.CastleRts.BQ |> should equal cbQ
+        result.EnPassant |> should equal ep
         result.Fiftymove |> should equal fifty
         result.Fullmove |> should equal full
 
     [<Fact>]
     let ``Parse correctly places pieces for the starting position`` () =
-        let result = FEN.Parse FEN.StartStr
+        let result = FEN.ToBrd FEN.StartStr
         
         // Check corners
-        result.Pieceat.[int A1] |> should equal WROOK
-        result.Pieceat.[int H1] |> should equal WROOK
-        result.Pieceat.[int A8] |> should equal BROOK
-        result.Pieceat.[int H8] |> should equal BROOK
+        result.PieceAt.[int A1] |> should equal WROOK
+        result.PieceAt.[int H1] |> should equal WROOK
+        result.PieceAt.[int A8] |> should equal BROOK
+        result.PieceAt.[int H8] |> should equal BROOK
         
         // Check Kings
-        result.Pieceat.[int E1] |> should equal WKING
-        result.Pieceat.[int E8] |> should equal BKING
+        result.PieceAt.[int E1] |> should equal WKING
+        result.PieceAt.[int E8] |> should equal BKING
         
         // Check an empty square in the middle
-        result.Pieceat.[int D4] |> should equal EMPTY
+        result.PieceAt.[int D4] |> should equal EMPTY
 
     [<Fact>]
     let ``Parse handles numeric empty square notation (e.g., 8)`` () =
         // FEN with a completely empty Rank 4
         let fen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"
-        let result = FEN.Parse fen
+        let result = FEN.ToBrd fen
         
         [A4..H4] |> List.iter (fun sq -> 
-            result.Pieceat.[int sq] |> should equal EMPTY)
+            result.PieceAt.[int sq] |> should equal EMPTY)
 
     [<Fact>]
     let ``Parse throws exception for invalid FEN`` () =
         let invalidFen = "not a real fen string"
-        (fun () -> FEN.Parse invalidFen |> ignore) |> should throw typeof<System.Exception>
+        (fun () -> FEN.ToBrd invalidFen |> ignore) |> should throw typeof<System.Exception>
 
     // --- 3. Integration Property ---
     // (If you eventually add a FEN.ToString function, add a Round-Trip property here)
