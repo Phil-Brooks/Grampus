@@ -28,13 +28,17 @@ type MoveHistoryPanel() as this =
 
     member this.AddMove(bdBefore: Brd, m: Move) =
         let san = San.ToSan bdBefore m
+        // Call the new logic that returns a list
+        let actions = HistoryLogic.getRequiredActions bdBefore san grid.Rows.Count
         
-        if bdBefore.WhosTurn = 0 then // White's turn
-            let moveNum = bdBefore.Fullmove
-            grid.Rows.Add([| box moveNum; box san; box "" |]) |> ignore
-        else // Black's turn
-            // Find the last row to update the Black move columns
-            let lastRow = grid.Rows.[grid.Rows.Count - 1]
-            lastRow.Cells.[2].Value <- san
+        // Loop through each action and apply it to the grid
+        actions |> List.iter (fun action ->
+            match action with
+            | AddNewRow(num, whiteSan) ->
+                grid.Rows.Add([| box num; box whiteSan; box "" |]) |> ignore
+            | UpdateExistingRow(blackSan) ->
+                let lastRow = grid.Rows.[grid.Rows.Count - 1]
+                lastRow.Cells.[2].Value <- blackSan
+        )
             
         grid.FirstDisplayedScrollingRowIndex <- grid.RowCount - 1
