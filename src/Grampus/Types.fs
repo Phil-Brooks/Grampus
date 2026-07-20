@@ -201,7 +201,8 @@ module Types =
         Depth : int
         Score : Score
         Nodes : int64
-        Pv    : string list // List of moves in UCI format (e2e4, etc)
+        Pv    : string list
+        MultiPvIndex: int
     }
 
     type EngineMsg = 

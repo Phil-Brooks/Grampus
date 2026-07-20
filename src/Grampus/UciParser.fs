@@ -20,9 +20,11 @@ module UciParser =
                     if i + 1 < parts.Length then Some parts.[i+1] else None)
             let pvIdx = line.IndexOf(" pv ") + 4
             let pvParts = line.Substring(pvIdx).Split([|' '|], StringSplitOptions.RemoveEmptyEntries) |> Array.toList
+            let multipv = getVal "multipv" |> Option.map int |> Option.defaultValue 1
             Some {
                 Depth = getVal "depth" |> Option.map int |> Option.defaultValue 0
                 Nodes = getVal "nodes" |> Option.map int64 |> Option.defaultValue 0L
                 Score = parseScore parts
                 Pv = pvParts
+                MultiPvIndex = multipv
             }

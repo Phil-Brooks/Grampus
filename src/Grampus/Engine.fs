@@ -7,14 +7,12 @@ type EngineRequest =
     | StartSearch of int    // Milliseconds
     | StopSearch
     | Quit
-
 module UciProtocol =
     let formatRequest = function
         | SetPosition fen -> sprintf "position fen %s" fen
         | StartSearch ms -> sprintf "go movetime %d" ms
         | StopSearch -> "stop"
         | Quit -> "quit"
-
     let parseLine (line: string) : EngineMsg option =
         if line.StartsWith "info" then 
             UciParser.parseInfo line |> Option.map Info
@@ -25,7 +23,6 @@ module UciProtocol =
             Some Ready
         else 
             None
-
 module Engine =
     let spawn (path: string) (onMsg: EngineMsg -> unit) =
         MailboxProcessor<EngineRequest>.Start(fun inbox ->
@@ -50,6 +47,7 @@ module Engine =
             let send (s: string) = proc.StandardInput.WriteLine s
             send "uci"
             send "isready"
+            send "setoption name MultiPV value 3" // Ask for top 3 lines
             let rec loop () = async {
                 let! msg = inbox.Receive()
                 match msg with
