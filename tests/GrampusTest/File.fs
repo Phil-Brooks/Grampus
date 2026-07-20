@@ -31,3 +31,9 @@ module File =
     [<InlineData(8s, false)>]
     let ``IsInBounds correctly identifies valid and invalid indices`` (f: int, expected: bool) =
         File.IsInBounds f |> should equal expected
+
+    [<Fact>]
+    let ``File arithmetic operators work correctly`` () =
+        A + 1 |> should equal B
+        H - 7 |> should equal A
+        C + 3 |> should equal F

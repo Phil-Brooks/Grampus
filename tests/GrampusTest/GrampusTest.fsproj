@@ -7,7 +7,6 @@
 
   <ItemGroup>
     <Compile Include="Types.fs" />
-    <Compile Include="Util.fs" />
     <Compile Include="Colour.fs" />
     <Compile Include="Dirn.fs" />
     <Compile Include="Piece.fs" />
@@ -19,6 +18,9 @@
     <Compile Include="Board.fs" />
     <Compile Include="MoveGen.fs" />
     <Compile Include="San.fs" />
+    <Compile Include="UciParser.fs" />
+    <Compile Include="UciMove.fs" />
+    <Compile Include="Engine.fs" />
   </ItemGroup>
 
   <ItemGroup>

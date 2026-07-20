@@ -32,7 +32,7 @@ module Types =
 
     // --- 4. Board Representation ---
     [<Fact>]
-    let ``BrdEMP string representation is correct``() =
+    let ``EMP string representation is correct``() =
         let str = Board.EMP.ToString()
         // Should be 64 dots followed by " w"
         str |> should equal ((String.replicate 64 ".") + " w")

@@ -25,3 +25,9 @@ module Rank =
     [<InlineData(7s, "8")>]
     let ``RankToString returns correct chess notation`` (rank: int, expected: string) =
         Rank.ToStr rank |> should equal expected
+
+    [<Fact>]
+    let ``Rank arithmetic operators work correctly`` () =
+        R1 + 1 |> should equal R2
+        R8 - 7 |> should equal R1
+        R4 + 2 |> should equal R6
