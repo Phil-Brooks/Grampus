@@ -36,7 +36,7 @@ module AnalysisDisplay =
     [<Fact>]
     let ``getSanPv handles Black to move starting sequence`` () =
         // Set up board after 1. e4
-        let bd = Board.MoveApply { MvType = SIMPLE; From=12; To=28; Pc=WPAWN; CapPc=0; Prom=0 } Board.Start
+        let bd = Board.MoveApply { From=12; To=28; Pc=WPAWN; CapPc=0; Prom=0 } Board.Start
         let uciMoves = ["e7e5"; "g1f3"]
         
         let result = AnalysisDisplay.getSanPv bd uciMoves

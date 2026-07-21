@@ -41,7 +41,7 @@ module FEN =
                         getpc cl.Tail (ifl + System.Int32.Parse(c.ToString()))
                     else 
                         let sq = SQ(ifl, r - 1)
-                        let pc = Piece.Parse(c)
+                        let pc = Piece.FromStr(c)
                         pieceat.[sq] <- pc
                         if pc = WKING then wtKingPos <- sq
                         if pc = BKING then bkKingPos <- sq
@@ -55,7 +55,7 @@ module FEN =
             sCastle|> Castle.FromStr
         let enPassant =
             let sEnpassant = matchr.Groups.["Enpassant"].Value
-            if sEnpassant <> "-" then Square.Parse(sEnpassant) else OUTOFBOUNDS
+            if sEnpassant <> "-" then Square.FromStr(sEnpassant) else OUTOFBOUNDS
         let fiftyMove =
             let sFiftyMove = matchr.Groups.["FiftyMove"].Value
             if sFiftyMove <> "-" then System.Int32.Parse(sFiftyMove) else 0
@@ -96,3 +96,7 @@ module FEN =
         let castles = bd.CastleRts |> Castle.ToStr
         let ep = bd.EnPassant |> Square.ToStr
         sprintf "%s %s %s %s %d %d" boardPart turn castles ep bd.Fiftymove bd.Fullmove
+
+// "Whenever you see a Grampus.Types.Brd, use this function to display it"
+[<assembly: System.Diagnostics.DebuggerDisplay("{Grampus.FEN.FromBrd(this)}", Target = typeof<Types.Brd>)>]
+do ()

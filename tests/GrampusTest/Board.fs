@@ -32,7 +32,7 @@ module Board =
     [<Fact>]
     let ``MoveApply: Capture removes piece`` () =
         // Setup: White Knight on F3 captures Black Pawn on E5
-        let bd = Board.EMP
+        let bd = {Board.EMP with PieceAt=Board.EMP.PieceAt|>Array.copy}
         bd.PieceAt.[F3] <- WKNIGHT
         bd.PieceAt.[E5] <- BPAWN
         let mv = Move.Create F3 E5 WKNIGHT BPAWN
@@ -57,10 +57,10 @@ module Board =
     [<Fact>]
     let ``MoveApply: En Passant removes the correct pawn`` () =
         // White Pawn on E5, Black Pawn on D5, EP square is D6
-        let bd = { Board.EMP with EnPassant = D6; WhosTurn = 0 }
+        let bd = { Board.EMP with PieceAt=Board.EMP.PieceAt|>Array.copy; EnPassant = D6; WhosTurn = 0 }
         bd.PieceAt.[E5] <- WPAWN
         bd.PieceAt.[D5] <- BPAWN
-        let mv = Move.CreateEp E5 D6 WPAWN BPAWN // exd6 e.p.
+        let mv = Move.Create E5 D6 WPAWN BPAWN // exd6 e.p.
         let nextBd = Board.MoveApply mv bd
         
         nextBd.PieceAt.[int D5] |> should equal EMPTY
@@ -68,7 +68,7 @@ module Board =
     [<Fact>]
     let ``MoveApply: Moving a piece on a kingless board does not crash`` () =
         // Setup: Just two rooks, no kings
-        let bd = Board.EMP 
+        let bd = {Board.EMP with PieceAt=Board.EMP.PieceAt|>Array.copy} 
         bd.PieceAt.[A1] <- WROOK
         bd.PieceAt.[A8] <- BROOK
         let mv = Move.Create A1 A5 WROOK EMPTY

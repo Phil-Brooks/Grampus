@@ -99,7 +99,7 @@ module MoveGen =
             else bd.BkKingPos
         let opponent = Colour.Opp player
         isSquareAttacked kingSq opponent bd
-    let legal (bd : Brd) (mvs : Move list) =
+    let legal (bd : Brd) (mvs : Mv list) =
         let me = bd.WhosTurn
         mvs |> List.filter (fun mv ->
             // 1. Create the board state that WOULD exist after this move
@@ -141,7 +141,7 @@ module MoveGen =
                 if cappc <> EMPTY && (Piece.Colour cappc) = BLACK then
                     yield! yieldPawnMoves sq pto cappc
                 elif pto = bd.EnPassant then
-                    yield Move.CreateEp sq pto WPAWN BPAWN 
+                    yield Move.Create sq pto WPAWN BPAWN 
             // 3. Captures (West)
             if file <> A then
                 let pto = sq + Dirn.NW
@@ -149,7 +149,7 @@ module MoveGen =
                 if cappc <> EMPTY && (Piece.Colour cappc) = BLACK then
                     yield! yieldPawnMoves sq pto cappc
                 elif pto = bd.EnPassant then
-                    yield Move.CreateEp sq pto WPAWN BPAWN
+                    yield Move.Create sq pto WPAWN BPAWN
         ]
         moves |> legal bd  
     let bPposs (bd : Brd) (sq : int) = 
@@ -182,7 +182,7 @@ module MoveGen =
                 if cappc <> EMPTY && (Piece.Colour cappc) = WHITE then
                     yield! yieldPawnMoves sq pto cappc
                 elif pto = bd.EnPassant then
-                    yield Move.CreateEp sq pto BPAWN WPAWN
+                    yield Move.Create sq pto BPAWN WPAWN
             // 3. Captures South-West (Diagonal Left)
             if file <> A then
                 let pto = sq + Dirn.SW
@@ -190,7 +190,7 @@ module MoveGen =
                 if cappc <> EMPTY && (Piece.Colour cappc) = WHITE then
                     yield! yieldPawnMoves sq pto cappc
                 elif pto = bd.EnPassant then
-                    yield Move.CreateEp sq pto BPAWN WPAWN
+                    yield Move.Create sq pto BPAWN WPAWN
         ]
         moves |>  legal bd    
     let nMoves (bd: Brd) (sq: int) (myPiece: int) (enemyColor: int) =

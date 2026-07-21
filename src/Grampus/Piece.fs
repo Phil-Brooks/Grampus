@@ -4,7 +4,7 @@ module Piece =
     let Colour (p: int) : int =
         p >>> 3
     let IsWhite (p: int) = p|>Colour = WHITE
-    let Parse(c : char) =
+    let FromStr(c : char) =
         match c with
         | 'P' -> WPAWN
         | 'N' -> WKNIGHT

@@ -2,6 +2,10 @@ namespace Grampus
 
 open System.Diagnostics
 
+type EngineMsg = 
+    | Info of Analysis
+    | BestMove of string
+    | Ready
 type EngineRequest = 
     | SetPosition of string // FEN
     | StartSearch of int    // Milliseconds

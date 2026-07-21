@@ -17,8 +17,8 @@ module UciMove =
     [<Fact>]
     let ``fromString returns None for invalid string length`` () =
         let bd = Board.Start
-        UciMove.fromString bd "e2e" |> should equal None
-        UciMove.fromString bd "" |> should equal None
+        UciMove.FromStr bd "e2e" |> should equal None
+        UciMove.FromStr bd "" |> should equal None
 
     [<Fact>]
     let ``fromString parses a standard quiet move`` () =
@@ -26,7 +26,7 @@ module UciMove =
         let e2, e4 = 12, 28 // Replace with your actual Square constants/indices
         let bd = createTestBoard [(e2, WPAWN)] -1
         
-        let result = UciMove.fromString bd "e2e4"
+        let result = UciMove.FromStr bd "e2e4"
         
         result.IsSome |> should be True
         let m = result.Value
@@ -42,7 +42,7 @@ module UciMove =
         let f3, d4 = 21, 27
         let bd = createTestBoard [(f3, WKNIGHT); (d4, BPAWN)] -1
         
-        let result = UciMove.fromString bd "f3d4"
+        let result = UciMove.FromStr bd "f3d4"
         
         let m = result.Value
         m.Pc|> should equal WKNIGHT
@@ -57,7 +57,7 @@ module UciMove =
         let a7, a8 = 48, 56
         let bd = createTestBoard [(a7, WPAWN)] -1
         
-        let result = UciMove.fromString bd uci
+        let result = UciMove.FromStr bd uci
         
         result.Value.Prom |> should equal expectedPromo
 
@@ -67,7 +67,7 @@ module UciMove =
         let e5, d6 = 36, 43
         let bd = createTestBoard [(e5, WPAWN)] d6
         
-        let result = UciMove.fromString bd "e5d6"
+        let result = UciMove.FromStr bd "e5d6"
         
         result.IsSome |> should be True
         let m = result.Value
@@ -80,6 +80,6 @@ module UciMove =
         let b2, b1 = 9, 1
         let bd = createTestBoard [(b2, BPAWN)] -1
         
-        let result = UciMove.fromString bd "b2b1n"
+        let result = UciMove.FromStr bd "b2b1n"
         
         result.Value.Prom |> should equal BKNIGHT

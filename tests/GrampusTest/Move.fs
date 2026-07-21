@@ -27,8 +27,8 @@ module Move =
         mv.To |> should equal t
         mv.Pc |> should equal p
         mv.CapPc |> should equal c
-        Move.IsCapture mv |> should equal (c <> EMPTY)
-        Move.IsPromotion mv |> should be False
+        Move.IsCap mv |> should equal (c <> EMPTY)
+        Move.IsProm mv |> should be False
 
     [<Fact>]
     let ``Move.CreateProm correctly encodes promotion data`` () =
@@ -39,7 +39,7 @@ module Move =
         mv.From |> should equal f
         mv.To |> should equal t
         mv.Pc |> should equal p
-        Move.IsPromotion mv |> should be True
+        Move.IsProm mv |> should be True
         mv.Prom |> should equal prom
 
     [<Fact>]
@@ -56,10 +56,10 @@ module Move =
     let ``IsEnPassant identifies pawn diagonal moves without captures`` () =
         // White Pawn capturing at E6 from D5 (EP) 
         // Note: In your logic, EP is a diagonal move where CapturedPiece is EMPTY
-        let mv = Move.CreateEp D5 E6 WPAWN BPAWN
-        Move.IsEnPassant mv |> should be True
+        let mv = Move.Create D5 E6 WPAWN BPAWN
+        Move.IsEP Board.EMP mv |> should be True
 
     [<Fact>]
     let ``IsPawnDoubleJump identifies 16 square vertical moves`` () =
         let mv = Move.Create E2 E4 WPAWN EMPTY
-        Move.IsPawnDoubleJump mv |> should be True
+        Move.IsDouble mv |> should be True

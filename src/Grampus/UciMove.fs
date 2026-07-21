@@ -1,11 +1,11 @@
 namespace Grampus
 
 module UciMove =
-    let fromString (bd: Brd) (uci: string) : Move option =
+    let FromStr (bd: Brd) (uci: string) : Mv option =
         if uci.Length < 4 then None
         else
-            let fromSq = Square.Parse (uci.Substring(0, 2))
-            let toSq = Square.Parse (uci.Substring(2, 2))
+            let fromSq = Square.FromStr (uci.Substring(0, 2))
+            let toSq = Square.FromStr (uci.Substring(2, 2))
             let pc = bd.PieceAt.[fromSq]
             let capPc = bd.PieceAt.[toSq]
             // Handle Promotion (e.g. "a7a8q")
@@ -21,6 +21,18 @@ module UciMove =
             // Handle En Passant
             if (pc = WPAWN || pc = BPAWN) && toSq = bd.EnPassant && capPc = EMPTY then
                 let epCapPc = if pc = WPAWN then BPAWN else WPAWN
-                Some (Move.CreateEp fromSq toSq pc epCapPc)
+                Some (Move.Create fromSq toSq pc epCapPc)
             else
-                Some (Move.CreateAll SIMPLE fromSq toSq pc capPc promPc)
+                Some (Move.CreateProm fromSq toSq pc capPc promPc)
+    let ToStr (m: Mv) =
+        let getPieceChar pc =
+            match pc with // using % 8 handles both white (1-6) and black (9-14)
+            | 2 -> "n" | 3 -> "b" | 4 -> "r" | 5 -> "q" | 6 -> "k"
+            | _ -> "" 
+        let mfrom = m.From |> Square.ToStr
+        let mto = m.To |> Square.ToStr
+        let promo = if m.Prom <> 0 then getPieceChar m.Prom else ""
+        sprintf "%s%s%s" mfrom mto promo
+// "Whenever you see a Grampus.Types.Brd, use this function to display it"
+[<assembly: System.Diagnostics.DebuggerDisplay("{Grampus.UciMove.ToStr(this)}", Target = typeof<Types.Mv>)>]
+do ()

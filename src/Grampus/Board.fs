@@ -11,7 +11,7 @@ module Board =
           Fiftymove = 0
           Fullmove = 0 }
     /// simple move apply code
-    let MoveApply (move : Move) (bd : Brd) =
+    let MoveApply (move : Mv) (bd : Brd) =
         let mfrom = move.From
         let mto = move.To
         let piece = move.Pc
@@ -30,7 +30,7 @@ module Board =
         pieceAt.[mfrom] <- EMPTY
         pieceAt.[mto] <- piece
         // promotion
-        if move |> Move.IsPromotion then pieceAt.[mto] <- prom
+        if move |> Move.IsProm then pieceAt.[mto] <- prom
         // castle
         if move |> Move.IsCastle then 
             if piece = WKING && mto = G1 then 
@@ -48,24 +48,24 @@ module Board =
         // castle rights
         if bd.CastleRts <> Castle.EMPTY then 
             if mfrom = H1 then 
-                castleRts <- {castleRts with Castle.WK = false }
+                castleRts <- {castleRts with Cstl.WK = false }
             elif mfrom = A1 then 
-                castleRts <- {castleRts with Castle.WQ = false }
+                castleRts <- {castleRts with Cstl.WQ = false }
             elif piece = WKING then 
-                castleRts <- {castleRts with Castle.WK = false; Castle.WQ = false }
+                castleRts <- {castleRts with Cstl.WK = false; Cstl.WQ = false }
             elif mfrom = H8 then 
-                castleRts <- {castleRts with Castle.BK = false }
+                castleRts <- {castleRts with Cstl.BK = false }
             elif mfrom = A8 then 
-                castleRts <- {castleRts with Castle.BQ = false }
+                castleRts <- {castleRts with Cstl.BQ = false }
             elif piece = BKING then 
-                castleRts <- {castleRts with Castle.BK = false; Castle.BQ = false }
+                castleRts <- {castleRts with Cstl.BK = false; Cstl.BQ = false }
         //en passant
-        if move |> Move.IsEnPassant then 
+        if move |> Move.IsEP bd then 
             let epf = mto |> FL
             let epr = move |> Move.Colour |> Rank.MyRank(R5)
             let epsq = SQ(epf,epr)
             pieceAt.[epsq] <- EMPTY        
-        if move |> Move.IsPawnDoubleJump then 
+        if move |> Move.IsDouble then 
             let ep = mfrom |> Square.InDirn(move|>Move.Colour|>Dirn.MyNorth)
             enPassant <- ep
         { 

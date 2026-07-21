@@ -12,14 +12,14 @@ module File =
     [<InlineData('a', 0)>] // FileA
     [<InlineData('h', 7)>] // FileH
     [<InlineData('d', 3)>] // FileD
-    let ``Parse returns correct internal index for valid lowercase characters`` (c: char, expected: int) =
+    let ``fromChar returns correct internal index for valid lowercase characters`` (c: char, expected: int) =
         File.fromChar c |> should equal expected
 
     [<Theory>]
     [<InlineData('z')>]
     [<InlineData('1')>]
     [<InlineData(' ')>]
-    let ``Parse throws exception for invalid file characters`` (invalidChar: char) =
+    let ``fromChar throws exception for invalid file characters`` (invalidChar: char) =
         (fun () -> File.fromChar invalidChar |> ignore) |> should throw typeof<System.Exception>
 
     // --- 2. Bounds Checking ---

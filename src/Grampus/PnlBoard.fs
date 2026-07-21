@@ -8,7 +8,7 @@ type PnlBoard() as bd =
     inherit Panel(Width = pnlsz, Height = pnlsz)
         
     // 1. Define the event. It will pass (BoardBeforeMove, MoveRecord, Evaluation)
-    let moveMade = new Event<Brd * Move>()
+    let moveMade = new Event<Brd * Mv>()
         
     let mutable board = Grampus.Board.Start
     let mutable sqTo = -1

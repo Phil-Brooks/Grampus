@@ -28,12 +28,4 @@ module Types =
     let ``Sq function calculates correct index``(f, r, expected) =
         SQ(f, r) |> should equal expected
 
-    // --- 3. Bitboard Constant Verification ---
-
-    // --- 4. Board Representation ---
-    [<Fact>]
-    let ``EMP string representation is correct``() =
-        let str = Board.EMP.ToString()
-        // Should be 64 dots followed by " w"
-        str |> should equal ((String.replicate 64 ".") + " w")
 

@@ -44,7 +44,7 @@ module MoveGenerate =
         
         // Should be 4 moves: A7-A8(Q), A7-A8(R), A7-A8(B), A7-A8(N)
         moves.Length |> should equal 4
-        moves |> List.iter (fun m -> Move.IsPromotion m |> should be True)
+        moves |> List.iter (fun m -> Move.IsProm m |> should be True)
 
     // --- 5. Double Check ---
     [<Fact>]
@@ -66,7 +66,7 @@ module MoveGenerate =
         let bd = FEN.ToBrd fen
         
         let pawnMoves = MoveGen.PossMoves bd D4
-        let epMove = pawnMoves |> List.find (fun m -> Move.IsEnPassant m)
+        let epMove = pawnMoves |> List.find (fun m -> Move.IsEP bd m)
         
         epMove.To |> should equal E3
 

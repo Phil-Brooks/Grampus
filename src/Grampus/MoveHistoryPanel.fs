@@ -26,7 +26,7 @@ type MoveHistoryPanel() as this =
         grid.Columns.[0].Width <- 30
         this.Controls.Add(grid)
 
-    member this.AddMove(bdBefore: Brd, m: Move) =
+    member this.AddMove(bdBefore: Brd, m: Mv) =
         let san = San.ToSan bdBefore m
         // Call the new logic that returns a list
         let actions = HistoryLogic.getRequiredActions bdBefore san grid.Rows.Count

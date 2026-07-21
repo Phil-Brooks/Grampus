@@ -10,9 +10,8 @@ type FrmMain() as this =
 
     let bd = new PnlBoard(Dock = DockStyle.Fill)
     let mh = new MoveHistoryPanel(Dock = DockStyle.Fill)
-    
-    // 1. Create the Analysis Panel
     let ap = new EngineAnalysisPanel(Dock = DockStyle.Fill)
+    let masterPanel = new MasterDatabasePanel(Dock = DockStyle.Fill)
 
     // 2. Setup the Engine logic
     let onEngineMsg = function
@@ -50,7 +49,7 @@ type FrmMain() as this =
     let lftpnl = new Panel(Dock = DockStyle.Top, BorderStyle = BorderStyle.Fixed3D, Height = 600)
     let lfbpnl = new Panel(Dock = DockStyle.Fill, BorderStyle = BorderStyle.Fixed3D)
     let rttpnl = new Panel(Dock = DockStyle.Top, BorderStyle = BorderStyle.Fixed3D, Height = 350)
-    let rtmpnl = new Panel(Dock = DockStyle.Top, BorderStyle = BorderStyle.Fixed3D, Height = 100)
+    let rtmpnl = new Panel(Dock = DockStyle.Top, BorderStyle = BorderStyle.Fixed3D, Height = 400)
     let rtbpnl = new Panel(Dock = DockStyle.Fill, BorderStyle = BorderStyle.Fixed3D)
 
     do 
@@ -61,6 +60,13 @@ type FrmMain() as this =
             // Get the state AFTER the move was made
             let currentBrd = bd.GetBoard() 
             let fen = FEN.FromBrd currentBrd
+            // Fetch from Lichess asynchronously
+            async {
+                let! data = LichessClient.fetchMastersStats fen
+                match data with
+                | Some d -> masterPanel.UpdateData(d)
+                | None -> ()
+            } |> Async.Start
             
             // Sync the Analysis Panel context so it can generate SAN
             ap.SetBoard(currentBrd)
@@ -72,6 +78,7 @@ type FrmMain() as this =
         )        
         ap |> rttpnl.Controls.Add
         rtbpnl |> rtpnl.Controls.Add
+        masterPanel |> rtmpnl.Controls.Add
         rtmpnl |> rtpnl.Controls.Add
         rttpnl |> rtpnl.Controls.Add
         rtpnl |> bgpnl.Controls.Add

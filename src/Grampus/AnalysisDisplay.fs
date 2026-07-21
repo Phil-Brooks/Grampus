@@ -25,7 +25,7 @@ module AnalysisDisplay =
         
         let sanMoves = 
             moves |> List.choose (fun uci ->
-                match UciMove.fromString tempBd uci with
+                match UciMove.FromStr tempBd uci with
                 | Some m ->
                     let san = San.ToSan tempBd m
                     let prefix = if isWhite then sprintf "%d. %s" moveNum san else san

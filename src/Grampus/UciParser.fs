@@ -2,6 +2,17 @@ namespace Grampus
 
 open System
 
+type Score = 
+    | Centipawns of int
+    | MateIn of int
+    | Unknown
+type Analysis = {
+    Depth : int
+    Score : Score
+    Nodes : int64
+    Pv    : string list
+    MultiPvIndex: int
+}
 module UciParser =
     let parseScore (parts: string[]) =
         let idx = parts |> Array.tryFindIndex (fun x -> x = "score")

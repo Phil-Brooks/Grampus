@@ -70,10 +70,13 @@
     <Compile Include="UciParser.fs" />
     <Compile Include="UciMove.fs" />
     <Compile Include="Engine.fs" />
+    <Compile Include="LichessClient.fs" />
+    <Compile Include="MasterDataLogic.fs" />
     <Compile Include="AnalysisDisplay.fs" />
     <Compile Include="HistoryLogic.fs" />
     <Compile Include="TypesUI.fs" />
     <Compile Include="Assets.fs" />
+    <Compile Include="MasterDatabasePanel.fs" />
     <Compile Include="EngineAnalysisPanel.fs" />
     <Compile Include="MoveHistoryPanel.fs" />
     <Compile Include="PnlBoard.fs" />

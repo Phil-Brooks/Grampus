@@ -22,8 +22,8 @@ module Square =
     [<InlineData("a1", 0s)>]
     [<InlineData("h8", 63s)>]
     [<InlineData("e4", 28s)>]
-    let ``Parse returns correct square index`` (s: string, expected: int) =
-        Square.Parse s |> should equal expected
+    let ``FromStr returns correct square index`` (s: string, expected: int) =
+        Square.FromStr s |> should equal expected
 
     [<Theory>]
     [<InlineData(0s, 0s, 0s)>]  // A1 -> File 0, Rank 0

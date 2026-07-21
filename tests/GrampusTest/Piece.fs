@@ -13,12 +13,12 @@ module Piece =
     [<InlineData('k', BKING)>]
     [<InlineData('n', BKNIGHT)>]
     [<InlineData('.', EMPTY)>]
-    let ``Parse returns correct Piece for valid char``(input: char, expected: int) =
-        Piece.Parse input |> should equal expected
+    let ``FromStr returns correct Piece for valid char``(input: char, expected: int) =
+        Piece.FromStr input |> should equal expected
 
     [<Fact>]
-    let ``Parse throws exception for invalid char``() =
-        (fun () -> Piece.Parse 'Z' |> ignore) |> should throw typeof<System.Exception>
+    let ``FromStr throws exception for invalid char``() =
+        (fun () -> Piece.FromStr 'Z' |> ignore) |> should throw typeof<System.Exception>
 
     [<Theory>]
     [<InlineData(WPAWN, "P")>]

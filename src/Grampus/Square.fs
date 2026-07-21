@@ -1,7 +1,7 @@
 namespace Grampus
 
 module Square =
-    let Parse(s : string) =
+    let FromStr(s : string) =
         if s.Length <> 2 then failwith (s + " is not a valid position")
         else 
             let file = File.fromChar(s.[0])

@@ -17,7 +17,7 @@ module Castle =
                 BK = s.Contains "k"
                 BQ = s.Contains "q"
             }
-    let ToStr (rights: Castle) =
+    let ToStr (rights: Cstl) =
         if rights = EMPTY then "-"
         else
             let k = if rights.WK then "K" else ""

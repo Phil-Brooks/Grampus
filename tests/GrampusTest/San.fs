@@ -18,7 +18,7 @@ module San =
 
     // Helper to create a Move
     let makeMove fromSq toSq pc cap prom =
-        { MvType = SIMPLE; From = fromSq; To = toSq; Pc = pc; CapPc = cap; Prom = prom }
+        { From = fromSq; To = toSq; Pc = pc; CapPc = cap; Prom = prom }
 
     [<Theory>]
     // Standard Piece Moves

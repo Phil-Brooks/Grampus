@@ -37,7 +37,7 @@ module FEN =
 
     [<Theory>]
     [<MemberData(nameof(FenTestData))>]
-    let ``Parse correctly extracts metadata from FEN string`` 
+    let ``ToBrd correctly extracts metadata from FEN string`` 
         (fenStr: string, turn, cwK, cwQ, cbK, cbQ, ep, fifty, full) =
         
         let result = FEN.ToBrd fenStr
@@ -52,7 +52,7 @@ module FEN =
         result.Fullmove |> should equal full
 
     [<Fact>]
-    let ``Parse correctly places pieces for the starting position`` () =
+    let ``ToBrd correctly places pieces for the starting position`` () =
         let result = FEN.ToBrd FEN.StartStr
         
         // Check corners
@@ -69,7 +69,7 @@ module FEN =
         result.PieceAt.[int D4] |> should equal EMPTY
 
     [<Fact>]
-    let ``Parse handles numeric empty square notation (e.g., 8)`` () =
+    let ``ToBrd handles numeric empty square notation (e.g., 8)`` () =
         // FEN with a completely empty Rank 4
         let fen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"
         let result = FEN.ToBrd fen
@@ -78,7 +78,7 @@ module FEN =
             result.PieceAt.[int sq] |> should equal EMPTY)
 
     [<Fact>]
-    let ``Parse throws exception for invalid FEN`` () =
+    let ``ToBrd throws exception for invalid FEN`` () =
         let invalidFen = "not a real fen string"
         (fun () -> FEN.ToBrd invalidFen |> ignore) |> should throw typeof<System.Exception>
 

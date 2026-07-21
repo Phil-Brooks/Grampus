@@ -5,7 +5,7 @@ module San =
         match pc % 8 with // using % 8 handles both white (1-6) and black (9-14)
         | 2 -> "N" | 3 -> "B" | 4 -> "R" | 5 -> "Q" | 6 -> "K"
         | _ -> "" // Pawns have no letter in SAN
-    let ToSan (bd: Brd) (m: Move) =
+    let ToSan (bd: Brd) (m: Mv) =
         // 1. Check Castling
         if (m.Pc = WKING || m.Pc = BKING) && abs(m.To - m.From) = 2 then
             if m.To|>FL = G then "O-O" else "O-O-O"
