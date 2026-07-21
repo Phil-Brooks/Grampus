@@ -24,13 +24,11 @@ type RepertoirePanel() as this =
         grid.ColumnHeadersDefaultCellStyle.BackColor <- Color.White
         grid.ColumnHeadersBorderStyle <- DataGridViewHeaderBorderStyle.None
         
-        grid.Columns.Add("Type", "Type") |> ignore
         grid.Columns.Add("Move", "Move") |> ignore
         grid.Columns.Add("Comment", "Comment") |> ignore
         
-        grid.Columns.[0].Width <- 45
-        grid.Columns.[1].Width <- 60
-        grid.Columns.[2].AutoSizeMode <- DataGridViewAutoSizeColumnMode.Fill
+        grid.Columns.[0].Width <- 60
+        grid.Columns.[1].AutoSizeMode <- DataGridViewAutoSizeColumnMode.Fill
 
         // Handle double clicking a move to play it
         grid.CellDoubleClick.Add(fun e ->
@@ -44,19 +42,17 @@ type RepertoirePanel() as this =
             if e.RowIndex >= 0 && e.ColumnIndex >= 0 then
                 match grid.Rows.[e.RowIndex].Tag with
                 | :? RepertoireNode as node ->
-                    let label, foreCol, fontStyle = RepertoireUILogic.getAnnotationDetails node.Annotation
-                    let backCol = RepertoireUILogic.getAnnotationColor node.Annotation
                     
                     // Handle Selection
                     let isSelected = e.State.HasFlag(DataGridViewElementStates.Selected)
-                    let finalBack = if isSelected then e.CellStyle.SelectionBackColor else backCol
-                    let finalFore = if isSelected then e.CellStyle.SelectionForeColor else foreCol
+                    let finalBack = if isSelected then e.CellStyle.SelectionBackColor else Color.DarkGreen
+                    let finalFore = if isSelected then e.CellStyle.SelectionForeColor else Color.FromArgb(235, 255, 235)
 
                     use backBrush = new SolidBrush(finalBack)
                     e.Graphics.FillRectangle(backBrush, e.CellBounds)
 
                     let text = e.Value.ToString()
-                    use font = new Font(e.CellStyle.Font, fontStyle)
+                    use font = new Font(e.CellStyle.Font, FontStyle.Bold)
                     
                     TextRenderer.DrawText(e.Graphics, text, font, e.CellBounds, finalFore, 
                         TextFormatFlags.VerticalCenter ||| TextFormatFlags.Left)
@@ -72,8 +68,7 @@ type RepertoirePanel() as this =
             grid.SuspendLayout()
             grid.Rows.Clear()
             for node in nodes do
-                let label, _, _ = RepertoireUILogic.getAnnotationDetails node.Annotation
-                let rowIdx = grid.Rows.Add([| box label; box node.San; box node.Comment |])
+                let rowIdx = grid.Rows.Add([| box node.San; box node.Comment |])
                 grid.Rows.[rowIdx].Tag <- node
             grid.ResumeLayout()
 

@@ -4,14 +4,9 @@ open System.Text.Json
 open System.Text.Json.Serialization
 open System.IO
 
-    type MoveAnnotation = 
-        | MainLine = 0   // The move you intend to play
-        | Alternative = 1 // A secondary option
-        | Opponent = 2   // A move the opponent might play
     type RepertoireNode = {
         Mv : Mv
         San : string
-        Annotation : MoveAnnotation
         Comment : string
         Replies : RepertoireNode list
     }
@@ -64,5 +59,5 @@ open System.IO
                         findCurrentBranch matchingNode.Replies remainingMoves)
 
         /// Helper to create a new move node
-        let createNode move san annot =
-            { Mv = move; San = san; Annotation = annot; Comment = ""; Replies = [] }
+        let createNode move san =
+            { Mv = move; San = san; Comment = ""; Replies = [] }

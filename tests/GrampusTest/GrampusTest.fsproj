@@ -23,7 +23,6 @@
     <Compile Include="UciMove.fs" />
     <Compile Include="Engine.fs" />
     <Compile Include="LichessClient.fs" />
-    <Compile Include="RepertoireUILogic.fs" />
     <Compile Include="MasterDataLogic.fs" />
     <Compile Include="AnalysisDisplay.fs" />
     <Compile Include="HistoryLogic.fs" />

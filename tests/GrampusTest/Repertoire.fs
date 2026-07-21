@@ -16,11 +16,11 @@ module RepertoireTests =
 
 
     // --- Setup a test tree with Enum syntax ---
-    let nodeNf3 = { Mv = createTestMv G1 F3 2; San = "Nf3"; Annotation = MoveAnnotation.MainLine; Comment = ""; Replies = [] }
-    let nodeE5  = { Mv = createTestMv E7 E5 9; San = "e5"; Annotation = MoveAnnotation.Opponent; Comment = ""; Replies = [nodeNf3] }
-    let nodeC5  = { Mv = createTestMv C7 C5 9; San = "c5"; Annotation = MoveAnnotation.Opponent; Comment = ""; Replies = [] }
-    let nodeE4  = { Mv = createTestMv E2 E4 1; San = "e4"; Annotation = MoveAnnotation.MainLine; Comment = ""; Replies = [nodeE5; nodeC5] }
-    let nodeD4  = { Mv = createTestMv D2 D4 1; San = "d4"; Annotation = MoveAnnotation.Alternative; Comment = ""; Replies = [] }
+    let nodeNf3 = { Mv = createTestMv G1 F3 2; San = "Nf3"; Comment = ""; Replies = [] }
+    let nodeE5  = { Mv = createTestMv E7 E5 9; San = "e5"; Comment = ""; Replies = [nodeNf3] }
+    let nodeC5  = { Mv = createTestMv C7 C5 9; San = "c5"; Comment = ""; Replies = [] }
+    let nodeE4  = { Mv = createTestMv E2 E4 1; San = "e4"; Comment = ""; Replies = [nodeE5; nodeC5] }
+    let nodeD4  = { Mv = createTestMv D2 D4 1; San = "d4"; Comment = ""; Replies = [] }
     
     let testRoots = [nodeE4; nodeD4]
     let testRepertoire = { Name = "Test Rep"; Side = 0; Roots = testRoots }
@@ -73,8 +73,6 @@ module RepertoireTests =
             loaded.Name |> should equal "Test Rep"
             loaded.Roots.Length |> should equal 2
             loaded.Roots.[0].San |> should equal "e4"
-            // Check if Enum serialized as String correctly
-            loaded.Roots.[0].Annotation |> should equal MoveAnnotation.MainLine
         finally
             if File.Exists(testFile) then File.Delete(testFile)
 
@@ -90,10 +88,9 @@ module RepertoireTests =
     [<Fact>]
     let ``createNode initializes correctly`` () =
         let mv = createTestMv E2 E4 1
-        let node = Repertoire.createNode mv "e4" MoveAnnotation.MainLine
+        let node = Repertoire.createNode mv "e4" 
         
         node.Mv.From |> should equal E2
-        node.Annotation |> should equal MoveAnnotation.MainLine
         node.Replies |> should be Empty
 
     [<Fact>]
@@ -102,8 +99,8 @@ module RepertoireTests =
         let moveToQueen = createTestMvP A7 A8 WPAWN WQUEEN
         let moveToRook  = createTestMvP A7 A8 WPAWN WROOK
         
-        let nodeQueen = { Mv = moveToQueen; San = "a8=Q"; Annotation = MoveAnnotation.MainLine; Comment = "Best"; Replies = [] }
-        let nodeRook  = { Mv = moveToRook; San = "a8=R"; Annotation = MoveAnnotation.Alternative; Comment = "Silly"; Replies = [] }
+        let nodeQueen = { Mv = moveToQueen; San = "a8=Q"; Comment = "Best"; Replies = [] }
+        let nodeRook  = { Mv = moveToRook; San = "a8=R"; Comment = "Silly"; Replies = [] }
         
         let roots = [nodeQueen; nodeRook]
 
@@ -164,8 +161,8 @@ module RepertoireTests =
         let move2 = createTestMvP 52 36 9 0 // e5
         let move3_actual = createTestMvP 50 34 9 0 // c5 (The move actually played)
         
-        let nodeE5 = { Mv = move2; San = "e5"; Annotation = MoveAnnotation.Opponent; Comment = ""; Replies = [] }
-        let nodeE4 = { Mv = move1; San = "e4"; Annotation = MoveAnnotation.MainLine; Comment = ""; Replies = [nodeE5] }
+        let nodeE5 = { Mv = move2; San = "e5"; Comment = ""; Replies = [] }
+        let nodeE4 = { Mv = move1; San = "e4"; Comment = ""; Replies = [nodeE5] }
         
         // Played e4, then c5. But the book only knows e4 followed by e5.
         let playedMoves = [ move1; move3_actual ]
