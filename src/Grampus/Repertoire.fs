@@ -54,8 +54,6 @@ open System.IO
         /// Helper to create a new move node
         let createNode move san =
             { Mv = move; San = san; Comment = ""; Replies = [] }
-
-
         let rec private updateNodes (nodes: RepertoireNode list) (history: Mv list) (newMv: Mv) (newSan: string) (studySide: int) (currentTurn: int) =
             match history with
             | head :: tail ->
@@ -79,8 +77,6 @@ open System.IO
                     let exists = nodes |> List.exists (fun n -> n.Mv = newMv)
                     if exists then nodes // Already exists: don't change anything
                     else nodes @ [ { Mv = newMv; San = newSan; Comment = ""; Replies = [] } ] // Add new variation
-
-        //TODO: unit test
         /// Public entry point to update the repertoire structure
         let update (repertoire: Repertoire) (history: Mv list) (newMv: Mv) (newSan: string) =
             // Start recursion from the root. The first move of a game is always WHITE's turn.

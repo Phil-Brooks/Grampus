@@ -5,7 +5,7 @@ open FsUnit.Xunit
 open Grampus
 open System.IO
 
-module RepertoireTests =
+module Repertoire =
 
     // --- Helpers for cleaner tests ---
     
@@ -169,3 +169,105 @@ module RepertoireTests =
         
         let result = Repertoire.findCurrentBranch [nodeE4] playedMoves
         result |> should equal None
+
+    // --- 5. Repertoire Update Logic Tests ---
+
+    [<Fact>]
+    let ``update OUR SIDE: adds move to empty roots`` () =
+        let rep = { Name = "White Study"; Side = WHITE; Roots = [] }
+        let moveE4 = createTestMv E2 E4 1
+        
+        let updated = Repertoire.update rep [] moveE4 "e4"
+        
+        updated.Roots.Length |> should equal 1
+        updated.Roots.[0].San |> should equal "e4"
+
+    [<Fact>]
+    let ``update OUR SIDE: replaces existing move with new one (Single Path Rule)`` () =
+        // Initial state: We have d4 in our repertoire
+        let moveD4 = createTestMv D2 D4 1
+        let moveE4 = createTestMv E2 E4 1
+        let nodeD4 = { Mv = moveD4; San = "d4"; Comment = "Old"; Replies = [] }
+        let rep = { Name = "White Study"; Side = WHITE; Roots = [nodeD4] }
+
+        // Update: We play e4 instead
+        let updated = Repertoire.update rep [] moveE4 "e4"
+
+        // Result: d4 should be gone, replaced by e4
+        updated.Roots.Length |> should equal 1
+        updated.Roots.[0].San |> should equal "e4"
+
+    [<Fact>]
+    let ``update OUR SIDE: keeps existing move and branches if move is the same`` () =
+        let moveE4 = createTestMv E2 E4 1
+        let reply = { Mv = createTestMv E7 E5 9; San = "e5"; Comment = ""; Replies = [] }
+        let nodeE4 = { Mv = moveE4; San = "e4"; Comment = "Keep me"; Replies = [reply] }
+        let rep = { Name = "White Study"; Side = WHITE; Roots = [nodeE4] }
+
+        // Update with same move
+        let updated = Repertoire.update rep [] moveE4 "e4"
+
+        updated.Roots.Length |> should equal 1
+        updated.Roots.[0].Comment |> should equal "Keep me"
+        updated.Roots.[0].Replies.Length |> should equal 1 // Branch preserved
+
+    [<Fact>]
+    let ``update OPPONENT SIDE: adds variation instead of replacing`` () =
+        // Repertoire for WHITE. History: 1. e4. Opponent (Black) plays.
+        let moveE4 = createTestMv E2 E4 1
+        let moveE5 = createTestMv E7 E5 9
+        let moveC5 = createTestMv C7 C5 9
+        
+        let nodeE5 = { Mv = moveE5; San = "e5"; Comment = ""; Replies = [] }
+        let nodeE4 = { Mv = moveE4; San = "e4"; Comment = ""; Replies = [nodeE5] }
+        let rep = { Name = "White Study"; Side = WHITE; Roots = [nodeE4] }
+
+        // Black plays c5 (Sicilian) instead of e5
+        let updated = Repertoire.update rep [moveE4] moveC5 "c5"
+
+        // Result: e4 should now have TWO replies (e5 AND c5)
+        let root = updated.Roots.[0]
+        root.Replies.Length |> should equal 2
+        root.Replies |> List.exists (fun n -> n.San = "e5") |> should be True
+        root.Replies |> List.exists (fun n -> n.San = "c5") |> should be True
+
+    [<Fact>]
+    let ``update Deep Path: correctly navigates and updates several moves deep`` () =
+        // 1. e4 e5 2. Nf3 ... -> add 2... Nc6
+        let m1 = createTestMv E2 E4 1   // White
+        let m2 = createTestMv E7 E5 9   // Black
+        let m3 = createTestMv G1 F3 2   // White
+        let m4 = createTestMv B8 C6 10  // Black (New Variation)
+
+        let nodeNf3 = { Mv = m3; San = "Nf3"; Comment = ""; Replies = [] }
+        let nodeE5 = { Mv = m2; San = "e5"; Comment = ""; Replies = [nodeNf3] }
+        let nodeE4 = { Mv = m1; San = "e4"; Comment = ""; Replies = [nodeE5] }
+        let rep = { Name = "White Study"; Side = WHITE; Roots = [nodeE4] }
+
+        let history = [m1; m2; m3]
+        let updated = Repertoire.update rep history m4 "Nc6"
+
+        // Verify structure: e4 -> e5 -> Nf3 -> Nc6
+        let branch = Repertoire.findCurrentBranch updated.Roots [m1; m2; m3]
+        branch.Value.Length |> should equal 1
+        branch.Value.[0].San |> should equal "Nc6"
+
+    [<Fact>]
+    let ``update Black Repertoire: applies single path rule to Black moves`` () =
+        // Studying BLACK. 1. e4 has been played. 
+        // We currently have 1... e5 in rep. We want to change to 1... c5.
+        let m1 = createTestMv E2 E4 1
+        let mE5 = createTestMv E7 E5 9
+        let mC5 = createTestMv C7 C5 9
+        
+        let nodeE5 = { Mv = mE5; San = "e5"; Comment = ""; Replies = [] }
+        let nodeE4 = { Mv = m1; San = "e4"; Comment = ""; Replies = [nodeE5] }
+        let rep = { Name = "Black Study"; Side = BLACK; Roots = [nodeE4] }
+
+        // Update history is [e4]. Next turn is Black (Our side).
+        let updated = Repertoire.update rep [m1] mC5 "c5"
+
+        // Result: e5 should be REPLACED by c5 because it's our side
+        let repliesToE4 = updated.Roots.[0].Replies
+        repliesToE4.Length |> should equal 1
+        repliesToE4.[0].San |> should equal "c5"
