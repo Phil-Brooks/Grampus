@@ -21,6 +21,7 @@
     <Compile Include="UciParser.fs" />
     <Compile Include="UciMove.fs" />
     <Compile Include="Engine.fs" />
+    <Compile Include="LichessClient.fs" />
     <Compile Include="AnalysisDisplay.fs" />
     <Compile Include="HistoryLogic.fs" />
     <Compile Include="Assets.fs" />
