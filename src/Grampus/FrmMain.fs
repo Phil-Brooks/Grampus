@@ -18,19 +18,19 @@ type FrmMain() as this =
     let rep = new RepertoirePanel(Dock = DockStyle.Fill)
     let mutable currentRep = Repertoire.load WHITE
     // --- Helper Logic ---
-    let updateRepertoireUI(history: Mv list) =
+    let updateRepUI(history: Mv list) =
         match Repertoire.findCurrentBranch currentRep.Roots history with
         | Some replies -> 
             rep.UpdateMoves(replies)
         | None -> 
             rep.Clear()
-    let switchRepertoire (side: int) =
+    let switchRep (side: int) =
         Repertoire.save currentRep
         currentRep <- Repertoire.load side
         bd.Orient(side) 
         mh.Clear()
         bd.SetBoard(Board.Start)
-        updateRepertoireUI([]) 
+        updateRepUI([]) 
         lblStatus.Text <- sprintf "Studying %s Repertoire" (if side = WHITE then "White" else "Black")
     // 2. Setup the Engine logic
     let onEngineMsg = function
@@ -43,13 +43,13 @@ type FrmMain() as this =
         let ms = new MenuStrip()
         // File Menu
         let mnuFile = new ToolStripMenuItem("&File")
-        let itmNew = new ToolStripMenuItem("&New Game", null, (fun _ _ -> switchRepertoire currentRep.Side))
+        let itmNew = new ToolStripMenuItem("&New Game", null, (fun _ _ -> switchRep currentRep.Side))
         let itmExit = new ToolStripMenuItem("E&xit", null, (fun _ _ -> this.Close()))
         mnuFile.DropDownItems.AddRange([| itmNew :> ToolStripItem; new ToolStripSeparator() :> ToolStripItem; itmExit |])
         // Study Menu
         let mnuStudy = new ToolStripMenuItem("&Study")
-        let itmWhite = new ToolStripMenuItem("White Repertoire", null, (fun _ _ -> switchRepertoire WHITE))
-        let itmBlack = new ToolStripMenuItem("Black Repertoire", null, (fun _ _ -> switchRepertoire BLACK))
+        let itmWhite = new ToolStripMenuItem("White Repertoire", null, (fun _ _ -> switchRep WHITE))
+        let itmBlack = new ToolStripMenuItem("Black Repertoire", null, (fun _ _ -> switchRep BLACK))
         let itmSave = new ToolStripMenuItem("&Save Now", null, (fun _ _ -> Repertoire.save currentRep))
         mnuStudy.DropDownItems.AddRange([| itmWhite :> ToolStripItem; itmBlack :> ToolStripItem; new ToolStripSeparator() :> ToolStripItem; itmSave |])
         ms.Items.Add(mnuFile) |> ignore
@@ -66,11 +66,11 @@ type FrmMain() as this =
         let btnBlack = new ToolStripButton(Text = "Study Black", CheckOnClick = true)
         btnWhite.Click.Add(fun _ -> 
             btnBlack.Checked <- false
-            switchRepertoire WHITE
+            switchRep WHITE
         )
         btnBlack.Click.Add(fun _ -> 
             btnWhite.Checked <- false
-            switchRepertoire BLACK
+            switchRep BLACK
         )
         let btnSave = new ToolStripButton(Text = "Save Changes")
         //btnSave.Image <- Assets.Save // If you have a save icon
@@ -109,7 +109,7 @@ type FrmMain() as this =
             currentRep <- Repertoire.update currentRep oldHistory m san
             mh.AddMove(bdBefore, m)
             let newHistory = oldHistory @ [ m ]
-            updateRepertoireUI(newHistory) 
+            updateRepUI(newHistory) 
             let currentBrd = bd.GetBoard()
             let fen = FEN.FromBrd currentBrd
             lblStatus.Text <- sprintf "Last move: %s" san
@@ -125,7 +125,7 @@ type FrmMain() as this =
         )
         currentRep <- Repertoire.load WHITE
         bd.Orient(WHITE)
-        updateRepertoireUI([])
+        updateRepUI([])
         lblStatus.Text <- "Studying White Repertoire"
     override this.OnFormClosing(e) =
         engine.Post Quit
