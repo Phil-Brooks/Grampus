@@ -5,6 +5,7 @@ open FsUnit.Xunit
 open Grampus
 
 module HistoryLogic =
+    let dummyMove f t = { From = f; To = t; Pc = 0; CapPc = 0; Prom = 0 }
 
     [<Fact>]
     let ``First move by White adds a new row`` () =
@@ -43,3 +44,29 @@ module HistoryLogic =
         let actions = HistoryLogic.getRequiredActions bd "d4" 1
         
         actions |> should equal [ AddNewRow(2, "d4") ]
+
+    [<Fact>]
+    let ``Initial history is empty`` () =
+        HistoryLogic.emptyHistory.PlayedMoves |> should be Empty
+
+    [<Fact>]
+    let ``Adding moves preserves the correct sequence for Repertoire matching`` () =
+        let m1 = dummyMove E2 E4
+        let m2 = dummyMove E7 E5
+        let m3 = dummyMove G1 F3
+        
+        let history = 
+            HistoryLogic.emptyHistory
+            |> HistoryLogic.addMoveToHistory m1
+            |> HistoryLogic.addMoveToHistory m2
+            |> HistoryLogic.addMoveToHistory m3
+            
+        history.PlayedMoves |> should equal [ m1; m2; m3 ]
+
+    [<Fact>]
+    let ``Resetting history returns to empty`` () =
+        let m1 = dummyMove E2 E4
+        let history = HistoryLogic.addMoveToHistory m1 HistoryLogic.emptyHistory
+        
+        let reset = HistoryLogic.emptyHistory
+        reset.PlayedMoves |> should be Empty

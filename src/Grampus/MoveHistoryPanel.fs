@@ -7,6 +7,7 @@ open Grampus
 type MoveHistoryPanel() as this =
     inherit UserControl()
     
+    let mutable history = HistoryLogic.emptyHistory
     let grid = new DataGridView(
         Dock = DockStyle.Fill, 
         AllowUserToAddRows = false,
@@ -27,11 +28,9 @@ type MoveHistoryPanel() as this =
         this.Controls.Add(grid)
 
     member this.AddMove(bdBefore: Brd, m: Mv) =
+        history <- HistoryLogic.addMoveToHistory m history
         let san = San.ToSan bdBefore m
-        // Call the new logic that returns a list
         let actions = HistoryLogic.getRequiredActions bdBefore san grid.Rows.Count
-        
-        // Loop through each action and apply it to the grid
         actions |> List.iter (fun action ->
             match action with
             | AddNewRow(num, whiteSan) ->
@@ -40,5 +39,10 @@ type MoveHistoryPanel() as this =
                 let lastRow = grid.Rows.[grid.Rows.Count - 1]
                 lastRow.Cells.[2].Value <- blackSan
         )
-            
         grid.FirstDisplayedScrollingRowIndex <- grid.RowCount - 1
+
+    member this.GetMoveList() = history.PlayedMoves
+
+    member this.Clear() =
+        history <- HistoryLogic.emptyHistory
+        grid.Rows.Clear()

@@ -9,10 +9,11 @@ type FrmMain() as this =
     inherit Form(Text = "Grampus", WindowState = FormWindowState.Maximized, 
                     IsMdiContainer = true, Icon = Assets.Grampus)
 
-    let bd = new PnlBoard(Dock = DockStyle.Fill)
+    let bd = new PnlBoard(Dock = DockStyle.Top, Height = 600)
     let mh = new MoveHistoryPanel(Dock = DockStyle.Fill)
-    let ap = new EngineAnalysisPanel(Dock = DockStyle.Fill)
+    let ap = new EngineAnalysisPanel(Dock = DockStyle.Top, Height = 100)
     let mr = new MasterDatabasePanel(Dock = DockStyle.Fill)
+    let rep = new RepertoirePanel(Dock = DockStyle.Fill)
 
     // 2. Setup the Engine logic
     let onEngineMsg = function
@@ -51,30 +52,16 @@ type FrmMain() as this =
 
     do 
         // --- 1. Assemble History (Far Left) ---
-        mh.Dock <- DockStyle.Fill
         colHistory.Controls.Add(mh)
 
         // --- 2. Assemble Middle Column (Board + Master) ---
-        // We set the board to the TOP with a fixed height
-        bd.Dock <- DockStyle.Top
-        bd.Height <- 600
-        
-        // We set the masterPanel to FILL the remaining space
-        mr.Dock <- DockStyle.Fill
-        
         // IMPORTANT: Add the FILL control first, then the TOP control.
-        // WinForms will give the TOP control its height, and the FILL control the rest.
         colBoard.Controls.Add(mr) 
         colBoard.Controls.Add(bd)
 
-        // --- 3. Assemble Right Column (Analysis) ---
-        ap.Dock <- DockStyle.Top
-        ap.Height <- 100
-        
-        // Create a filler for the bottom-right if you want one
-        let filler = new Panel(Dock = DockStyle.Fill, BackColor = Color.FromArgb(240, 240, 240))
-        
-        colAnalysis.Controls.Add(filler)
+        // --- 3. Assemble Right Column (Analysis + Rep) ---
+        // IMPORTANT: Add the FILL control first, then the TOP control.
+        colAnalysis.Controls.Add(rep)
         colAnalysis.Controls.Add(ap)
 
         // --- 4. Final Form Assembly (Order is Vital) ---
@@ -83,7 +70,6 @@ type FrmMain() as this =
         this.Controls.Add(colBoard)    // Claims 600px from the current left
         this.Controls.Add(colHistory)  // Claims 200px from the far left
         this.Controls.Add(ts)           // Claims the top edge        
-        
         
         // Wire board moves to the Engine
         bd.OnMoveMade.Add(fun (bdBefore, m) -> 
