@@ -17,11 +17,12 @@ type FrmMain() as this =
     let mutable currentRepertoire = Repertoire.load WHITE
 
     // --- Helper Logic ---
-    let updateRepertoireUI() =
-        let history = mh.GetMoveList()
+    let updateRepertoireUI(history: Mv list) =
         match Repertoire.findCurrentBranch currentRepertoire.Roots history with
-        | Some replies -> rep.UpdateMoves(replies)
-        | None -> rep.Clear()
+        | Some replies -> 
+            rep.UpdateMoves(replies)
+        | None -> 
+            rep.Clear()
     let switchRepertoire (side: int) =
         // 1. Save current progress before switching
         Repertoire.save currentRepertoire
@@ -35,7 +36,7 @@ type FrmMain() as this =
         // 4. Reset the game and UI for the new study
         mh.Clear()
         bd.SetBoard(Board.Start)
-        updateRepertoireUI() 
+        updateRepertoireUI([]) 
 
     // 2. Setup the Engine logic
     let onEngineMsg = function
@@ -92,31 +93,43 @@ type FrmMain() as this =
             bd.MakeMove(m) // This will trigger OnMoveMade automatically
         )
 
-        // B. When a move is made (either by dragging or by selecting from book)
+        // B. When a move is made
         bd.OnMoveMade.Add(fun (bdBefore, m) -> 
+            // 1. Get the history BEFORE the move
+            let oldHistory = mh.GetMoveList()
+            
+            // 2. Determine the SAN (Standard Algebraic Notation) 
+            let san = San.ToSan bdBefore m
+
+            // 3. Update the data structure using the OLD history as the path
+            currentRepertoire <- Repertoire.update currentRepertoire oldHistory m san
+            
+            // 4. Update the History UI
             mh.AddMove(bdBefore, m)
-            updateRepertoireUI() // Update the suggested moves
             
-            let currentBrd = bd.GetBoard() 
+            // 5. Explicitly define the NEW history and update Repertoire UI
+            let newHistory = oldHistory @ [ m ]
+            updateRepertoireUI(newHistory) 
+            
+            // --- Rest of your logic (Engine, Lichess, etc.) ---
+            let currentBrd = bd.GetBoard()
             let fen = FEN.FromBrd currentBrd
-            
-            async {
-                let! data = LichessClient.fetchMastersStats fen
-                match data with
-                | Some d -> mr.UpdateData(d)
-                | None -> ()
-            } |> Async.Start
-            
             ap.SetBoard(currentBrd)
             ap.Clear()
             engine.Post (SetPosition fen)
-            engine.Post (StartSearch 10000) 
+            engine.Post (StartSearch 10000)
+            
+            async {
+                let! data = LichessClient.fetchMastersStats fen
+                match data with | Some d -> mr.UpdateData(d) | None -> ()
+            } |> Async.Start
         )
+
 
         // C. Initial Display
         currentRepertoire <- Repertoire.load WHITE
         bd.Orient(WHITE)
-        updateRepertoireUI()
+        updateRepertoireUI([])
 
     override this.OnFormClosing(e) =
         engine.Post Quit
