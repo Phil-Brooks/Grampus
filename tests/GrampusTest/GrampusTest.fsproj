@@ -18,6 +18,7 @@
     <Compile Include="Board.fs" />
     <Compile Include="MoveGen.fs" />
     <Compile Include="San.fs" />
+    <Compile Include="Repertoire.fs" />
     <Compile Include="UciParser.fs" />
     <Compile Include="UciMove.fs" />
     <Compile Include="Engine.fs" />
