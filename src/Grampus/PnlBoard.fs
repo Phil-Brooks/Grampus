@@ -205,6 +205,13 @@ type PnlBoard() as bd =
     member bd.SetBoard(ibd : Brd) =
         board <- ibd
         setpcsmvs()
+    member bd.MakeMove(m: Mv) =
+        let oldBoard = board
+        let nbd = board |> Board.MoveApply m
+        bd.SetBoard(nbd) // Redraw board
+        moveMade.Trigger(oldBoard, m) // Fire event    
+    
+    
     ///Gets the Board to be displayed
     member bd.GetBoard() = board
     ///Orients the Board depending on whether White

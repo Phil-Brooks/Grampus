@@ -68,7 +68,7 @@ type RepertoirePanel() as this =
 
     [<CLIEvent>] member this.OnMoveSelected = moveSelected.Publish
     member this.UpdateMoves(nodes: RepertoireNode list) =
-        this.BeginInvoke(MethodInvoker(fun () ->
+        let updateAction() =
             grid.SuspendLayout()
             grid.Rows.Clear()
             for node in nodes do
@@ -76,7 +76,18 @@ type RepertoirePanel() as this =
                 let rowIdx = grid.Rows.Add([| box label; box node.San; box node.Comment |])
                 grid.Rows.[rowIdx].Tag <- node
             grid.ResumeLayout()
-        )) |> ignore
+
+        // If the window is already visible, use BeginInvoke to be thread-safe
+        if this.IsHandleCreated then
+            this.BeginInvoke(MethodInvoker(updateAction)) |> ignore
+        else
+            // If we are still in the constructor (startup), just run it directly
+            updateAction()
 
     member this.Clear() =
-        this.BeginInvoke(MethodInvoker(fun () -> grid.Rows.Clear())) |> ignore
+        let clearAction() = grid.Rows.Clear()
+        
+        if this.IsHandleCreated then
+            this.BeginInvoke(MethodInvoker(clearAction)) |> ignore
+        else
+            clearAction()
