@@ -14,31 +14,28 @@ type FrmMain() as this =
     let mr = new MasterDatabasePanel(Dock = DockStyle.Fill)
     let rep = new RepertoirePanel(Dock = DockStyle.Fill)
 
-    // --- State ---
-    // Creating a small test repertoire for White
-    let mutable currentRepertoire : Repertoire option = 
-        Some { 
-            Name = "White Opening Study"
-            Side = WHITE
-            Roots = [ 
-                { Mv = { From=E2; To=E4; Pc=WPAWN; CapPc=EMPTY; Prom=EMPTY }; San = "e4"; Annotation = MainLine; Comment = "Best by test"; Replies = [
-                    { Mv = { From=C7; To=C5; Pc=BPAWN; CapPc=EMPTY; Prom=EMPTY }; San = "c5"; Annotation = Opponent; Comment = "Sicilian Defense"; Replies = [
-                         { Mv = { From=G1; To=F3; Pc=WKNIGHT; CapPc=EMPTY; Prom=EMPTY }; San = "Nf3"; Annotation = MainLine; Comment = "Open Sicilian"; Replies = [] }
-                    ]}
-                ]}
-                { Mv = { From=D2; To=D4; Pc=WPAWN; CapPc=EMPTY; Prom=EMPTY }; San = "d4"; Annotation = Alternative; Comment = "Queen's Pawn Game"; Replies = [] }
-            ] 
-        }
+    let mutable currentRepertoire = Repertoire.load WHITE
 
     // --- Helper Logic ---
     let updateRepertoireUI() =
-        match currentRepertoire with
-        | Some r ->
-            let history = mh.GetMoveList()
-            match Repertoire.findCurrentBranch r.Roots history with
-            | Some replies -> rep.UpdateMoves(replies)
-            | None -> rep.Clear()
+        let history = mh.GetMoveList()
+        match Repertoire.findCurrentBranch currentRepertoire.Roots history with
+        | Some replies -> rep.UpdateMoves(replies)
         | None -> rep.Clear()
+    let switchRepertoire (side: int) =
+        // 1. Save current progress before switching
+        Repertoire.save currentRepertoire
+        
+        // 2. Load the new one
+        currentRepertoire <- Repertoire.load side
+        
+        // 3. Orient the board automatically
+        bd.Orient(side) 
+        
+        // 4. Reset the game and UI for the new study
+        mh.Clear()
+        bd.SetBoard(Board.Start)
+        updateRepertoireUI() 
 
     // 2. Setup the Engine logic
     let onEngineMsg = function
@@ -50,25 +47,25 @@ type FrmMain() as this =
 
     let createToolbar() =
         let ts = new ToolStrip()
-        let btnFlip = new ToolStripButton(Text = "Flip Board", DisplayStyle = ToolStripItemDisplayStyle.ImageAndText)
-        btnFlip.Image <- Assets.Orient
-        btnFlip.Padding <- Padding(5, 0, 5, 0) 
-        btnFlip.Click.Add(fun _ -> bd.Orient())
-        
-        let btnNew = new ToolStripButton(Text = "New Game")
-        btnNew.Click.Add(fun _ -> 
-            ap.Clear()
-            mh.Clear() // Clear the move history
-            bd.SetBoard(Board.Start) // Reset the board
-            updateRepertoireUI() // Reset repertoire to roots
-            engine.Post (SetPosition FEN.StartStr)
-            engine.Post (StartSearch 5000)
+        let btnWhite = new ToolStripButton(Text = "Study White", CheckOnClick = true, Checked = true)
+        let btnBlack = new ToolStripButton(Text = "Study Black", CheckOnClick = true)
+        btnWhite.Click.Add(fun _ -> 
+            btnBlack.Checked <- false
+            switchRepertoire WHITE
         )
-        
-        ts.Items.Add(btnFlip) |> ignore
+        btnBlack.Click.Add(fun _ -> 
+            btnWhite.Checked <- false
+            switchRepertoire BLACK
+        )
+        let btnSave = new ToolStripButton(Text = "Save Changes")
+        //btnSave.Image <- Assets.Save // If you have a save icon
+        btnSave.Click.Add(fun _ -> Repertoire.save currentRepertoire)
+
+        ts.Items.Add(btnWhite) |> ignore
+        ts.Items.Add(btnBlack) |> ignore
         ts.Items.Add(new ToolStripSeparator()) |> ignore
-        ts.Items.Add(btnNew) |> ignore
-        ts
+        ts.Items.Add(btnSave) |> ignore
+        ts    
     let ts = createToolbar()
 
     // 1. Layout containers
@@ -117,8 +114,11 @@ type FrmMain() as this =
         )
 
         // C. Initial Display
+        currentRepertoire <- Repertoire.load WHITE
+        bd.Orient(WHITE)
         updateRepertoireUI()
 
     override this.OnFormClosing(e) =
         engine.Post Quit
         base.OnFormClosing(e)
+        Repertoire.save currentRepertoire

@@ -68,8 +68,8 @@ type PnlBoard() as bd =
             with _ -> ()
         else setpcsmvs()
     ///orient board
-    let orient() =
-        isw <- not isw
+    let orient(side) =
+        isw <- side = WHITE
         let possq i (sq : PictureBox) =
             let r = RNK i
             let f = FL i
@@ -215,7 +215,7 @@ type PnlBoard() as bd =
     ///Gets the Board to be displayed
     member bd.GetBoard() = board
     ///Orients the Board depending on whether White
-    member bd.Orient() = orient()
+    member bd.Orient(side) = orient(side)
     // Expose the event so the Form can see it
     [<CLIEvent>]
     member this.OnMoveMade = moveMade.Publish

@@ -11,9 +11,9 @@ module RepertoireUILogic =
     
     // Define the test data as a static member
     let annotationCases : obj[][] = [|
-        [| MainLine; "Main"; FontStyle.Bold |]
-        [| Alternative; "Alt"; FontStyle.Regular |]
-        [| Opponent; "Opp"; FontStyle.Italic |]
+        [| MoveAnnotation.MainLine; "Main"; FontStyle.Bold |]
+        [| MoveAnnotation.Alternative; "Alt"; FontStyle.Regular |]
+        [| MoveAnnotation.Opponent; "Opp"; FontStyle.Italic |]
     |]
 
     [<Theory>]
@@ -26,8 +26,8 @@ module RepertoireUILogic =
     
     [<Fact>]
     let ``getAnnotationDetails returns specific colors for specific types`` () =
-        let _, mainCol, _ = RepertoireUILogic.getAnnotationDetails MainLine
-        let _, altCol, _ = RepertoireUILogic.getAnnotationDetails Alternative
+        let _, mainCol, _ = RepertoireUILogic.getAnnotationDetails MoveAnnotation.MainLine
+        let _, altCol, _ = RepertoireUILogic.getAnnotationDetails MoveAnnotation.Alternative
         
         mainCol |> should equal Color.DarkGreen
         altCol |> should equal Color.RoyalBlue
@@ -36,9 +36,9 @@ module RepertoireUILogic =
 
     [<Fact>]
     let ``getAnnotationColor returns very light backgrounds`` () =
-        let mainBg = RepertoireUILogic.getAnnotationColor MainLine
-        let altBg = RepertoireUILogic.getAnnotationColor Alternative
-        let oppBg = RepertoireUILogic.getAnnotationColor Opponent
+        let mainBg = RepertoireUILogic.getAnnotationColor MoveAnnotation.MainLine
+        let altBg = RepertoireUILogic.getAnnotationColor MoveAnnotation.Alternative
+        let oppBg = RepertoireUILogic.getAnnotationColor MoveAnnotation.Opponent
 
         // Verify they are different colors
         mainBg |> should not' (equal altBg)
@@ -49,9 +49,9 @@ module RepertoireUILogic =
 
     // Data provider for the Theory
     let allAnnotations : obj[][] = [| 
-        [| MainLine |]
-        [| Alternative |]
-        [| Opponent |] 
+        [| MoveAnnotation.MainLine |]
+        [| MoveAnnotation.Alternative |]
+        [| MoveAnnotation.Opponent |] 
     |]
 
     [<Theory>]

@@ -1,9 +1,13 @@
 namespace Grampus
 
+open System.Text.Json
+open System.Text.Json.Serialization
+open System.IO
+
     type MoveAnnotation = 
-        | MainLine    // The move you intend to play
-        | Alternative // A secondary option
-        | Opponent    // A move the opponent might play
+        | MainLine = 0   // The move you intend to play
+        | Alternative = 1 // A secondary option
+        | Opponent = 2   // A move the opponent might play
     type RepertoireNode = {
         Mv : Mv
         San : string
@@ -18,6 +22,26 @@ namespace Grampus
     }
 
     module Repertoire =
+        let private options = JsonSerializerOptions()
+        options.WriteIndented <- true
+        options.Converters.Add(JsonStringEnumConverter())
+
+        let private getFileName side = 
+            if side = WHITE then "repertoire_white.json" else "repertoire_black.json"
+
+        let save (repertoire: Repertoire) =
+            let path = getFileName repertoire.Side
+            let json = JsonSerializer.Serialize(repertoire, options)
+            File.WriteAllText(path, json)
+
+        let load (side: int) : Repertoire =
+            let path = getFileName side
+            if File.Exists(path) then
+                try 
+                    JsonSerializer.Deserialize<Repertoire>(File.ReadAllText(path), options)
+                with _ -> { Name = "New Repertoire"; Side = side; Roots = [] }
+            else 
+                { Name = "New Repertoire"; Side = side; Roots = [] }
 
         /// Flips the board orientation if the repertoire is for Black
         let getRequiredOrientation (repertoire: Repertoire) =
@@ -32,7 +56,7 @@ namespace Grampus
             | currentMove :: remainingMoves ->
                 // Look for a node in this level that matches the move played
                 nodes 
-                |> List.tryFind (fun n -> n.Mv.From = currentMove.From && n.Mv.To = currentMove.To)
+                |> List.tryFind (fun n -> n.Mv.From = currentMove.From && n.Mv.To = currentMove.To && n.Mv.Prom = currentMove.Prom)
                 |> Option.bind (fun matchingNode -> 
                     if remainingMoves.IsEmpty then 
                         Some matchingNode.Replies 
