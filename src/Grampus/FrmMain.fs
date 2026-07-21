@@ -2,8 +2,6 @@ namespace GrampusUI
 
 open System.Windows.Forms
 open Grampus
-open System
-open System.Drawing
 
 type FrmMain() as this =
     inherit Form(Text = "Grampus", WindowState = FormWindowState.Maximized, 
@@ -22,7 +20,7 @@ type FrmMain() as this =
         | Ready -> printfn "Engine is ready"
 
     // Change "to your actual engine executable path
-    let engine = Engine.spawn @"D:\Github\Grampus\stockfish.exe" onEngineMsg
+    let engine = Engine.spawn engloc onEngineMsg
 
     let createToolbar() =
         let ts = new ToolStrip()
