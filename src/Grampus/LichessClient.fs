@@ -20,7 +20,7 @@ type MasterResponse = {
     [<JsonPropertyName("moves")>] Moves : MasterMove[]
 }
 
-//TODO:unit test
+//TODO: unit test
 module LichessClient =
     let private client = new HttpClient()
     let private apiToken = 
