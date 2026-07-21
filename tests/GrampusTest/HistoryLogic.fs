@@ -4,7 +4,7 @@ open Xunit
 open FsUnit.Xunit
 open Grampus
 
-module HistoryLogicTests =
+module HistoryLogic =
 
     [<Fact>]
     let ``First move by White adds a new row`` () =
