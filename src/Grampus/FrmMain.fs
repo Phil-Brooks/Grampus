@@ -3,6 +3,7 @@ namespace GrampusUI
 open System.Windows.Forms
 open Grampus
 open System
+open System.Drawing
 
 type FrmMain() as this =
     inherit Form(Text = "Grampus", WindowState = FormWindowState.Maximized, 
@@ -11,7 +12,7 @@ type FrmMain() as this =
     let bd = new PnlBoard(Dock = DockStyle.Fill)
     let mh = new MoveHistoryPanel(Dock = DockStyle.Fill)
     let ap = new EngineAnalysisPanel(Dock = DockStyle.Fill)
-    let masterPanel = new MasterDatabasePanel(Dock = DockStyle.Fill)
+    let mr = new MasterDatabasePanel(Dock = DockStyle.Fill)
 
     // 2. Setup the Engine logic
     let onEngineMsg = function
@@ -19,7 +20,7 @@ type FrmMain() as this =
         | BestMove m -> printfn "Engine suggests: %s" m
         | Ready -> printfn "Engine is ready"
 
-    // Change "path/to/stockfish" to your actual engine executable path
+    // Change "to your actual engine executable path
     let engine = Engine.spawn @"D:\Github\Grampus\stockfish.exe" onEngineMsg
 
     let createToolbar() =
@@ -41,19 +42,50 @@ type FrmMain() as this =
         ts.Items.Add(new ToolStripSeparator()) |> ignore
         ts.Items.Add(btnNew) |> ignore
         ts
-
     let ts = createToolbar()
-    let bgpnl = new Panel(Dock = DockStyle.Fill, BorderStyle = BorderStyle.Fixed3D)
-    let lfpnl = new Panel(Dock = DockStyle.Left, BorderStyle = BorderStyle.Fixed3D, Width = 600)
-    let rtpnl = new Panel(Dock = DockStyle.Fill, BorderStyle = BorderStyle.Fixed3D)
-    let lftpnl = new Panel(Dock = DockStyle.Top, BorderStyle = BorderStyle.Fixed3D, Height = 600)
-    let lfbpnl = new Panel(Dock = DockStyle.Fill, BorderStyle = BorderStyle.Fixed3D)
-    let rttpnl = new Panel(Dock = DockStyle.Top, BorderStyle = BorderStyle.Fixed3D, Height = 350)
-    let rtmpnl = new Panel(Dock = DockStyle.Top, BorderStyle = BorderStyle.Fixed3D, Height = 400)
-    let rtbpnl = new Panel(Dock = DockStyle.Fill, BorderStyle = BorderStyle.Fixed3D)
+
+    // 1. Create the 3 Main Columns
+    let colHistory = new Panel(Dock = DockStyle.Left, Width = 200, BorderStyle = BorderStyle.FixedSingle)
+    let colBoard   = new Panel(Dock = DockStyle.Left, Width = 600, BorderStyle = BorderStyle.FixedSingle)
+    let colAnalysis = new Panel(Dock = DockStyle.Fill, BorderStyle = BorderStyle.FixedSingle)
 
     do 
-        // 3. Wire board moves to the Engine
+        // --- 1. Assemble History (Far Left) ---
+        mh.Dock <- DockStyle.Fill
+        colHistory.Controls.Add(mh)
+
+        // --- 2. Assemble Middle Column (Board + Master) ---
+        // We set the board to the TOP with a fixed height
+        bd.Dock <- DockStyle.Top
+        bd.Height <- 600
+        
+        // We set the masterPanel to FILL the remaining space
+        mr.Dock <- DockStyle.Fill
+        
+        // IMPORTANT: Add the FILL control first, then the TOP control.
+        // WinForms will give the TOP control its height, and the FILL control the rest.
+        colBoard.Controls.Add(mr) 
+        colBoard.Controls.Add(bd)
+
+        // --- 3. Assemble Right Column (Analysis) ---
+        ap.Dock <- DockStyle.Top
+        ap.Height <- 100
+        
+        // Create a filler for the bottom-right if you want one
+        let filler = new Panel(Dock = DockStyle.Fill, BackColor = Color.FromArgb(240, 240, 240))
+        
+        colAnalysis.Controls.Add(filler)
+        colAnalysis.Controls.Add(ap)
+
+        // --- 4. Final Form Assembly (Order is Vital) ---
+        // Add columns in the order you want them to claim space
+        this.Controls.Add(colAnalysis) // Claims the remaining center/right
+        this.Controls.Add(colBoard)    // Claims 600px from the current left
+        this.Controls.Add(colHistory)  // Claims 200px from the far left
+        this.Controls.Add(ts)           // Claims the top edge        
+        
+        
+        // Wire board moves to the Engine
         bd.OnMoveMade.Add(fun (bdBefore, m) -> 
             mh.AddMove(bdBefore, m)
             
@@ -64,7 +96,7 @@ type FrmMain() as this =
             async {
                 let! data = LichessClient.fetchMastersStats fen
                 match data with
-                | Some d -> masterPanel.UpdateData(d)
+                | Some d -> mr.UpdateData(d)
                 | None -> ()
             } |> Async.Start
             
@@ -76,19 +108,6 @@ type FrmMain() as this =
             engine.Post (SetPosition fen)
             engine.Post (StartSearch 10000) 
         )        
-        ap |> rttpnl.Controls.Add
-        rtbpnl |> rtpnl.Controls.Add
-        masterPanel |> rtmpnl.Controls.Add
-        rtmpnl |> rtpnl.Controls.Add
-        rttpnl |> rtpnl.Controls.Add
-        rtpnl |> bgpnl.Controls.Add
-        mh |> lfbpnl.Controls.Add
-        lfbpnl |> lfpnl.Controls.Add
-        bd |> lftpnl.Controls.Add
-        lftpnl |> lfpnl.Controls.Add
-        lfpnl |> bgpnl.Controls.Add
-        bgpnl |> this.Controls.Add
-        ts |> this.Controls.Add
 
     // Ensure the engine process is killed when the app closes
     override this.OnFormClosing(e) =
