@@ -57,7 +57,7 @@ module Engine =
             | Ready -> receivedReady <- true
             | _ -> ()
         
-        let engine = Engine.spawn @"D:\Github\Grampus\stockfish.exe" onMsg
+        let engine = Engine.spawn GrampusUI.TypesUI.engloc onMsg
         System.Threading.Thread.Sleep(1000) // Give it a second
     
         receivedReady |> should be True

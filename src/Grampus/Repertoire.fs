@@ -19,14 +19,15 @@ open System.IO
         let private options = JsonSerializerOptions()
         options.WriteIndented <- true
         options.Converters.Add(JsonStringEnumConverter())
-        let private getFileName side = 
-            if side = WHITE then "repertoire_white.json" else "repertoire_black.json"
-        let save (repertoire: Repertoire) =
-            let path = getFileName repertoire.Side
+        let private getFileName fol side = 
+            let nm = if side = WHITE then "repertoire_white.json" else "repertoire_black.json"
+            Path.Combine(fol, nm)
+        let save fol (repertoire: Repertoire) =
+            let path = getFileName fol repertoire.Side
             let json = JsonSerializer.Serialize(repertoire, options)
             File.WriteAllText(path, json)
-        let load (side: int) : Repertoire =
-            let path = getFileName side
+        let load fol (side: int) : Repertoire =
+            let path = getFileName fol side
             if File.Exists(path) then
                 try 
                     JsonSerializer.Deserialize<Repertoire>(File.ReadAllText(path), options)

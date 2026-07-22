@@ -65,11 +65,11 @@ module Repertoire =
 
         try
             // Save
-            Repertoire.save testRepertoire
+            Repertoire.save "" testRepertoire
             File.Exists(testFile) |> should be True
 
             // Load
-            let loaded = Repertoire.load 0
+            let loaded = Repertoire.load "" 0
             loaded.Name |> should equal "Test Rep"
             loaded.Roots.Length |> should equal 2
             loaded.Roots.[0].San |> should equal "e4"
@@ -79,7 +79,7 @@ module Repertoire =
     [<Fact>]
     let ``Load returns empty repertoire if file missing`` () =
         let nonExistentSide = 99
-        let result = Repertoire.load nonExistentSide
+        let result = Repertoire.load "" nonExistentSide
         result.Roots |> should be Empty
         result.Side |> should equal nonExistentSide
 
@@ -130,7 +130,7 @@ module Repertoire =
         File.WriteAllText(fileName, "{ \"this is\": not valid json [ }")
 
         try
-            let loaded = Repertoire.load side
+            let loaded = Repertoire.load "" side
             
             // Should not crash, should return default
             loaded.Name |> should equal "New Repertoire"
@@ -148,7 +148,7 @@ module Repertoire =
         File.WriteAllText(fileName, "")
 
         try
-            let loaded = Repertoire.load side
+            let loaded = Repertoire.load "" side
             loaded.Name |> should equal "New Repertoire"
         finally
             if File.Exists(fileName) then File.Delete(fileName)

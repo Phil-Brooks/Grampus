@@ -16,7 +16,7 @@ type FrmMain() as this =
     let ap = new EngineAnalysisPanel(Dock = DockStyle.Top, Height = 100)
     let mr = new MasterDatabasePanel(Dock = DockStyle.Fill)
     let rep = new RepertoirePanel(Dock = DockStyle.Fill)
-    let mutable currentRep = Repertoire.load WHITE
+    let mutable currentRep = Repertoire.load repfol WHITE
     // --- Helper Logic ---
     let updateRepUI(history: Mv list) =
         match Repertoire.findCurrentBranch currentRep.Roots history with
@@ -25,8 +25,8 @@ type FrmMain() as this =
         | None -> 
             rep.Clear()
     let switchRep (side: int) =
-        Repertoire.save currentRep
-        currentRep <- Repertoire.load side
+        Repertoire.save repfol currentRep
+        currentRep <- Repertoire.load repfol side
         bd.Orient(side) 
         mh.Clear()
         bd.SetBoard(Board.Start)
@@ -50,7 +50,7 @@ type FrmMain() as this =
         let mnuStudy = new ToolStripMenuItem("&Study")
         let itmWhite = new ToolStripMenuItem("White Repertoire", null, (fun _ _ -> switchRep WHITE))
         let itmBlack = new ToolStripMenuItem("Black Repertoire", null, (fun _ _ -> switchRep BLACK))
-        let itmSave = new ToolStripMenuItem("&Save Now", null, (fun _ _ -> Repertoire.save currentRep))
+        let itmSave = new ToolStripMenuItem("&Save Now", null, (fun _ _ -> Repertoire.save repfol currentRep))
         mnuStudy.DropDownItems.AddRange([| itmWhite :> ToolStripItem; itmBlack :> ToolStripItem; new ToolStripSeparator() :> ToolStripItem; itmSave |])
         ms.Items.Add(mnuFile) |> ignore
         ms.Items.Add(mnuStudy) |> ignore
@@ -74,7 +74,7 @@ type FrmMain() as this =
         )
         let btnSave = new ToolStripButton(Text = "Save Changes")
         //btnSave.Image <- Assets.Save // If you have a save icon
-        btnSave.Click.Add(fun _ -> Repertoire.save currentRep)
+        btnSave.Click.Add(fun _ -> Repertoire.save repfol currentRep)
         ts.Items.Add(btnWhite) |> ignore
         ts.Items.Add(btnBlack) |> ignore
         ts.Items.Add(new ToolStripSeparator()) |> ignore
@@ -142,11 +142,11 @@ type FrmMain() as this =
             } |> Async.Start
         )
 
-        currentRep <- Repertoire.load WHITE
+        currentRep <- Repertoire.load repfol WHITE
         bd.Orient(WHITE)
         updateRepUI([])
         lblStatus.Text <- "Studying White Repertoire"
     override this.OnFormClosing(e) =
         engine.Post Quit
         base.OnFormClosing(e)
-        Repertoire.save currentRep
+        Repertoire.save repfol currentRep
