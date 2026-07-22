@@ -71,12 +71,13 @@ module Assets =
     let White = loadImage "white.png"
     let Sav = loadImage "sav.png"
     let Grampus = loadIcon "grampus.ico"
-    let Pieces = 
+    let loadPcs() =
         [ "wP"; "wN"; "wB"; "wR"; "wQ"; "wK"; 
           "bP"; "bN"; "bB"; "bR"; "bQ"; "bK" ]
         |> List.map (fun code -> code, loadPiece code)
         |> Map.ofList
-    let Cursors = 
+    let mutable Pieces = loadPcs()
+    let loadCrs() =
         [ "wP"; "wN"; "wB"; "wR"; "wQ"; "wK"; 
           "bP"; "bN"; "bB"; "bR"; "bQ"; "bK" ]
         |> List.map (fun code -> 
@@ -87,3 +88,7 @@ module Assets =
             resizedBmp.Dispose()
             code, cursor)
         |> Map.ofList
+    let mutable Cursors = loadCrs()
+    let Resest() =
+        Pieces <- loadPcs()
+        Cursors <- loadCrs()

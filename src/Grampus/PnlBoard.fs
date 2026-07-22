@@ -57,6 +57,9 @@ type PnlBoard() as bd =
     ///set pieces on squares
     let setpcsmvs() =
         let setpc i c =
+            let odd i = ((FL i) + (RNK i)) % 2 = 0
+            let cl i = if odd i then uisqs.[0] else uisqs.[1]
+            sqs.[i].BackColor <- cl i
             sqs.[i].Image <- if c = "." then null else Assets.Pieces.[c]
         let setpcsmvs() =
             board.PieceAt
@@ -202,6 +205,8 @@ type PnlBoard() as bd =
         sqpnl |> bdpnl.Controls.Add
         bdpnl |> bd.Controls.Add
     ///Sets the Board to be displayed
+    member bd.Redraw() =
+        setpcsmvs()
     member bd.SetBoard(ibd : Brd) =
         board <- ibd
         setpcsmvs()
@@ -210,8 +215,6 @@ type PnlBoard() as bd =
         let nbd = board |> Board.MoveApply m
         bd.SetBoard(nbd) // Redraw board
         moveMade.Trigger(oldBoard, m) // Fire event    
-    
-    
     ///Gets the Board to be displayed
     member bd.GetBoard() = board
     ///Orients the Board depending on whether White

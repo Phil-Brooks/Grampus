@@ -1,6 +1,7 @@
 namespace GrampusUI
 
 open System.Windows.Forms
+open System.Drawing
 open Grampus
 
 type FrmMain() as this =
@@ -52,8 +53,51 @@ type FrmMain() as this =
         let itmBlack = new ToolStripMenuItem("Black Repertoire", Assets.Black, (fun _ _ -> switchRep BLACK))
         let itmSave = new ToolStripMenuItem("&Save Now", Assets.Sav, (fun _ _ -> Repertoire.save repfol currentRep))
         mnuStudy.DropDownItems.AddRange([| itmWhite :> ToolStripItem; itmBlack :> ToolStripItem; new ToolStripSeparator() :> ToolStripItem; itmSave |])
+        // Settings
+        let mnuSettings = new ToolStripMenuItem("&Settings")
+        // 1. Engine Location
+        let itmEngine = new ToolStripMenuItem("Set Engine Path...", null, fun _ _ ->
+            let fd = new OpenFileDialog(Filter = "Executables|*.exe")
+            if fd.ShowDialog() = DialogResult.OK then
+                Settings.EngineLocation <- fd.FileName
+                ConfigManager.save Settings
+        )
+        // 2. Piece Sets (Sub-menu)
+        let mnuPieces = new ToolStripMenuItem("Piece Set")
+        let addPieceOption (name: string) =
+            let itm = new ToolStripMenuItem(name, null, fun _ _ ->
+                Settings.PieceSet <- name
+                ConfigManager.save Settings
+                uipcs <- name
+                Assets.Resest()
+                bd.Redraw() // Tell the board to redraw with new pieces
+            )
+            mnuPieces.DropDownItems.Add(itm) |> ignore
+        ["Merida"; "Cburnett"; "Horsey"] |> List.iter addPieceOption
+        // 3. Color Themes (Sub-menu)
+        let mnuThemes = new ToolStripMenuItem("Board Theme")
+        let themes = [
+            "Green", [Color.Green; Color.PaleGreen; Color.YellowGreen; Color.Yellow]
+            "Red",   [Color.Red; Color.Pink; Color.PaleVioletRed; Color.HotPink]
+        ]
+        themes |> List.iter (fun (name, colors) ->
+            let itm = new ToolStripMenuItem(name, null, fun _ _ ->
+                Settings.ThemeColors <- colors |> List.map (fun c -> c.ToArgb())
+                ConfigManager.save Settings
+                uisqs <- colors
+                bd.Redraw() // Redraw board
+            )
+            mnuThemes.DropDownItems.Add(itm) |> ignore
+        )
+        mnuSettings.DropDownItems.AddRange([| 
+            itmEngine :> ToolStripItem
+            new ToolStripSeparator() :> ToolStripItem
+            mnuPieces :> ToolStripItem
+            mnuThemes :> ToolStripItem
+        |])
         ms.Items.Add(mnuFile) |> ignore
         ms.Items.Add(mnuStudy) |> ignore
+        ms.Items.Add(mnuSettings) |> ignore
         ms
     // --- Status Bar ---
     let createStatusBar() =
