@@ -40,7 +40,7 @@ type PnlBoard() as bd =
         ///set pieces on squares
         let setsq i (sq : PictureBox) =
             let sq = new PictureBox(Height = sqsz, Width = sqsz, SizeMode = PictureBoxSizeMode.Zoom)
-            sq.BackColor <- if i % 2 = 0 then Color.Green else Color.PaleGreen
+            sq.BackColor <- if i % 2 = 0 then uisqs.[0] else uisqs.[1]
             sq.Top <- 1
             sq.Left <- i * sqsz + 1
             sq.Image <- if board.WhosTurn = WHITE then wpcims.[i] else bpcims.[i]
@@ -91,8 +91,8 @@ type PnlBoard() as bd =
     ///highlight possible squares
     let highlightsqs sl =
         let odd i = ((FL i) + (RNK i)) % 2 = 0
-        let cl i = if odd i then Color.Green else Color.PaleGreen
-        let hl i = if odd i then Color.YellowGreen else Color.Yellow
+        let cl i = if odd i then uisqs.[0] else uisqs.[1]
+        let hl i = if odd i then uisqs.[2] else uisqs.[3]
         sqs |> Array.iteri (fun i sq -> sqs.[i].BackColor <- cl i)
         sl |> List.iter (fun s -> sqs.[s].BackColor <- hl s)
     /// Action for GiveFeedback
@@ -155,7 +155,7 @@ type PnlBoard() as bd =
         let lbl = new Label()
         lbl.Text <- File.NAMES.[i]
         lbl.Font <- new Font("Arial", 12.0F, FontStyle.Bold, GraphicsUnit.Point, byte (0))
-        lbl.ForeColor <- Color.Green
+        lbl.ForeColor <- uisqs.[0]
         lbl.Height <- 21
         lbl.Width <- sqsz
         lbl.TextAlign <- ContentAlignment.MiddleCenter
@@ -167,7 +167,7 @@ type PnlBoard() as bd =
         let lbl = new Label()
         lbl.Text <- (i + 1).ToString()
         lbl.Font <- new Font("Arial", 12.0F, FontStyle.Bold, GraphicsUnit.Point, byte (0))
-        lbl.ForeColor <- Color.Green
+        lbl.ForeColor <- uisqs.[0]
         lbl.Height <- sqsz
         lbl.Width <- 21
         lbl.TextAlign <- ContentAlignment.MiddleCenter
@@ -179,7 +179,7 @@ type PnlBoard() as bd =
         let r = RNK i
         let f = FL i
         let sq = new PictureBox(Height = sqsz, Width = sqsz, SizeMode = PictureBoxSizeMode.Zoom)
-        sq.BackColor <- if (f + r) % 2 = 0 then Color.Green else Color.PaleGreen
+        sq.BackColor <- if (f + r) % 2 = 0 then uisqs.[0] else uisqs.[1]
         sq.Left <- f * sqsz + 1
         sq.Top <- 7 * sqsz - r * sqsz + 1
         sq.Tag <- i

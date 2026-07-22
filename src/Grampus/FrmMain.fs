@@ -48,9 +48,9 @@ type FrmMain() as this =
         mnuFile.DropDownItems.AddRange([| itmNew :> ToolStripItem; new ToolStripSeparator() :> ToolStripItem; itmExit |])
         // Study Menu
         let mnuStudy = new ToolStripMenuItem("&Study")
-        let itmWhite = new ToolStripMenuItem("White Repertoire", null, (fun _ _ -> switchRep WHITE))
-        let itmBlack = new ToolStripMenuItem("Black Repertoire", null, (fun _ _ -> switchRep BLACK))
-        let itmSave = new ToolStripMenuItem("&Save Now", null, (fun _ _ -> Repertoire.save repfol currentRep))
+        let itmWhite = new ToolStripMenuItem("White Repertoire", Assets.White, (fun _ _ -> switchRep WHITE))
+        let itmBlack = new ToolStripMenuItem("Black Repertoire", Assets.Black, (fun _ _ -> switchRep BLACK))
+        let itmSave = new ToolStripMenuItem("&Save Now", Assets.Sav, (fun _ _ -> Repertoire.save repfol currentRep))
         mnuStudy.DropDownItems.AddRange([| itmWhite :> ToolStripItem; itmBlack :> ToolStripItem; new ToolStripSeparator() :> ToolStripItem; itmSave |])
         ms.Items.Add(mnuFile) |> ignore
         ms.Items.Add(mnuStudy) |> ignore
@@ -62,8 +62,8 @@ type FrmMain() as this =
         ss
     let createToolbar() =
         let ts = new ToolStrip()
-        let btnWhite = new ToolStripButton(Text = "Study White", CheckOnClick = true, Checked = true)
-        let btnBlack = new ToolStripButton(Text = "Study Black", CheckOnClick = true)
+        let btnWhite = new ToolStripButton(Text = "Study White", CheckOnClick = true, Checked = true, Image = Assets.White)
+        let btnBlack = new ToolStripButton(Text = "Study Black", CheckOnClick = true, Image = Assets.Black)
         btnWhite.Click.Add(fun _ -> 
             btnBlack.Checked <- false
             switchRep WHITE
@@ -72,8 +72,7 @@ type FrmMain() as this =
             btnWhite.Checked <- false
             switchRep BLACK
         )
-        let btnSave = new ToolStripButton(Text = "Save Changes")
-        //btnSave.Image <- Assets.Save // If you have a save icon
+        let btnSave = new ToolStripButton(Text = "Save Changes", Image = Assets.Sav)
         btnSave.Click.Add(fun _ -> Repertoire.save repfol currentRep)
         ts.Items.Add(btnWhite) |> ignore
         ts.Items.Add(btnBlack) |> ignore

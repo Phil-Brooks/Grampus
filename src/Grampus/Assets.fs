@@ -51,7 +51,7 @@ module Assets =
             failwithf "Resource not found: %s. Ensure it is marked as 'Embedded Resource'." path
         new Bitmap(stream)
     let loadPiece (name: string) =
-        let path = "Grampus.Images.Merida." + name + ".png"
+        let path = "Grampus.Images." + uipcs + "." + name + ".png"
         let stream = assembly.GetManifestResourceStream(path)
         if stream = null then 
             failwithf "Resource not found: %s. Ensure it is marked as 'Embedded Resource'." path
@@ -67,7 +67,9 @@ module Assets =
         newBmp
     
     let Back = loadImage "Back.jpg"
-    let Orient= loadImage "orient.png"
+    let Black = loadImage "black.png"
+    let White = loadImage "white.png"
+    let Sav = loadImage "sav.png"
     let Grampus = loadIcon "grampus.ico"
     let Pieces = 
         [ "wP"; "wN"; "wB"; "wR"; "wQ"; "wK"; 

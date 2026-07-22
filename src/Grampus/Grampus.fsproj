@@ -11,6 +11,30 @@
   </ItemGroup>
 
   <ItemGroup>
+    <EmbeddedResource Include="Images\Horsey\bB.png" />
+    <EmbeddedResource Include="Images\Horsey\bK.png" />
+    <EmbeddedResource Include="Images\Horsey\bN.png" />
+    <EmbeddedResource Include="Images\Horsey\bP.png" />
+    <EmbeddedResource Include="Images\Horsey\bQ.png" />
+    <EmbeddedResource Include="Images\Horsey\bR.png" />
+    <EmbeddedResource Include="Images\Horsey\wB.png" />
+    <EmbeddedResource Include="Images\Horsey\wK.png" />
+    <EmbeddedResource Include="Images\Horsey\wN.png" />
+    <EmbeddedResource Include="Images\Horsey\wP.png" />
+    <EmbeddedResource Include="Images\Horsey\wQ.png" />
+    <EmbeddedResource Include="Images\Horsey\wR.png" />
+    <EmbeddedResource Include="Images\Cburnett\bB.png" />
+    <EmbeddedResource Include="Images\Cburnett\bK.png" />
+    <EmbeddedResource Include="Images\Cburnett\bN.png" />
+    <EmbeddedResource Include="Images\Cburnett\bP.png" />
+    <EmbeddedResource Include="Images\Cburnett\bQ.png" />
+    <EmbeddedResource Include="Images\Cburnett\bR.png" />
+    <EmbeddedResource Include="Images\Cburnett\wB.png" />
+    <EmbeddedResource Include="Images\Cburnett\wK.png" />
+    <EmbeddedResource Include="Images\Cburnett\wN.png" />
+    <EmbeddedResource Include="Images\Cburnett\wP.png" />
+    <EmbeddedResource Include="Images\Cburnett\wQ.png" />
+    <EmbeddedResource Include="Images\Cburnett\wR.png" />
     <EmbeddedResource Include="Images\Merida\bB.png" />
     <EmbeddedResource Include="Images\Merida\bK.png" />
     <EmbeddedResource Include="Images\Merida\bN.png" />
@@ -23,36 +47,10 @@
     <EmbeddedResource Include="Images\Merida\wP.png" />
     <EmbeddedResource Include="Images\Merida\wQ.png" />
     <EmbeddedResource Include="Images\Merida\wR.png" />
-    <EmbeddedResource Include="Images\Back.jpg" />
-    <EmbeddedResource Include="Images\down-32-red.png" />
-    <EmbeddedResource Include="Images\down-32-yell.png" />
-    <EmbeddedResource Include="Images\endButton.png" />
-    <EmbeddedResource Include="Images\homeButton.png" />
-    <EmbeddedResource Include="Images\nextButton.png" />
-    <EmbeddedResource Include="Images\nextLineButton.png" />
-    <EmbeddedResource Include="Images\plus-minus-32.png" />
-    <EmbeddedResource Include="Images\prevButton.png" />
-    <EmbeddedResource Include="Images\prevLineButton.png" />
-    <EmbeddedResource Include="Images\sava.png" />
-    <EmbeddedResource Include="Images\up-32-red.png" />
-    <EmbeddedResource Include="Images\up-32-yell.png" />
-    <EmbeddedResource Include="Images\black.png" />
-    <EmbeddedResource Include="Images\cls.png" />
-    <EmbeddedResource Include="Images\copyp.png" />
-    <EmbeddedResource Include="Images\edith.png" />
-    <EmbeddedResource Include="Images\gnew.png" />
-    <EmbeddedResource Include="Images\grampus.ico" />
-    <EmbeddedResource Include="Images\new.png" />
-    <EmbeddedResource Include="Images\opn.png" />
-    <EmbeddedResource Include="Images\orient.png" />
-    <EmbeddedResource Include="Images\pastep.png" />
-    <EmbeddedResource Include="Images\remc.png" />
-    <EmbeddedResource Include="Images\remn.png" />
-    <EmbeddedResource Include="Images\remv.png" />
     <EmbeddedResource Include="Images\sav.png" />
-    <EmbeddedResource Include="Images\sete.png" />
-    <EmbeddedResource Include="Images\tcls.png" />
-    <EmbeddedResource Include="Images\tree.png" />
+    <EmbeddedResource Include="Images\Back.jpg" />
+    <EmbeddedResource Include="Images\black.png" />
+    <EmbeddedResource Include="Images\grampus.ico" />
     <EmbeddedResource Include="Images\white.png" />
     <Compile Include="Types.fs" />
     <Compile Include="Colour.fs" />
@@ -85,6 +83,8 @@
     <Compile Include="FrmMain.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>
+
+  <ItemGroup />
 
 </Project>
 

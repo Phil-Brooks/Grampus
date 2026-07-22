@@ -4,8 +4,10 @@ setlocal enabledelayedexpansion
 :: ==========================================
 :: CONFIGURATION: Set your folder paths here
 :: ==========================================
-set "source_dir=D:\Github\lila-master\public\piece\merida"
-set "target_dir=D:\Github\Grampus\src\Grampus\Images\Merida"
+rem set "source_dir=D:\Github\lila-master\public\piece\merida"
+rem set "target_dir=D:\Github\Grampus\src\Grampus\Images\Merida"
+set "source_dir=D:\Github\lila-master\public\piece\horsey"
+set "target_dir=D:\Github\Grampus\src\Grampus\Images\Horsey"
 :: ==========================================
 
 :: Check if ImageMagick is installed

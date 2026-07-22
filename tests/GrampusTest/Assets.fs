@@ -21,5 +21,4 @@ module Assets =
     let ``Ensure main UI icons exist`` () =
         // Accessing these properties will throw if the streams are null
         Assets.Back |> should not' (equal null)
-        Assets.Orient |> should not' (equal null)
         Assets.Grampus |> should not' (equal null)
