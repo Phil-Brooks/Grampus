@@ -15,7 +15,7 @@ type MasterDatabasePanel() as this =
     let grid = new DataGridView(
         Dock = DockStyle.Fill, AllowUserToAddRows = false, ReadOnly = true,
         RowHeadersVisible = false, BackgroundColor = Color.White,
-        BorderStyle = BorderStyle.None, SelectionMode = DataGridViewSelectionMode.FullRowSelect,
+        SelectionMode = DataGridViewSelectionMode.FullRowSelect,
         EnableHeadersVisualStyles = false,
         // Using standard DataGridView - no subclassing
         AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.None
@@ -25,7 +25,10 @@ type MasterDatabasePanel() as this =
         grid.RowTemplate.Height <- 30
         grid.AllowUserToResizeRows <- false        
         grid.ColumnHeadersDefaultCellStyle.BackColor <- Color.White
-        grid.ColumnHeadersBorderStyle <- DataGridViewHeaderBorderStyle.None        
+        grid.DefaultCellStyle.SelectionBackColor <- Color.White
+        grid.DefaultCellStyle.SelectionForeColor <- Color.Black
+        grid.ColumnHeadersDefaultCellStyle.SelectionBackColor <- Color.White
+        grid.ColumnHeadersDefaultCellStyle.SelectionForeColor <- Color.Black
         
         grid.Columns.Add("Move", "Move") |> ignore
         grid.Columns.Add("Games", "Games") |> ignore

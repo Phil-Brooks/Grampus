@@ -11,7 +11,7 @@ type RepertoirePanel() as this =
     let grid = new DataGridView(
         Dock = DockStyle.Fill, AllowUserToAddRows = false, ReadOnly = true,
         RowHeadersVisible = false, BackgroundColor = Color.White,
-        BorderStyle = BorderStyle.None, SelectionMode = DataGridViewSelectionMode.FullRowSelect,
+        SelectionMode = DataGridViewSelectionMode.FullRowSelect,
         EnableHeadersVisualStyles = false,
         AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.None
     )
@@ -22,11 +22,15 @@ type RepertoirePanel() as this =
     do
         grid.RowTemplate.Height <- 28
         grid.ColumnHeadersDefaultCellStyle.BackColor <- Color.White
-        grid.ColumnHeadersBorderStyle <- DataGridViewHeaderBorderStyle.None
         grid.Columns.Add("Move", "Move") |> ignore
         grid.Columns.Add("Comment", "Comment") |> ignore
         grid.Columns.[0].Width <- 60
         grid.Columns.[1].AutoSizeMode <- DataGridViewAutoSizeColumnMode.Fill
+        grid.DefaultCellStyle.SelectionBackColor <- Color.White
+        grid.DefaultCellStyle.SelectionForeColor <- Color.Black
+        grid.ColumnHeadersDefaultCellStyle.SelectionBackColor <- Color.White
+        grid.ColumnHeadersDefaultCellStyle.SelectionForeColor <- Color.Black
+
 
         // Handle double clicking a move to play it
         grid.CellDoubleClick.Add(fun e ->
@@ -36,23 +40,6 @@ type RepertoirePanel() as this =
                 | _ -> ()
         )
 
-        grid.CellPainting.Add(fun e ->
-            if e.RowIndex >= 0 && e.ColumnIndex >= 0 then
-                match grid.Rows.[e.RowIndex].Tag with
-                | :? RepertoireNode as node ->
-                    // Handle Selection
-                    let isSelected = e.State.HasFlag(DataGridViewElementStates.Selected)
-                    let finalBack = if isSelected then e.CellStyle.SelectionBackColor else Color.DarkGreen
-                    let finalFore = if isSelected then e.CellStyle.SelectionForeColor else Color.FromArgb(235, 255, 235)
-                    use backBrush = new SolidBrush(finalBack)
-                    e.Graphics.FillRectangle(backBrush, e.CellBounds)
-                    let text = e.Value.ToString()
-                    use font = new Font(e.CellStyle.Font, FontStyle.Bold)
-                    TextRenderer.DrawText(e.Graphics, text, font, e.CellBounds, finalFore, 
-                        TextFormatFlags.VerticalCenter ||| TextFormatFlags.Left)
-                    e.Handled <- true
-                | _ -> ()
-        )
         this.Controls.Add(grid)
 
     [<CLIEvent>] member this.OnMoveSelected = moveSelected.Publish

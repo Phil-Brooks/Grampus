@@ -80,7 +80,7 @@ type FrmMain() as this =
         ts.Items.Add(new ToolStripSeparator()) |> ignore
         ts.Items.Add(btnSave) |> ignore
         ts    
-    let colHistory = new Panel(Dock = DockStyle.Left, Width = 200, BorderStyle = BorderStyle.FixedSingle)
+    let colHistory = new Panel(Dock = DockStyle.Left, Width = 184, BorderStyle = BorderStyle.FixedSingle)
     let colBoard   = new Panel(Dock = DockStyle.Left, Width = 600, BorderStyle = BorderStyle.FixedSingle)
     let colAnalysis = new Panel(Dock = DockStyle.Fill, BorderStyle = BorderStyle.FixedSingle)
     do 
@@ -123,6 +123,25 @@ type FrmMain() as this =
                 match data with | Some d -> mr.UpdateData(d) | None -> ()
             } |> Async.Start
         )
+        mh.OnMoveSelected.Add(fun moves ->
+            // Reconstruct the board by playing moves from the start
+            let mutable tempBoard = Board.Start
+            for m in moves do
+                tempBoard <- Board.MoveApply m tempBoard
+            bd.SetBoard(tempBoard) 
+            let fen = FEN.FromBrd tempBoard
+            lblPosition.Text <- sprintf "FEN: %s" (if fen.Length > 30 then fen.Substring(0, 27) + "..." else fen)
+            updateRepUI(moves)
+            ap.SetBoard(tempBoard)
+            ap.Clear()
+            engine.Post (SetPosition fen)
+            engine.Post (StartSearch 10000)
+            async {
+                let! data = LichessClient.fetchMastersStats fen
+                match data with | Some d -> mr.UpdateData(d) | None -> ()
+            } |> Async.Start
+        )
+
         currentRep <- Repertoire.load WHITE
         bd.Orient(WHITE)
         updateRepUI([])
