@@ -326,3 +326,16 @@ module Repertoire =
         e4.Replies |> List.exists (fun n -> n.San = "e5") |> should be True
         e4.Replies |> List.exists (fun n -> n.San = "c5") |> should be True
 
+    [<Fact>]
+    let ``Saving repertoire creates a backup file`` () =
+        let fol = "test_data"
+        if Directory.Exists(fol) then Directory.Delete(fol, true)
+        Directory.CreateDirectory(fol) |> ignore
+    
+        let rep = { Name = "Test"; Side = WHITE; Roots = [] }
+        Repertoire.save fol rep // First save
+        System.Threading.Thread.Sleep(1100) // Ensure timestamp differs
+        Repertoire.save fol rep // Second save (should trigger backup)
+    
+        let backups = Repertoire.getVersions fol WHITE
+        backups.Length |> should equal 1

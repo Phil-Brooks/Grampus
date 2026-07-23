@@ -37,27 +37,65 @@ type FrmMain() as this =
     // --- Menus ---
     let createMenu() =
         let ms = new MenuStrip()
+        
         // File Menu
         let mnuFile = new ToolStripMenuItem("&File")
-        let itmNew = new ToolStripMenuItem("&New Game", null, (fun _ _ -> switchRep currentRep.Side))
+        
+        // Dynamic Load Old Version Menu
+        let mnuLoadBackup = new ToolStripMenuItem("&Load Old Version")
+        
+        // This event fires every time the "Load Old Version" sub-menu is hovered/clicked
+        mnuLoadBackup.DropDownOpening.Add(fun _ ->
+            mnuLoadBackup.DropDownItems.Clear()
+            let backups = Repertoire.getVersions repfol currentRep.Side
+            
+            if backups.IsEmpty then
+                let itmNone = new ToolStripMenuItem("No backups found")
+                itmNone.Enabled <- false
+                mnuLoadBackup.DropDownItems.Add(itmNone) |> ignore
+            else
+                // Create a menu item for each backup file
+                for path in backups do
+                    let fileInfo = System.IO.FileInfo(path)
+                    let dateStr = fileInfo.LastWriteTime.ToString("yyyy-MM-dd HH:mm")
+                    
+                    let itm = new ToolStripMenuItem(sprintf "Backup: %s" dateStr, null, fun _ _ ->
+                        // 1. Load the historical file
+                        currentRep <- Repertoire.loadFromFile path currentRep.Side
+                        
+                        // 2. Reset the current game state to match the loaded file
+                        bd.SetBoard(Board.Start)
+                        mh.Clear()
+                        ap.Clear()
+                        refreshRepTree()
+                        
+                        lblStatus.Text <- sprintf "Restored version from %s" dateStr
+                    )
+                    mnuLoadBackup.DropDownItems.Add(itm) |> ignore
+        )
+
         let itmExit = new ToolStripMenuItem("E&xit", null, (fun _ _ -> this.Close()))
-        mnuFile.DropDownItems.AddRange([| itmNew :> ToolStripItem; new ToolStripSeparator() :> ToolStripItem; itmExit |])
-        // Study Menu
+        
+        // Replace New Game with Load Backup
+        mnuFile.DropDownItems.Add(mnuLoadBackup) |> ignore
+        mnuFile.DropDownItems.Add(new ToolStripSeparator()) |> ignore
+        mnuFile.DropDownItems.Add(itmExit) |> ignore
+
+        // Study Menu (remains the same)
         let mnuStudy = new ToolStripMenuItem("&Study")
         let itmWhite = new ToolStripMenuItem("White Repertoire", Assets.White, (fun _ _ -> switchRep WHITE))
         let itmBlack = new ToolStripMenuItem("Black Repertoire", Assets.Black, (fun _ _ -> switchRep BLACK))
         let itmSave = new ToolStripMenuItem("&Save Now", Assets.Sav, (fun _ _ -> Repertoire.save repfol currentRep))
         mnuStudy.DropDownItems.AddRange([| itmWhite :> ToolStripItem; itmBlack :> ToolStripItem; new ToolStripSeparator() :> ToolStripItem; itmSave |])
-        // Settings
+
+        // Settings (remains the same)
         let mnuSettings = new ToolStripMenuItem("&Settings")
-        // 1. Engine Location
         let itmEngine = new ToolStripMenuItem("Set Engine Path...", null, fun _ _ ->
             let fd = new OpenFileDialog(Filter = "Executables|*.exe")
             if fd.ShowDialog() = DialogResult.OK then
                 Settings.EngineLocation <- fd.FileName
                 ConfigManager.save Settings
         )
-        // 2. Piece Sets (Sub-menu)
         let mnuPieces = new ToolStripMenuItem("Piece Set")
         let addPieceOption (name: string) =
             let itm = new ToolStripMenuItem(name, null, fun _ _ ->
@@ -65,11 +103,11 @@ type FrmMain() as this =
                 ConfigManager.save Settings
                 uipcs <- name
                 Assets.Resest()
-                bd.Redraw() // Tell the board to redraw with new pieces
+                bd.Redraw()
             )
             mnuPieces.DropDownItems.Add(itm) |> ignore
         ["Merida"; "Cburnett"; "Horsey"] |> List.iter addPieceOption
-        // 3. Color Themes (Sub-menu)
+        
         let mnuThemes = new ToolStripMenuItem("Board Theme")
         let themes = [
             "Green", [Color.Green; Color.PaleGreen; Color.YellowGreen; Color.Yellow]
@@ -80,20 +118,22 @@ type FrmMain() as this =
                 Settings.ThemeColors <- colors |> List.map (fun c -> c.ToArgb())
                 ConfigManager.save Settings
                 uisqs <- colors
-                bd.Redraw() // Redraw board
+                bd.Redraw()
             )
             mnuThemes.DropDownItems.Add(itm) |> ignore
         )
+        
         mnuSettings.DropDownItems.AddRange([| 
             itmEngine :> ToolStripItem
             new ToolStripSeparator() :> ToolStripItem
             mnuPieces :> ToolStripItem
             mnuThemes :> ToolStripItem
         |])
+
         ms.Items.Add(mnuFile) |> ignore
         ms.Items.Add(mnuStudy) |> ignore
         ms.Items.Add(mnuSettings) |> ignore
-        ms
+        ms   
     // --- Status Bar ---
     let createStatusBar() =
         let ss = new StatusStrip()

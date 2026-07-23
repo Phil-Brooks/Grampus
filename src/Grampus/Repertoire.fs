@@ -1,5 +1,6 @@
 namespace Grampus
 
+open System
 open System.Text.Json
 open System.Text.Json.Serialization
 open System.IO
@@ -22,19 +23,38 @@ open System.IO
         let private getFileName fol side = 
             let nm = if side = WHITE then "repertoire_white.json" else "repertoire_black.json"
             Path.Combine(fol, nm)
+        let private getBackupPath fol side =
+            let backupDir = Path.Combine(fol, "backups")
+            if not (Directory.Exists(backupDir)) then Directory.CreateDirectory(backupDir) |> ignore
+            let timestamp = DateTime.Now.ToString("yyyyMMdd_HHmmss")
+            let sideStr = if side = WHITE then "white" else "black"
+            Path.Combine(backupDir, sprintf "repertoire_%s_%s.json" sideStr timestamp)
         let save fol (repertoire: Repertoire) =
             let path = getFileName fol repertoire.Side
+            if File.Exists(path) then
+                let backupPath = getBackupPath fol repertoire.Side
+                File.Copy(path, backupPath, true)
             let json = JsonSerializer.Serialize(repertoire, options)
             File.WriteAllText(path, json)
-        let load fol (side: int) : Repertoire =
-            let path = getFileName fol side
+        let loadFromFile path side =
             if File.Exists(path) then
                 try 
                     JsonSerializer.Deserialize<Repertoire>(File.ReadAllText(path), options)
                 with _ -> { Name = "New Repertoire"; Side = side; Roots = [] }
             else 
                 { Name = "New Repertoire"; Side = side; Roots = [] }
-        /// Flips the board orientation if the repertoire is for Black
+        let load fol (side: int) : Repertoire =
+            let path = getFileName fol side
+            loadFromFile path side
+        let getVersions fol side =
+            let backupDir = Path.Combine(fol, "backups")
+            if not (Directory.Exists(backupDir)) then []
+            else
+                let sideStr = if side = WHITE then "white" else "black"
+                let pattern = sprintf "repertoire_%s_*.json" sideStr
+                Directory.GetFiles(backupDir, pattern)
+                |> Array.toList
+                |> List.sortByDescending id // Filenames are timestamped, so ID sort is chronological       
         let getRequiredOrientation (repertoire: Repertoire) =
             // If repertoire is for BLACK, return BLACK (1), else WHITE (0)
             repertoire.Side
