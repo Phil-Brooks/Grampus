@@ -27,7 +27,7 @@ module AnalysisDisplay =
             moves |> List.choose (fun uci ->
                 match UciMove.FromStr tempBd uci with
                 | Some m ->
-                    let san = San.ToSan tempBd m
+                    let san = (San.ToSan tempBd m) |> San.ToFigurine
                     let prefix = if isWhite then sprintf "%d. %s" moveNum san else san
                     tempBd <- Board.MoveApply m tempBd
                     if not isWhite then moveNum <- moveNum + 1

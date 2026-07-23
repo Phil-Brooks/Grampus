@@ -21,9 +21,9 @@ module San =
         if (m.Pc = WKING || m.Pc = BKING) && abs(m.To - m.From) = 2 then
             if m.To|>FL = G then "O-O" else "O-O-O"
         else
-            let pieceChar = getPieceFigurine m.Pc
+            let pieceChar = getPieceChar m.Pc
             let target = m.To |> Square.ToStr
-            let promo = if m.Prom <> 0 then "=" + (getPieceFigurine m.Prom) else ""
+            let promo = if m.Prom <> 0 then "=" + (getPieceChar m.Prom) else ""
         
             // Special pawn capture notation (e.g., exd5 or hxg1=Q)
             if pieceChar = "" && m.CapPc <> 0 then

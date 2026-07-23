@@ -27,10 +27,12 @@ type MoveHistoryPanel() as this =
             actions |> List.iter (fun action ->
                 match action with
                 | AddNewRow(num, whiteSan) ->
-                    grid.Rows.Add([| box num; box whiteSan; box "" |]) |> ignore
+                    let san = San.ToFigurine whiteSan
+                    grid.Rows.Add([| box num; box san; box "" |]) |> ignore
                 | UpdateExistingRow(blackSan) ->
                     let lastRow = grid.Rows.[grid.Rows.Count - 1]
-                    lastRow.Cells.[2].Value <- blackSan
+                    let san = San.ToFigurine blackSan
+                    lastRow.Cells.[2].Value <- san
             )
             // Apply move to get the board state for the NEXT move's SAN calculation
             tempBoard <- Board.MoveApply m tempBoard
@@ -77,10 +79,12 @@ type MoveHistoryPanel() as this =
         actions |> List.iter (fun action ->
             match action with
             | AddNewRow(num, whiteSan) ->
-                grid.Rows.Add([| box num; box whiteSan; box "" |]) |> ignore
+                let san = San.ToFigurine whiteSan
+                grid.Rows.Add([| box num; box san; box "" |]) |> ignore
             | UpdateExistingRow(blackSan) ->
                 let lastRow = grid.Rows.[grid.Rows.Count - 1]
-                lastRow.Cells.[2].Value <- blackSan
+                let san = San.ToFigurine blackSan
+                lastRow.Cells.[2].Value <- san
         )
         grid.FirstDisplayedScrollingRowIndex <- grid.RowCount - 1
     member this.GetMoveList() = history.PlayedMoves
