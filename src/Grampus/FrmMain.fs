@@ -138,15 +138,39 @@ type FrmMain() as this =
         this.Controls.Add(menu)
         this.Controls.Add(status)
         // --- Event Wiring ---
-        rep.OnMoveSelected.Add(fun m ->
-            bd.MakeMove(m) // This will trigger OnMoveMade automatically
+        rep.OnMovesSelected.Add(fun moves ->
+            // 1. Reset Board and History UI
+            let mutable tempBoard = Board.Start
+            mh.Clear()
+            
+            // 2. Play through the sequence to rebuild history and board state
+            for m in moves do
+                let bdBefore = tempBoard
+                let san = San.ToSan bdBefore m
+                mh.AddMove(bdBefore, m)
+                tempBoard <- Board.MoveApply m tempBoard
+            
+            // 3. Set the final board position
+            bd.SetBoard(tempBoard)
+            
+            // 4. Trigger analysis/Lichess for the new position
+            let fen = FEN.FromBrd tempBoard
+            lblPosition.Text <- sprintf "FEN: %s" (if fen.Length > 30 then fen.Substring(0, 27) + "..." else fen)
+            ap.SetBoard(tempBoard)
+            ap.Clear()
+            engine.Post (SetPosition fen)
+            engine.Post (StartSearch 10000)
+            
+            async {
+                let! data = LichessClient.fetchMastersStats fen
+                match data with | Some d -> mr.UpdateData(d) | None -> ()
+            } |> Async.Start
         )
         bd.OnMoveMade.Add(fun (bdBefore, m) -> 
             let oldHistory = mh.GetMoveList()
             let san = San.ToSan bdBefore m
             currentRep <- Repertoire.update currentRep oldHistory m san
             mh.AddMove(bdBefore, m)
-            let newHistory = oldHistory @ [ m ]
             refreshRepTree() 
             let currentBrd = bd.GetBoard()
             let fen = FEN.FromBrd currentBrd
@@ -162,14 +186,15 @@ type FrmMain() as this =
             } |> Async.Start
         )
         mh.OnMoveSelected.Add(fun moves ->
-            // Reconstruct the board by playing moves from the start
             let mutable tempBoard = Board.Start
+            mh.Clear()
             for m in moves do
+                let bdBefore = tempBoard
+                mh.AddMove(bdBefore, m)
                 tempBoard <- Board.MoveApply m tempBoard
-            bd.SetBoard(tempBoard) 
+            bd.SetBoard(tempBoard)
             let fen = FEN.FromBrd tempBoard
             lblPosition.Text <- sprintf "FEN: %s" (if fen.Length > 30 then fen.Substring(0, 27) + "..." else fen)
-            refreshRepTree() 
             ap.SetBoard(tempBoard)
             ap.Clear()
             engine.Post (SetPosition fen)
