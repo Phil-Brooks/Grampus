@@ -18,10 +18,11 @@ type FrmMain() as this =
     let mr = new MasterDatabasePanel(Dock = DockStyle.Fill)
     let rep = new RepertoirePanel(Dock = DockStyle.Fill)
     let mutable currentRep = Repertoire.load repfol WHITE
+    let mutable currentMode = Read
     let refreshRepTree() =
         rep.UpdateFullTree(currentRep)    
     let switchRep (side: int) =
-        Repertoire.save repfol currentRep
+        if currentMode = Edit then Repertoire.save repfol currentRep
         currentRep <- Repertoire.load repfol side
         bd.Orient(side) 
         mh.Clear()
@@ -34,16 +35,28 @@ type FrmMain() as this =
         | BestMove m -> printfn "Engine suggests: %s" m
         | Ready -> printfn "Engine is ready"
     let engine = Engine.spawn engloc onEngineMsg
+    let updateAllowedMoves(history: Mv list) =
+        if currentMode = Read then
+            match Repertoire.findCurrentBranch currentRep.Roots history with
+            | Some nodes -> bd.SetAllowedMoves(nodes |> List.map (fun n -> n.Mv))
+            | None -> bd.SetAllowedMoves([]) // No moves allowed if off-book in Read mode
+        else
+            bd.SetAllowedMoves([]) // Ignore in Edit mode
+    let setMode mode =
+        currentMode <- mode
+        bd.Mode <- mode
+        // Disable comment editing in Read mode
+        rep.SetMode (mode) // You'll need to add this method to RepertoirePanel
+        let history = mh.GetMoveList()
+        updateAllowedMoves(history)
+        lblStatus.Text <- sprintf "Mode: %A | Studying %s" mode (if currentRep.Side = WHITE then "White" else "Black")
     // --- Menus ---
     let createMenu() =
         let ms = new MenuStrip()
-        
         // File Menu
         let mnuFile = new ToolStripMenuItem("&File")
-        
         // Dynamic Load Old Version Menu
         let mnuLoadBackup = new ToolStripMenuItem("&Load Old Version")
-        
         // This event fires every time the "Load Old Version" sub-menu is hovered/clicked
         mnuLoadBackup.DropDownOpening.Add(fun _ ->
             mnuLoadBackup.DropDownItems.Clear()
@@ -73,19 +86,23 @@ type FrmMain() as this =
                     )
                     mnuLoadBackup.DropDownItems.Add(itm) |> ignore
         )
-
         let itmExit = new ToolStripMenuItem("E&xit", null, (fun _ _ -> this.Close()))
-        
-        // Replace New Game with Load Backup
         mnuFile.DropDownItems.Add(mnuLoadBackup) |> ignore
         mnuFile.DropDownItems.Add(new ToolStripSeparator()) |> ignore
         mnuFile.DropDownItems.Add(itmExit) |> ignore
+
+        let mnuMode = new ToolStripMenuItem("&Mode")
+        let itmEdit = new ToolStripMenuItem("Edit Mode (Build Repertoire)", null, fun _ _ -> setMode Edit)
+        let itmRead = new ToolStripMenuItem("Read Mode (Practice)", null, fun _ _ -> setMode Read)
+        mnuMode.DropDownItems.AddRange([| itmEdit :> ToolStripItem; itmRead |])
 
         // Study Menu (remains the same)
         let mnuStudy = new ToolStripMenuItem("&Study")
         let itmWhite = new ToolStripMenuItem("White Repertoire", Assets.White, (fun _ _ -> switchRep WHITE))
         let itmBlack = new ToolStripMenuItem("Black Repertoire", Assets.Black, (fun _ _ -> switchRep BLACK))
-        let itmSave = new ToolStripMenuItem("&Save Now", Assets.Sav, (fun _ _ -> Repertoire.save repfol currentRep))
+        let itmSave = new ToolStripMenuItem("&Save Now", Assets.Sav, fun _ _ -> 
+                if currentMode = Edit then Repertoire.save repfol currentRep 
+                else MessageBox.Show("Cannot save in Read Mode") |> ignore)
         mnuStudy.DropDownItems.AddRange([| itmWhite :> ToolStripItem; itmBlack :> ToolStripItem; new ToolStripSeparator() :> ToolStripItem; itmSave |])
 
         // Settings (remains the same)
@@ -131,6 +148,7 @@ type FrmMain() as this =
         |])
 
         ms.Items.Add(mnuFile) |> ignore
+        ms.Items.Add(mnuMode) |> ignore
         ms.Items.Add(mnuStudy) |> ignore
         ms.Items.Add(mnuSettings) |> ignore
         ms   
@@ -152,7 +170,8 @@ type FrmMain() as this =
             switchRep BLACK
         )
         let btnSave = new ToolStripButton(Text = "Save Changes", Image = Assets.Sav)
-        btnSave.Click.Add(fun _ -> Repertoire.save repfol currentRep)
+        btnSave.Click.Add(fun _ -> if currentMode = Edit then Repertoire.save repfol currentRep 
+                                   else MessageBox.Show("Cannot save in Read Mode") |> ignore)
         ts.Items.Add(btnWhite) |> ignore
         ts.Items.Add(btnBlack) |> ignore
         ts.Items.Add(new ToolStripSeparator()) |> ignore
@@ -182,17 +201,14 @@ type FrmMain() as this =
             // 1. Reset Board and History UI
             let mutable tempBoard = Board.Start
             mh.Clear()
-            
             // 2. Play through the sequence to rebuild history and board state
             for m in moves do
                 let bdBefore = tempBoard
                 let san = San.ToSan bdBefore m
                 mh.AddMove(bdBefore, m)
                 tempBoard <- Board.MoveApply m tempBoard
-            
             // 3. Set the final board position
             bd.SetBoard(tempBoard)
-            
             // 4. Trigger analysis/Lichess for the new position
             let fen = FEN.FromBrd tempBoard
             lblPosition.Text <- sprintf "FEN: %s" (if fen.Length > 30 then fen.Substring(0, 27) + "..." else fen)
@@ -200,7 +216,6 @@ type FrmMain() as this =
             ap.Clear()
             engine.Post (SetPosition fen)
             engine.Post (StartSearch 10000)
-            
             async {
                 let! data = LichessClient.fetchMastersStats fen
                 match data with | Some d -> mr.UpdateData(d) | None -> ()
@@ -209,9 +224,11 @@ type FrmMain() as this =
         bd.OnMoveMade.Add(fun (bdBefore, m) -> 
             let oldHistory = mh.GetMoveList()
             let san = San.ToSan bdBefore m
-            currentRep <- Repertoire.update currentRep oldHistory m san
+            if currentMode = Edit then
+                currentRep <- Repertoire.update currentRep oldHistory m san
+                refreshRepTree()
             mh.AddMove(bdBefore, m)
-            refreshRepTree() 
+            updateAllowedMoves(mh.GetMoveList())
             let currentBrd = bd.GetBoard()
             let fen = FEN.FromBrd currentBrd
             lblStatus.Text <- sprintf "Last move: %s" san
@@ -233,6 +250,7 @@ type FrmMain() as this =
                 mh.AddMove(bdBefore, m)
                 tempBoard <- Board.MoveApply m tempBoard
             bd.SetBoard(tempBoard)
+            updateAllowedMoves(moves)
             let fen = FEN.FromBrd tempBoard
             lblPosition.Text <- sprintf "FEN: %s" (if fen.Length > 30 then fen.Substring(0, 27) + "..." else fen)
             ap.SetBoard(tempBoard)
@@ -261,4 +279,4 @@ type FrmMain() as this =
     override this.OnFormClosing(e) =
         engine.Post Quit
         base.OnFormClosing(e)
-        Repertoire.save repfol currentRep
+        if currentMode = Edit then Repertoire.save repfol currentRep

@@ -10,6 +10,9 @@ type PnlBoard() as bd =
     // 1. Define the event. It will pass (BoardBeforeMove, MoveRecord, Evaluation)
     let moveMade = new Event<Brd * Mv>()
         
+    let mutable currentMode = Edit
+    let mutable allowedMoves : Mv list = [] 
+    
     let mutable board = Grampus.Board.Start
     let mutable sqTo = -1
     let mutable cCur = Cursors.Default
@@ -112,8 +115,14 @@ type PnlBoard() as bd =
     let mouseDown (p : PictureBox, e : MouseEventArgs) =
         if e.Button = MouseButtons.Left then 
             let sqFrom = System.Convert.ToInt32(p.Tag)
-            let sqf : int = sqFrom
-            let psmvs = sqf |> MoveGen.PossMoves board
+            let allPossMoves = sqFrom |> MoveGen.PossMoves board
+            let psmvs = 
+                if currentMode = Read then
+                    allPossMoves |> List.filter (fun m -> 
+                        allowedMoves |> List.exists (fun am -> 
+                            am.From = m.From && am.To = m.To && am.Prom = m.Prom))
+                else 
+                    allPossMoves
             let pssqs = psmvs |> List.map (fun m -> m.To)
             pssqs |> highlightsqs
             let oimg = p.Image
@@ -219,6 +228,11 @@ type PnlBoard() as bd =
     member bd.GetBoard() = board
     ///Orients the Board depending on whether White
     member bd.Orient(side) = orient(side)
+    member bd.Mode 
+        with get() = currentMode 
+        and set(v) = currentMode <- v
+    member bd.SetAllowedMoves(mvs: Mv list) =
+        allowedMoves <- mvs    
     // Expose the event so the Form can see it
     [<CLIEvent>]
-    member this.OnMoveMade = moveMade.Publish
+    member bd.OnMoveMade = moveMade.Publish

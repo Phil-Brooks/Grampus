@@ -4,6 +4,8 @@ open System.Drawing
 open System.Windows.Forms
 open Grampus
 
+type AppMode = Edit | Read
+
 type RepertoirePanel() as this =
     inherit UserControl()
 
@@ -19,8 +21,10 @@ type RepertoirePanel() as this =
 
     let txtComment = new TextBox(
         Multiline = true,
+        ReadOnly = true,
         Dock = DockStyle.Fill,
         ScrollBars = ScrollBars.Vertical,
+        BackColor = Color.LightGray,
         Font = new Font("Segoe UI", 10.0f)
     )
 
@@ -136,3 +140,8 @@ type RepertoirePanel() as this =
         if this.IsHandleCreated then 
             this.BeginInvoke(MethodInvoker(fun () -> tree.Nodes.Clear())) |> ignore
         else tree.Nodes.Clear()
+    member this.SetMode(mode) =
+        let isReadOnly = (mode=Read)
+        txtComment.ReadOnly <- isReadOnly
+        // Optional: change color to indicate it's disabled
+        txtComment.BackColor <- if isReadOnly then Color.LightGray else Color.White
