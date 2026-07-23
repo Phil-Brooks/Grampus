@@ -83,3 +83,14 @@ open System.IO
             // Start recursion from the root. The first move of a game is always WHITE's turn.
             let newRoots = updateNodes repertoire.Roots history newMv newSan repertoire.Side WHITE
             { repertoire with Roots = newRoots }
+        /// Recursively updates a comment for a specific move node in the tree
+        let rec updateComment (nodes: RepertoireNode list) (targetMv: Mv) (newComment: string) =
+            nodes |> List.map (fun node ->
+                if node.Mv = targetMv then
+                    { node with Comment = newComment }
+                else
+                    { node with Replies = updateComment node.Replies targetMv newComment }
+            )
+        //TODO: need to unit test
+        let setComment (repertoire: Repertoire) (node: RepertoireNode) (comment: string) =
+            { repertoire with Roots = updateComment repertoire.Roots node.Mv comment }

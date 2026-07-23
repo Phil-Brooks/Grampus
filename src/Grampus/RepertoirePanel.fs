@@ -1,6 +1,5 @@
 namespace GrampusUI
 
-open System
 open System.Drawing
 open System.Windows.Forms
 open Grampus
@@ -8,59 +7,90 @@ open Grampus
 type RepertoirePanel() as this =
     inherit UserControl()
 
-    let grid = new DataGridView(
-        Dock = DockStyle.Fill, AllowUserToAddRows = false, ReadOnly = true,
-        RowHeadersVisible = false, BackgroundColor = Color.White,
-        SelectionMode = DataGridViewSelectionMode.FullRowSelect,
-        EnableHeadersVisualStyles = false,
-        AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.None
+    let tree = new TreeView(
+        Dock = DockStyle.Fill,
+        FullRowSelect = true,
+        HideSelection = false,
+        Indent = 15
     )
 
-    // Event to notify the main form that a move was selected from the book
+    let txtComment = new TextBox(
+        Multiline = true,
+        Dock = DockStyle.Fill,
+        ScrollBars = ScrollBars.Vertical,
+        Font = new Font("Segoe UI", 10.0f)
+    )
+
+    let split = new SplitContainer(
+        Orientation = Orientation.Horizontal,
+        Dock = DockStyle.Fill,
+        SplitterDistance = 300
+    )
+
+    // Events
     let moveSelected = new Event<Mv>()
+    let commentUpdated = new Event<RepertoireNode * string>()
 
     do
-        grid.RowTemplate.Height <- 28
-        grid.ColumnHeadersDefaultCellStyle.BackColor <- Color.White
-        grid.Columns.Add("Move", "Move") |> ignore
-        grid.Columns.Add("Comment", "Comment") |> ignore
-        grid.Columns.[0].Width <- 60
-        grid.Columns.[1].AutoSizeMode <- DataGridViewAutoSizeColumnMode.Fill
-        grid.DefaultCellStyle.SelectionBackColor <- Color.White
-        grid.DefaultCellStyle.SelectionForeColor <- Color.Black
-        grid.ColumnHeadersDefaultCellStyle.SelectionBackColor <- Color.White
-        grid.ColumnHeadersDefaultCellStyle.SelectionForeColor <- Color.Black
+        // Layout
+        let commentHeader = new Label(Text = "Comment:", Dock = DockStyle.Top, Height = 20)
+        let bottomPanel = new Panel(Dock = DockStyle.Fill)
+        bottomPanel.Controls.Add(txtComment)
+        bottomPanel.Controls.Add(commentHeader)
 
+        split.Panel1.Controls.Add(tree)
+        split.Panel2.Controls.Add(bottomPanel)
+        this.Controls.Add(split)
 
-        // Handle double clicking a move to play it
-        grid.CellDoubleClick.Add(fun e ->
-            if e.RowIndex >= 0 then
-                match grid.Rows.[e.RowIndex].Tag with
-                | :? RepertoireNode as node -> moveSelected.Trigger(node.Mv)
+        // Tree Events
+        tree.AfterSelect.Add(fun e ->
+            match e.Node.Tag with
+            | :? RepertoireNode as node -> 
+                txtComment.Text <- node.Comment
+            | _ -> txtComment.Text <- ""
+        )
+
+        tree.NodeMouseDoubleClick.Add(fun e ->
+            match e.Node.Tag with
+            | :? RepertoireNode as node -> moveSelected.Trigger(node.Mv)
+            | _ -> ()
+        )
+
+        // Comment Events: Update when focus is lost or text changes
+        txtComment.LostFocus.Add(fun _ ->
+            if tree.SelectedNode <> null then
+                match tree.SelectedNode.Tag with
+                | :? RepertoireNode as node -> 
+                    if node.Comment <> txtComment.Text then
+                        commentUpdated.Trigger(node, txtComment.Text)
                 | _ -> ()
         )
 
-        this.Controls.Add(grid)
+    /// Recursive helper to build tree nodes
+    let rec createTreeNode (node: RepertoireNode): TreeNode =
+        let tn = new TreeNode(San.ToFigurine node.San)
+        tn.Tag <- node
+        for reply in node.Replies do
+            tn.Nodes.Add(createTreeNode reply) |> ignore
+        tn
 
     [<CLIEvent>] member this.OnMoveSelected = moveSelected.Publish
-    member this.UpdateMoves(nodes: RepertoireNode list) =
+    [<CLIEvent>] member this.OnCommentUpdated = commentUpdated.Publish
+    member this.UpdateFullTree(repertoire: Repertoire) =
         let updateAction() =
-            grid.SuspendLayout()
-            grid.Rows.Clear()
-            for node in nodes do
-                let san = San.ToFigurine node.San
-                let rowIdx = grid.Rows.Add([| box san; box node.Comment |])
-                grid.Rows.[rowIdx].Tag <- node
-            grid.ResumeLayout()
-        // If the window is already visible, use BeginInvoke to be thread-safe
-        if this.IsHandleCreated then
-            this.BeginInvoke(MethodInvoker(updateAction)) |> ignore
-        else
-            // If we are still in the constructor (startup), just run it directly
-            updateAction()
+            tree.SuspendLayout()
+            tree.Nodes.Clear()
+            let rootNode = new TreeNode(repertoire.Name)
+            for r in repertoire.Roots do
+                rootNode.Nodes.Add(createTreeNode r) |> ignore
+            tree.Nodes.Add(rootNode) |> ignore
+            rootNode.Expand()
+            tree.ResumeLayout()
+
+        if this.IsHandleCreated then 
+            this.BeginInvoke(MethodInvoker(updateAction)) |> ignore 
+        else updateAction()
     member this.Clear() =
-        let clearAction() = grid.Rows.Clear()
-        if this.IsHandleCreated then
-            this.BeginInvoke(MethodInvoker(clearAction)) |> ignore
-        else
-            clearAction()
+        if this.IsHandleCreated then 
+            this.BeginInvoke(MethodInvoker(fun () -> tree.Nodes.Clear())) |> ignore
+        else tree.Nodes.Clear()

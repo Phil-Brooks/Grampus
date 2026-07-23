@@ -18,20 +18,15 @@ type FrmMain() as this =
     let mr = new MasterDatabasePanel(Dock = DockStyle.Fill)
     let rep = new RepertoirePanel(Dock = DockStyle.Fill)
     let mutable currentRep = Repertoire.load repfol WHITE
-    // --- Helper Logic ---
-    let updateRepUI(history: Mv list) =
-        match Repertoire.findCurrentBranch currentRep.Roots history with
-        | Some replies -> 
-            rep.UpdateMoves(replies)
-        | None -> 
-            rep.Clear()
+    let refreshRepTree() =
+        rep.UpdateFullTree(currentRep)    
     let switchRep (side: int) =
         Repertoire.save repfol currentRep
         currentRep <- Repertoire.load repfol side
         bd.Orient(side) 
         mh.Clear()
         bd.SetBoard(Board.Start)
-        updateRepUI([]) 
+        refreshRepTree() 
         lblStatus.Text <- sprintf "Studying %s Repertoire" (if side = WHITE then "White" else "Black")
     // 2. Setup the Engine logic
     let onEngineMsg = function
@@ -152,7 +147,7 @@ type FrmMain() as this =
             currentRep <- Repertoire.update currentRep oldHistory m san
             mh.AddMove(bdBefore, m)
             let newHistory = oldHistory @ [ m ]
-            updateRepUI(newHistory) 
+            refreshRepTree() 
             let currentBrd = bd.GetBoard()
             let fen = FEN.FromBrd currentBrd
             lblStatus.Text <- sprintf "Last move: %s" san
@@ -174,7 +169,7 @@ type FrmMain() as this =
             bd.SetBoard(tempBoard) 
             let fen = FEN.FromBrd tempBoard
             lblPosition.Text <- sprintf "FEN: %s" (if fen.Length > 30 then fen.Substring(0, 27) + "..." else fen)
-            updateRepUI(moves)
+            refreshRepTree() 
             ap.SetBoard(tempBoard)
             ap.Clear()
             engine.Post (SetPosition fen)
@@ -184,11 +179,20 @@ type FrmMain() as this =
                 match data with | Some d -> mr.UpdateData(d) | None -> ()
             } |> Async.Start
         )
+        rep.OnCommentUpdated.Add(fun (node, newComment) ->
+            // Update the immutable state
+            currentRep <- Repertoire.setComment currentRep node newComment
+            // Save immediately
+            Repertoire.save repfol currentRep
+            // Refresh tree to keep the 'Tag' data in the UI in sync with the record
+            refreshRepTree()
+        )    
 
         currentRep <- Repertoire.load repfol WHITE
         bd.Orient(WHITE)
-        updateRepUI([])
+        refreshRepTree()
         lblStatus.Text <- "Studying White Repertoire"
+    
     override this.OnFormClosing(e) =
         engine.Post Quit
         base.OnFormClosing(e)
