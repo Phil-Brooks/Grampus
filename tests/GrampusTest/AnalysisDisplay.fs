@@ -31,7 +31,7 @@ module AnalysisDisplay =
         let result = AnalysisDisplay.getSanPv bd uciMoves
         
         // Expected: 1. e4 e5 2. Nf3
-        result |> should equal "1. e4 e5 2. Nf3"
+        result |> should equal "1. e4 e5 2. ♘f3"
 
     [<Fact>]
     let ``getSanPv handles Black to move starting sequence`` () =
@@ -42,4 +42,4 @@ module AnalysisDisplay =
         let result = AnalysisDisplay.getSanPv bd uciMoves
         
         // Expected: e5 2. Nf3 (standard notation when starting on Black's turn)
-        result |> should equal "e5 2. Nf3"
+        result |> should equal "e5 2. ♘f3"

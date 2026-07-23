@@ -91,6 +91,5 @@ open System.IO
                 else
                     { node with Replies = updateComment node.Replies targetMv newComment }
             )
-        //TODO: need to unit test
         let setComment (repertoire: Repertoire) (node: RepertoireNode) (comment: string) =
             { repertoire with Roots = updateComment repertoire.Roots node.Mv comment }

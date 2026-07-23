@@ -271,3 +271,58 @@ module Repertoire =
         let repliesToE4 = updated.Roots.[0].Replies
         repliesToE4.Length |> should equal 1
         repliesToE4.[0].San |> should equal "c5"
+
+    // --- 6. Comment Update Tests ---
+
+    [<Fact>]
+    let ``setComment updates comment on a root node`` () =
+        let newComment = "Strongest opening for White"
+        
+        // nodeE4 is a root in testRepertoire
+        let updated = Repertoire.setComment testRepertoire nodeE4 newComment
+        
+        // Verify the root is updated
+        let updatedE4 = updated.Roots |> List.find (fun n -> n.San = "e4")
+        updatedE4.Comment |> should equal newComment
+        
+        // Verify other roots are unchanged
+        let d4 = updated.Roots |> List.find (fun n -> n.San = "d4")
+        d4.Comment |> should equal ""
+
+    [<Fact>]
+    let ``setComment updates comment deep in the tree`` () =
+        // Path: e4 -> e5 -> Nf3 (nodeNf3 is 3 levels deep)
+        let newComment = "The main line of the Open Game"
+        
+        let updated = Repertoire.setComment testRepertoire nodeNf3 newComment
+        
+        // Navigate deep to verify
+        let e4 = updated.Roots |> List.find (fun n -> n.San = "e4")
+        let e5 = e4.Replies |> List.find (fun n -> n.San = "e5")
+        let nf3 = e5.Replies |> List.find (fun n -> n.San = "Nf3")
+        
+        nf3.Comment |> should equal newComment
+        
+        // Verify the parent's metadata (SAN) was preserved during the recursion
+        e5.San |> should equal "e5"
+
+    [<Fact>]
+    let ``setComment does nothing if the node is not found in the repertoire`` () =
+        let fakeMv = createTestMv A2 A3 1 // a3 is not in our testRoots
+        let fakeNode = { Mv = fakeMv; San = "a3"; Comment = ""; Replies = [] }
+        
+        let updated = Repertoire.setComment testRepertoire fakeNode "Should not be added"
+        
+        // Structural equality check: the repertoire should be identical to the original
+        updated |> should equal testRepertoire
+
+    [<Fact>]
+    let ``setComment preserves branches when updating a parent's comment`` () =
+        // Update e4's comment and ensure e5 and c5 variations are still there
+        let updated = Repertoire.setComment testRepertoire nodeE4 "Updated e4"
+        
+        let e4 = updated.Roots |> List.find (fun n -> n.San = "e4")
+        e4.Replies.Length |> should equal 2
+        e4.Replies |> List.exists (fun n -> n.San = "e5") |> should be True
+        e4.Replies |> List.exists (fun n -> n.San = "c5") |> should be True
+
