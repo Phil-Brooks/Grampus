@@ -48,7 +48,8 @@ type RepertoirePanel() as this =
             grid.SuspendLayout()
             grid.Rows.Clear()
             for node in nodes do
-                let rowIdx = grid.Rows.Add([| box node.San; box node.Comment |])
+                let san = San.ToFigurine node.San
+                let rowIdx = grid.Rows.Add([| box san; box node.Comment |])
                 grid.Rows.[rowIdx].Tag <- node
             grid.ResumeLayout()
         // If the window is already visible, use BeginInvoke to be thread-safe

@@ -117,7 +117,8 @@ type MasterDatabasePanel() as this =
                     for m in data.Moves do
                         let ratios = MasterDataLogic.calculateRatios m.White m.Draws m.Black
                         let total = m.White + m.Draws + m.Black
-                        grid.Rows.Add([| box m.San; box (MasterDataLogic.formatCount total); box ratios |]) |> ignore
+                        let san = San.ToFigurine m.San
+                        grid.Rows.Add([| box san; box (MasterDataLogic.formatCount total); box ratios |]) |> ignore
             
                 let totalRatios = MasterDataLogic.calculateRatios data.White data.Draws data.Black
                 let totalGames = data.White + data.Draws + data.Black
