@@ -1,21 +1,35 @@
 namespace Grampus
 
+#if INTERACTIVE
+#else
 open System
 open System.Text.Json
 open System.Text.Json.Serialization
 open System.IO
+#endif
 
     type RepertoireNode = {
         Mv : Mv
         San : string
         Comment : string
+        Path : Mv list
         Replies : RepertoireNode list
     }
+
     type Repertoire = {
         Name : string
         Side : int // WHITE or BLACK constants from your Types module
-        Roots : RepertoireNode list
+        Lines : Mv list list
+        Comments : Map<Mv list, string>
     }
+
+    type RepertoireDto = {
+        Name : string
+        Side : int
+        Lines : Mv list list
+        CommentsList : (Mv list * string) list
+    }
+
     module Repertoire =
         let private options = JsonSerializerOptions()
         options.WriteIndented <- true
@@ -34,15 +48,27 @@ open System.IO
             if File.Exists(path) then
                 let backupPath = getBackupPath fol repertoire.Side
                 File.Copy(path, backupPath, true)
-            let json = JsonSerializer.Serialize(repertoire, options)
+            let dto = {
+                Name = repertoire.Name
+                Side = repertoire.Side
+                Lines = repertoire.Lines
+                CommentsList = repertoire.Comments |> Map.toList
+            }
+            let json = JsonSerializer.Serialize(dto, options)
             File.WriteAllText(path, json)
         let loadFromFile path side =
             if File.Exists(path) then
                 try 
-                    JsonSerializer.Deserialize<Repertoire>(File.ReadAllText(path), options)
-                with _ -> { Name = "New Repertoire"; Side = side; Roots = [] }
+                    let dto = JsonSerializer.Deserialize<RepertoireDto>(File.ReadAllText(path), options)
+                    {
+                        Name = dto.Name
+                        Side = dto.Side
+                        Lines = dto.Lines
+                        Comments = Map.ofList dto.CommentsList
+                    }
+                with _ -> { Name = "New Repertoire"; Side = side; Lines = []; Comments = Map.empty }
             else 
-                { Name = "New Repertoire"; Side = side; Roots = [] }
+                { Name = "New Repertoire"; Side = side; Lines = []; Comments = Map.empty }
         let load fol (side: int) : Repertoire =
             let path = getFileName fol side
             loadFromFile path side
@@ -56,7 +82,6 @@ open System.IO
                 |> Array.toList
                 |> List.sortByDescending id // Filenames are timestamped, so ID sort is chronological       
         let getRequiredOrientation (repertoire: Repertoire) =
-            // If repertoire is for BLACK, return BLACK (1), else WHITE (0)
             repertoire.Side
         /// Finds the branch in the repertoire that matches a list of moves played
         /// movesPlayed: A list of Mv records from the start of the game
@@ -74,42 +99,82 @@ open System.IO
                         findCurrentBranch matchingNode.Replies remainingMoves)
         /// Helper to create a new move node
         let createNode move san =
-            { Mv = move; San = san; Comment = ""; Replies = [] }
-        let rec private updateNodes (nodes: RepertoireNode list) (history: Mv list) (newMv: Mv) (newSan: string) (studySide: int) (currentTurn: int) =
-            match history with
-            | head :: tail ->
-                // 1. Navigate deeper: find the branch that matches the history
-                nodes |> List.map (fun node ->
-                    if node.Mv = head then
-                        // Flip the turn for the next level
-                        let nextTurn = if currentTurn = WHITE then BLACK else WHITE
-                        { node with Replies = updateNodes node.Replies tail newMv newSan studySide nextTurn }
-                    else node)
-            | [] ->
-                // 2. We are at the position where the move is made. Apply Business Rules:
-                if currentTurn = studySide then
-                    // RULE: OUR SIDE (Single path)
-                    let existing = nodes |> List.tryFind (fun n -> n.Mv = newMv)
-                    match existing with
-                    | Some found -> [ found ] // Already exists: keep only this one
-                    | None -> [ { Mv = newMv; San = newSan; Comment = ""; Replies = [] } ] // Replace all with new move
-                else
-                    // RULE: OPPONENT SIDE (Variations)
-                    let exists = nodes |> List.exists (fun n -> n.Mv = newMv)
-                    if exists then nodes // Already exists: don't change anything
-                    else nodes @ [ { Mv = newMv; San = newSan; Comment = ""; Replies = [] } ] // Add new variation
-        /// Public entry point to update the repertoire structure
+            { Mv = move; San = san; Comment = ""; Path = [move]; Replies = [] }
+
+        let rec private isPrefix (a: 'a list) (b: 'a list) =
+            match a, b with
+            | [], _ -> true
+            | _, [] -> false
+            | x :: xs, y :: ys -> x = y && isPrefix xs ys
+
         let update (repertoire: Repertoire) (history: Mv list) (newMv: Mv) (newSan: string) =
-            // Start recursion from the root. The first move of a game is always WHITE's turn.
-            let newRoots = updateNodes repertoire.Roots history newMv newSan repertoire.Side WHITE
-            { repertoire with Roots = newRoots }
-        /// Recursively updates a comment for a specific move node in the tree
-        let rec updateComment (nodes: RepertoireNode list) (targetMv: Mv) (newComment: string) =
-            nodes |> List.map (fun node ->
-                if node.Mv = targetMv then
-                    { node with Comment = newComment }
+            let currentTurn = if history.Length % 2 = 0 then WHITE else BLACK
+            let newPath = history @ [newMv]
+
+            let filteredLines =
+                if currentTurn = repertoire.Side then
+                    // OUR SIDE (Single path rule)
+                    repertoire.Lines |> List.filter (fun line ->
+                        not (isPrefix history line && line.Length > history.Length && line.[history.Length] <> newMv)
+                    )
                 else
-                    { node with Replies = updateComment node.Replies targetMv newComment }
-            )
+                    // OPPONENT SIDE (Variations rule)
+                    repertoire.Lines
+
+            let finalLines =
+                let exists = filteredLines |> List.exists (fun line -> isPrefix newPath line)
+                if exists then filteredLines
+                else filteredLines @ [newPath]
+
+            { repertoire with Lines = finalLines }
+
         let setComment (repertoire: Repertoire) (node: RepertoireNode) (comment: string) =
-            { repertoire with Roots = updateComment repertoire.Roots node.Mv comment }
+            let pathExists = repertoire.Lines |> List.exists (fun line -> isPrefix node.Path line)
+            if not pathExists then repertoire
+            else
+                let newComments = Map.add node.Path comment repertoire.Comments
+                { repertoire with Comments = newComments }
+
+        let toTree (lines: Mv list list) (comments: Map<Mv list, string>) : RepertoireNode list =
+            let rec build (bd: Brd) (currentPath: Mv list) (remainingLines: Mv list list) : RepertoireNode list =
+                let activeLines = remainingLines |> List.filter (fun l -> not l.IsEmpty)
+                if activeLines.IsEmpty then []
+                else
+                    activeLines
+                    |> List.groupBy List.head
+                    |> List.map (fun (mv, group) ->
+                        let nextPath = currentPath @ [mv]
+                        let nextBd = Board.MoveApply mv bd
+                        let san = San.ToSan bd mv
+                        let comment = Map.tryFind nextPath comments |> Option.defaultValue ""
+                        
+                        let nextRemaining = group |> List.map List.tail
+                        let replies = build nextBd nextPath nextRemaining
+                        
+                        { Mv = mv; San = san; Comment = comment; Path = nextPath; Replies = replies }
+                    )
+            build Board.Start [] lines
+
+        let ofTree name side (roots: RepertoireNode list) : Repertoire =
+            let rec traverse (currentPath: Mv list) (nodes: RepertoireNode list) (accLines: Mv list list) (accComments: Map<Mv list, string>) =
+                if nodes.IsEmpty then 
+                    if currentPath.IsEmpty then (accLines, accComments)
+                    else (currentPath :: accLines, accComments)
+                else
+                    nodes |> List.fold (fun (lines, comments) node ->
+                        let nextPath = currentPath @ [node.Mv]
+                        let updatedComments = 
+                            if String.IsNullOrEmpty(node.Comment) then comments 
+                            else Map.add nextPath node.Comment comments
+                        
+                        if node.Replies.IsEmpty then
+                            (nextPath :: lines, updatedComments)
+                        else
+                            traverse nextPath node.Replies lines updatedComments
+                    ) (accLines, accComments)
+            
+            let lines, comments = traverse [] roots [] Map.empty
+            { Name = name; Side = side; Lines = List.rev lines; Comments = comments }
+
+    type Repertoire with
+        member this.Roots = Repertoire.toTree this.Lines this.Comments

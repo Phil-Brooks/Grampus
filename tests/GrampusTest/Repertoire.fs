@@ -16,21 +16,21 @@ module Repertoire =
 
 
     // --- Setup a test tree with Enum syntax ---
-    let nodeNf3 = { Mv = createTestMv G1 F3 2; San = "Nf3"; Comment = ""; Replies = [] }
-    let nodeE5  = { Mv = createTestMv E7 E5 9; San = "e5"; Comment = ""; Replies = [nodeNf3] }
-    let nodeC5  = { Mv = createTestMv C7 C5 9; San = "c5"; Comment = ""; Replies = [] }
-    let nodeE4  = { Mv = createTestMv E2 E4 1; San = "e4"; Comment = ""; Replies = [nodeE5; nodeC5] }
-    let nodeD4  = { Mv = createTestMv D2 D4 1; San = "d4"; Comment = ""; Replies = [] }
+    let nodeNf3 = { Mv = createTestMv G1 F3 2; San = "Nf3"; Comment = ""; Path = [createTestMv E2 E4 1; createTestMv E7 E5 9; createTestMv G1 F3 2]; Replies = [] }
+    let nodeE5  = { Mv = createTestMv E7 E5 9; San = "e5"; Comment = ""; Path = [createTestMv E2 E4 1; createTestMv E7 E5 9]; Replies = [nodeNf3] }
+    let nodeC5  = { Mv = createTestMv C7 C5 9; San = "c5"; Comment = ""; Path = [createTestMv E2 E4 1; createTestMv C7 C5 9]; Replies = [] }
+    let nodeE4  = { Mv = createTestMv E2 E4 1; San = "e4"; Comment = ""; Path = [createTestMv E2 E4 1]; Replies = [nodeE5; nodeC5] }
+    let nodeD4  = { Mv = createTestMv D2 D4 1; San = "d4"; Comment = ""; Path = [createTestMv D2 D4 1]; Replies = [] }
     
     let testRoots = [nodeE4; nodeD4]
-    let testRepertoire = { Name = "Test Rep"; Side = 0; Roots = testRoots }
+    let testRepertoire = Repertoire.ofTree "Test Rep" 0 testRoots
 
     // --- 1. Orientation Tests ---
 
     [<Fact>]
     let ``getRequiredOrientation returns correct side`` () =
-        let whiteRep = { Name = "White"; Side = 0; Roots = [] }
-        let blackRep = { Name = "Black"; Side = 1; Roots = [] }
+        let whiteRep = { Name = "White"; Side = 0; Lines = []; Comments = Map.empty }
+        let blackRep = { Name = "Black"; Side = 1; Lines = []; Comments = Map.empty }
         
         Repertoire.getRequiredOrientation whiteRep |> should equal 0
         Repertoire.getRequiredOrientation blackRep |> should equal 1
@@ -99,8 +99,8 @@ module Repertoire =
         let moveToQueen = createTestMvP A7 A8 WPAWN WQUEEN
         let moveToRook  = createTestMvP A7 A8 WPAWN WROOK
         
-        let nodeQueen = { Mv = moveToQueen; San = "a8=Q"; Comment = "Best"; Replies = [] }
-        let nodeRook  = { Mv = moveToRook; San = "a8=R"; Comment = "Silly"; Replies = [] }
+        let nodeQueen = { Mv = moveToQueen; San = "a8=Q"; Comment = "Best"; Path = [moveToQueen]; Replies = [] }
+        let nodeRook  = { Mv = moveToRook; San = "a8=R"; Comment = "Silly"; Path = [moveToRook]; Replies = [] }
         
         let roots = [nodeQueen; nodeRook]
 
@@ -161,8 +161,8 @@ module Repertoire =
         let move2 = createTestMvP 52 36 9 0 // e5
         let move3_actual = createTestMvP 50 34 9 0 // c5 (The move actually played)
         
-        let nodeE5 = { Mv = move2; San = "e5"; Comment = ""; Replies = [] }
-        let nodeE4 = { Mv = move1; San = "e4"; Comment = ""; Replies = [nodeE5] }
+        let nodeE5 = { Mv = move2; San = "e5"; Comment = ""; Path = [move1; move2]; Replies = [] }
+        let nodeE4 = { Mv = move1; San = "e4"; Comment = ""; Path = [move1]; Replies = [nodeE5] }
         
         // Played e4, then c5. But the book only knows e4 followed by e5.
         let playedMoves = [ move1; move3_actual ]
@@ -174,7 +174,7 @@ module Repertoire =
 
     [<Fact>]
     let ``update OUR SIDE: adds move to empty roots`` () =
-        let rep = { Name = "White Study"; Side = WHITE; Roots = [] }
+        let rep = { Name = "White Study"; Side = WHITE; Lines = []; Comments = Map.empty }
         let moveE4 = createTestMv E2 E4 1
         
         let updated = Repertoire.update rep [] moveE4 "e4"
@@ -187,8 +187,8 @@ module Repertoire =
         // Initial state: We have d4 in our repertoire
         let moveD4 = createTestMv D2 D4 1
         let moveE4 = createTestMv E2 E4 1
-        let nodeD4 = { Mv = moveD4; San = "d4"; Comment = "Old"; Replies = [] }
-        let rep = { Name = "White Study"; Side = WHITE; Roots = [nodeD4] }
+        let nodeD4 = { Mv = moveD4; San = "d4"; Comment = "Old"; Path = [moveD4]; Replies = [] }
+        let rep = Repertoire.ofTree "White Study" WHITE [nodeD4]
 
         // Update: We play e4 instead
         let updated = Repertoire.update rep [] moveE4 "e4"
@@ -200,9 +200,9 @@ module Repertoire =
     [<Fact>]
     let ``update OUR SIDE: keeps existing move and branches if move is the same`` () =
         let moveE4 = createTestMv E2 E4 1
-        let reply = { Mv = createTestMv E7 E5 9; San = "e5"; Comment = ""; Replies = [] }
-        let nodeE4 = { Mv = moveE4; San = "e4"; Comment = "Keep me"; Replies = [reply] }
-        let rep = { Name = "White Study"; Side = WHITE; Roots = [nodeE4] }
+        let reply = { Mv = createTestMv E7 E5 9; San = "e5"; Comment = ""; Path = [moveE4; createTestMv E7 E5 9]; Replies = [] }
+        let nodeE4 = { Mv = moveE4; San = "e4"; Comment = "Keep me"; Path = [moveE4]; Replies = [reply] }
+        let rep = Repertoire.ofTree "White Study" WHITE [nodeE4]
 
         // Update with same move
         let updated = Repertoire.update rep [] moveE4 "e4"
@@ -218,9 +218,9 @@ module Repertoire =
         let moveE5 = createTestMv E7 E5 9
         let moveC5 = createTestMv C7 C5 9
         
-        let nodeE5 = { Mv = moveE5; San = "e5"; Comment = ""; Replies = [] }
-        let nodeE4 = { Mv = moveE4; San = "e4"; Comment = ""; Replies = [nodeE5] }
-        let rep = { Name = "White Study"; Side = WHITE; Roots = [nodeE4] }
+        let nodeE5 = { Mv = moveE5; San = "e5"; Comment = ""; Path = [moveE4; moveE5]; Replies = [] }
+        let nodeE4 = { Mv = moveE4; San = "e4"; Comment = ""; Path = [moveE4]; Replies = [nodeE5] }
+        let rep = Repertoire.ofTree "White Study" WHITE [nodeE4]
 
         // Black plays c5 (Sicilian) instead of e5
         let updated = Repertoire.update rep [moveE4] moveC5 "c5"
@@ -239,10 +239,10 @@ module Repertoire =
         let m3 = createTestMv G1 F3 2   // White
         let m4 = createTestMv B8 C6 10  // Black (New Variation)
 
-        let nodeNf3 = { Mv = m3; San = "Nf3"; Comment = ""; Replies = [] }
-        let nodeE5 = { Mv = m2; San = "e5"; Comment = ""; Replies = [nodeNf3] }
-        let nodeE4 = { Mv = m1; San = "e4"; Comment = ""; Replies = [nodeE5] }
-        let rep = { Name = "White Study"; Side = WHITE; Roots = [nodeE4] }
+        let nodeNf3 = { Mv = m3; San = "Nf3"; Comment = ""; Path = [m1; m2; m3]; Replies = [] }
+        let nodeE5 = { Mv = m2; San = "e5"; Comment = ""; Path = [m1; m2]; Replies = [nodeNf3] }
+        let nodeE4 = { Mv = m1; San = "e4"; Comment = ""; Path = [m1]; Replies = [nodeE5] }
+        let rep = Repertoire.ofTree "White Study" WHITE [nodeE4]
 
         let history = [m1; m2; m3]
         let updated = Repertoire.update rep history m4 "Nc6"
@@ -260,9 +260,9 @@ module Repertoire =
         let mE5 = createTestMv E7 E5 9
         let mC5 = createTestMv C7 C5 9
         
-        let nodeE5 = { Mv = mE5; San = "e5"; Comment = ""; Replies = [] }
-        let nodeE4 = { Mv = m1; San = "e4"; Comment = ""; Replies = [nodeE5] }
-        let rep = { Name = "Black Study"; Side = BLACK; Roots = [nodeE4] }
+        let nodeE5 = { Mv = mE5; San = "e5"; Comment = ""; Path = [m1; mE5]; Replies = [] }
+        let nodeE4 = { Mv = m1; San = "e4"; Comment = ""; Path = [m1]; Replies = [nodeE5] }
+        let rep = Repertoire.ofTree "Black Study" BLACK [nodeE4]
 
         // Update history is [e4]. Next turn is Black (Our side).
         let updated = Repertoire.update rep [m1] mC5 "c5"
@@ -309,7 +309,7 @@ module Repertoire =
     [<Fact>]
     let ``setComment does nothing if the node is not found in the repertoire`` () =
         let fakeMv = createTestMv A2 A3 1 // a3 is not in our testRoots
-        let fakeNode = { Mv = fakeMv; San = "a3"; Comment = ""; Replies = [] }
+        let fakeNode = { Mv = fakeMv; San = "a3"; Comment = ""; Path = [fakeMv]; Replies = [] }
         
         let updated = Repertoire.setComment testRepertoire fakeNode "Should not be added"
         
@@ -332,7 +332,7 @@ module Repertoire =
         if Directory.Exists(fol) then Directory.Delete(fol, true)
         Directory.CreateDirectory(fol) |> ignore
     
-        let rep = { Name = "Test"; Side = WHITE; Roots = [] }
+        let rep = { Name = "Test"; Side = WHITE; Lines = []; Comments = Map.empty }
         Repertoire.save fol rep // First save
         System.Threading.Thread.Sleep(1100) // Ensure timestamp differs
         Repertoire.save fol rep // Second save (should trigger backup)
