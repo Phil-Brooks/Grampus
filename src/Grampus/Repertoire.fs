@@ -72,34 +72,55 @@ open System.IO
                 |> List.sortByDescending id // Filenames are timestamped, so ID sort is chronological       
         let getRequiredOrientation (repertoire: Repertoire) =
             repertoire.Side
-
         let rec private isPrefix (a: 'a list) (b: 'a list) =
             match a, b with
             | [], _ -> true
             | _, [] -> false
             | x :: xs, y :: ys -> x = y && isPrefix xs ys
-
         let update (repertoire: Repertoire) (history: Mv list) (newMv: Mv) =
-            let currentTurn = if history.Length % 2 = 0 then WHITE else BLACK
             let newPath = history @ [newMv]
 
-            let filteredLines =
-                if currentTurn = repertoire.Side then
-                    // OUR SIDE (Single path rule)
-                    repertoire.Lines |> List.filter (fun line ->
-                        not (isPrefix history line && line.Length > history.Length && line.[history.Length] <> newMv)
-                    )
+            // Rule 1: If the path already exists (or is a prefix of a longer line), return unchanged
+            if repertoire.Lines |> List.exists (isPrefix newPath) then
+                repertoire
+            else
+                let currentTurn = if history.Length % 2 = 0 then WHITE else BLACK
+
+                if currentTurn <> repertoire.Side then
+                    // Rule 2: Opponent Side
+                    // Check if there is a line that is EXACTLY the current history
+                    let exactMatchExists = repertoire.Lines |> List.exists (fun line -> line = history)
+
+                    if exactMatchExists then
+                        // Extend that specific line
+                        let nextLines = 
+                            repertoire.Lines 
+                            |> List.map (fun line -> if line = history then newPath else line)
+                        { repertoire with Lines = nextLines }
+                    else
+                        // Add a new variation line
+                        { repertoire with Lines = newPath :: repertoire.Lines }
+
                 else
-                    // OPPONENT SIDE (Variations rule)
-                    repertoire.Lines
+                    // Rule 3: Our Side (Replacement Rule)
+                    // 1. Identify which lines to remove (any line starting with the current history)
+                    let linesToRemove = 
+                        repertoire.Lines |> List.filter (isPrefix history)
 
-            let finalLines =
-                let exists = filteredLines |> List.exists (fun line -> isPrefix newPath line)
-                if exists then filteredLines
-                else filteredLines @ [newPath]
+                    // 2. Filter them out
+                    let filteredLines = 
+                        repertoire.Lines |> List.filter (fun line -> not (isPrefix history line))
+            
+                    // 3. Clean up comments associated with the lines being deleted
+                    let cleanedComments = 
+                        repertoire.Comments 
+                        |> Map.filter (fun path _ -> 
+                            not (linesToRemove |> List.exists (fun removed -> isPrefix path removed))
+                        )
 
-            { repertoire with Lines = finalLines }
-
+                    { repertoire with 
+                        Lines = newPath :: filteredLines
+                        Comments = cleanedComments }        
         let setComment (repertoire: Repertoire) (mvl: Mv list) (comment: string) =
             let pathExists = repertoire.Lines |> List.exists (fun line -> isPrefix mvl line)
             if not pathExists then repertoire
