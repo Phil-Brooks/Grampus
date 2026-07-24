@@ -19,15 +19,15 @@ type FrmMain() as this =
     let rep = new RepertoirePanel(Dock = DockStyle.Fill)
     let mutable currentRep = Repertoire.load repfol WHITE
     let mutable currentMode = Read
-    let refreshRepTree() =
-        rep.UpdateFullTree(currentRep, mh.GetMoveList())    
+    let refreshRep() =
+        rep.UpdateAll(currentRep, mh.GetMoveList())    
     let switchRep (side: int) =
         if currentMode = Edit then Repertoire.save repfol currentRep
         currentRep <- Repertoire.load repfol side
         bd.Orient(side) 
         mh.Clear()
         bd.SetBoard(Board.Start)
-        refreshRepTree() 
+        refreshRep() 
         lblStatus.Text <- sprintf "Studying %s Repertoire" (if side = WHITE then "White" else "Black")
     // 2. Setup the Engine logic
     let onEngineMsg = function
@@ -37,17 +37,18 @@ type FrmMain() as this =
     let engine = Engine.spawn engloc onEngineMsg
     let updateAllowedMoves(history: Mv list) =
         if currentMode = Read then
-            bd.SetAllowedMoves([]) // TODO: need to get all next moves in rep
-            //match Repertoire.findCurrentBranch currentRep.Roots history with
-            //| Some nodes -> bd.SetAllowedMoves(nodes |> List.map (fun n -> n.Mv))
-            //| None -> bd.SetAllowedMoves([]) // No moves allowed if off-book in Read mode
+            let nextMoves =
+                currentRep.Lines
+                |> List.filter (fun line -> Repertoire.IsPrefix history line && line.Length > history.Length)
+                |> List.map (fun line -> line.[history.Length])
+                |> List.distinct
+            bd.SetAllowedMoves(nextMoves)
         else
             bd.SetAllowedMoves([]) // Ignore in Edit mode
     let setMode mode =
         currentMode <- mode
         bd.Mode <- mode
-        // Disable comment editing in Read mode
-        rep.SetMode (mode) // You'll need to add this method to RepertoirePanel
+        rep.SetMode (mode)
         let history = mh.GetMoveList()
         updateAllowedMoves(history)
         lblStatus.Text <- sprintf "Mode: %A | Studying %s" mode (if currentRep.Side = WHITE then "White" else "Black")
@@ -81,7 +82,7 @@ type FrmMain() as this =
                         bd.SetBoard(Board.Start)
                         mh.Clear()
                         ap.Clear()
-                        refreshRepTree()
+                        refreshRep()
                         
                         lblStatus.Text <- sprintf "Restored version from %s" dateStr
                     )
@@ -197,6 +198,7 @@ type FrmMain() as this =
         this.Controls.Add(toolbar)
         this.Controls.Add(menu)
         this.Controls.Add(status)
+        setMode Read
         // --- Event Wiring ---
         rep.OnMovesSelected.Add(fun moves ->
             // 1. Reset Board and History UI
@@ -205,11 +207,11 @@ type FrmMain() as this =
             // 2. Play through the sequence to rebuild history and board state
             for m in moves do
                 let bdBefore = tempBoard
-                let san = San.ToSan bdBefore m
                 mh.AddMove(bdBefore, m)
                 tempBoard <- Board.MoveApply m tempBoard
             // 3. Set the final board position
             bd.SetBoard(tempBoard)
+            refreshRep()
             // 4. Trigger analysis/Lichess for the new position
             let fen = FEN.FromBrd tempBoard
             lblPosition.Text <- sprintf "FEN: %s" (if fen.Length > 30 then fen.Substring(0, 27) + "..." else fen)
@@ -228,7 +230,7 @@ type FrmMain() as this =
             mh.AddMove(bdBefore, m)
             if currentMode = Edit then
                 currentRep <- Repertoire.update currentRep oldHistory m
-                refreshRepTree()
+            refreshRep()
             updateAllowedMoves(mh.GetMoveList())
             let currentBrd = bd.GetBoard()
             let fen = FEN.FromBrd currentBrd
@@ -269,12 +271,12 @@ type FrmMain() as this =
             // Save immediately
             Repertoire.save repfol currentRep
             // Refresh tree to keep the 'Tag' data in the UI in sync with the record
-            refreshRepTree()
+            refreshRep()
         )    
 
         currentRep <- Repertoire.load repfol WHITE
         bd.Orient(WHITE)
-        refreshRepTree()
+        refreshRep()
         lblStatus.Text <- "Studying White Repertoire"
     
     override this.OnFormClosing(e) =

@@ -139,16 +139,10 @@ type RepertoirePanel() as this =
                 helper nextBd rest (san :: acc)
         helper Board.Start line []
 
-    let rec isPrefix (a: 'a list) (b: 'a list) =
-        match a, b with
-        | [], _ -> true
-        | _, [] -> false
-        | x :: xs, y :: ys -> x = y && isPrefix xs ys
-
     [<CLIEvent>] member this.OnMovesSelected = movesSelected.Publish
     [<CLIEvent>] member this.OnCommentUpdated = commentUpdated.Publish
 
-    member this.UpdateFullTree(repertoire: Repertoire, history: Mv list) =
+    member this.UpdateAll(repertoire: Repertoire, history: Mv list) =
         let updateAction() =
             currentHistory <- history
             currentRepertoire <- Some repertoire
@@ -160,7 +154,7 @@ type RepertoirePanel() as this =
             let currentBd = history |> List.fold (fun b m -> Board.MoveApply m b) Board.Start
             let nextMoves =
                 repertoire.Lines
-                |> List.filter (fun line -> isPrefix history line && line.Length > history.Length)
+                |> List.filter (fun line -> Repertoire.IsPrefix history line && line.Length > history.Length)
                 |> List.map (fun line -> line.[history.Length])
                 |> List.distinct
 
@@ -192,7 +186,7 @@ type RepertoirePanel() as this =
 
             let filteredLines =
                 repertoire.Lines
-                |> List.filter (fun line -> isPrefix history line)
+                |> List.filter (fun line -> Repertoire.IsPrefix history line)
 
             // Add columns for each filtered line
             for i = 1 to filteredLines.Length do
