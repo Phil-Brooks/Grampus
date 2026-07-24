@@ -20,7 +20,7 @@ type FrmMain() as this =
     let mutable currentRep = Repertoire.load repfol WHITE
     let mutable currentMode = Read
     let refreshRepTree() =
-        rep.UpdateFullTree(currentRep)    
+        rep.UpdateFullTree(currentRep, mh.GetMoveList())    
     let switchRep (side: int) =
         if currentMode = Edit then Repertoire.save repfol currentRep
         currentRep <- Repertoire.load repfol side
@@ -37,9 +37,10 @@ type FrmMain() as this =
     let engine = Engine.spawn engloc onEngineMsg
     let updateAllowedMoves(history: Mv list) =
         if currentMode = Read then
-            match Repertoire.findCurrentBranch currentRep.Roots history with
-            | Some nodes -> bd.SetAllowedMoves(nodes |> List.map (fun n -> n.Mv))
-            | None -> bd.SetAllowedMoves([]) // No moves allowed if off-book in Read mode
+            bd.SetAllowedMoves([]) // TODO: need to get all next moves in rep
+            //match Repertoire.findCurrentBranch currentRep.Roots history with
+            //| Some nodes -> bd.SetAllowedMoves(nodes |> List.map (fun n -> n.Mv))
+            //| None -> bd.SetAllowedMoves([]) // No moves allowed if off-book in Read mode
         else
             bd.SetAllowedMoves([]) // Ignore in Edit mode
     let setMode mode =
@@ -224,10 +225,10 @@ type FrmMain() as this =
         bd.OnMoveMade.Add(fun (bdBefore, m) -> 
             let oldHistory = mh.GetMoveList()
             let san = San.ToSan bdBefore m
-            if currentMode = Edit then
-                currentRep <- Repertoire.update currentRep oldHistory m san
-                refreshRepTree()
             mh.AddMove(bdBefore, m)
+            if currentMode = Edit then
+                currentRep <- Repertoire.update currentRep oldHistory m
+                refreshRepTree()
             updateAllowedMoves(mh.GetMoveList())
             let currentBrd = bd.GetBoard()
             let fen = FEN.FromBrd currentBrd
@@ -262,9 +263,9 @@ type FrmMain() as this =
                 match data with | Some d -> mr.UpdateData(d) | None -> ()
             } |> Async.Start
         )
-        rep.OnCommentUpdated.Add(fun (node, newComment) ->
+        rep.OnCommentUpdated.Add(fun (mvl, newComment) ->
             // Update the immutable state
-            currentRep <- Repertoire.setComment currentRep node newComment
+            currentRep <- Repertoire.setComment currentRep mvl newComment
             // Save immediately
             Repertoire.save repfol currentRep
             // Refresh tree to keep the 'Tag' data in the UI in sync with the record
