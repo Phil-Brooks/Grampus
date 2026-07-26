@@ -13,24 +13,12 @@ type RepertoirePanel() as this =
     let mutable currentHistory : Mv list = []
     let mutable currentRepertoire : Repertoire option = None
 
-    // Event definitions
     let movesSelected = new Event<Mv list>()
     let commentUpdated = new Event<Mv list * string>()
 
-    // Layout panels
-    let layout = new TableLayoutPanel(
-        Dock = DockStyle.Fill,
-        RowCount = 3,
-        ColumnCount = 1
-    )
-
-    let pnlNextMoves = new FlowLayoutPanel(
-        Dock = DockStyle.Fill,
-        FlowDirection = FlowDirection.LeftToRight,
-        WrapContents = false,
-        AutoScroll = true
-    )
-
+    let layout = new TableLayoutPanel(Dock = DockStyle.Fill, RowCount = 3, ColumnCount = 1)
+    let pnlNextMoves = new FlowLayoutPanel(Dock = DockStyle.Fill, FlowDirection = FlowDirection.LeftToRight, WrapContents = false, AutoScroll = true)
+    
     let gridLines = new DataGridView(
         Dock = DockStyle.Fill,
         AllowUserToAddRows = false,
@@ -39,96 +27,66 @@ type RepertoirePanel() as this =
         BackgroundColor = Color.White,
         SelectionMode = DataGridViewSelectionMode.CellSelect,
         EnableHeadersVisualStyles = false,
-        MultiSelect = false
+        MultiSelect = false,
+        BorderStyle = BorderStyle.None
     )
 
-    let txtComment = new TextBox(
-        Multiline = true,
-        ReadOnly = true,
-        Dock = DockStyle.Fill,
-        ScrollBars = ScrollBars.Vertical,
-        BackColor = Color.LightGray,
-        Font = new Font("Segoe UI", 10.0f)
-    )
-
-    let commentHeader = new Label(
-        Text = "Comment:",
-        Dock = DockStyle.Top,
-        Height = 20
-    )
-
-    let pnlComment = new Panel(
-        Dock = DockStyle.Fill
-    )
+    let txtComment = new TextBox(Multiline = true, ReadOnly = true, Dock = DockStyle.Fill, ScrollBars = ScrollBars.Vertical, BackColor = Color.LightGray, Font = new Font("Segoe UI", 10.0f))
+    let commentHeader = new Label(Text = "Comment:", Dock = DockStyle.Top, Height = 20)
+    let pnlComment = new Panel(Dock = DockStyle.Fill)
 
     do
-        // Setup TableLayoutPanel rows
         layout.RowStyles.Add(new RowStyle(SizeType.Absolute, 40.0f)) |> ignore
         layout.RowStyles.Add(new RowStyle(SizeType.Percent, 100.0f)) |> ignore
         layout.RowStyles.Add(new RowStyle(SizeType.Absolute, 100.0f)) |> ignore
-
-        // Add controls to layout
         layout.Controls.Add(pnlNextMoves, 0, 0)
         layout.Controls.Add(gridLines, 0, 1)
         layout.Controls.Add(pnlComment, 0, 2)
-
-        // Setup bottom comment panel
         pnlComment.Controls.Add(txtComment)
         pnlComment.Controls.Add(commentHeader)
 
-        // Setup Grid styling
         gridLines.RowTemplate.Height <- 26
-        gridLines.AllowUserToResizeRows <- false
-        gridLines.ColumnHeadersDefaultCellStyle.BackColor <- Color.White
-        gridLines.DefaultCellStyle.SelectionBackColor <- Color.AliceBlue
-        gridLines.DefaultCellStyle.SelectionForeColor <- Color.Black
-        gridLines.ColumnHeadersDefaultCellStyle.SelectionBackColor <- Color.White
-        gridLines.ColumnHeadersDefaultCellStyle.SelectionForeColor <- Color.Black
+        gridLines.DefaultCellStyle.Font <- new Font("Segoe UI Symbol", 9.0f)
+        gridLines.ColumnHeadersDefaultCellStyle.Font <- new Font("Segoe UI", 8.5f, FontStyle.Bold)
 
         this.Controls.Add(layout)
 
-        // Cell Double-Click -> Play moves up to this ply in the selected variation
+        // --- Handle Move Selection via Double Click ---
         gridLines.CellDoubleClick.Add(fun e ->
             if e.RowIndex >= 0 && e.ColumnIndex > 0 then
                 match currentRepertoire with
                 | Some rep ->
-                    let historyLength = currentHistory.Length
-                    let filteredLines =
-                        rep.Lines
-                        |> List.filter (fun line ->
-                            let rec isPrefix a b =
-                                match a, b with
-                                | [], _ -> true
-                                | _, [] -> false
-                                | x::xs, y::ys -> x = y && isPrefix xs ys
-                            isPrefix currentHistory line
-                        )
-                    let lineIndex = e.ColumnIndex - 1
-                    if lineIndex < filteredLines.Length then
-                        let line = filteredLines.[lineIndex]
-                        let prefixLen =
-                            if historyLength % 2 = 0 then
-                                historyLength + 2 * e.RowIndex + 2
+                    let lineIdx = (e.ColumnIndex - 1) / 2
+                    let isWhiteCol = (e.ColumnIndex - 1) % 2 = 0
+                    
+                    let filteredLines = rep.Lines |> List.filter (Repertoire.IsPrefix currentHistory)
+                    if lineIdx < filteredLines.Length then
+                        let line = filteredLines.[lineIdx]
+                        
+                        // Calculate Ply Index
+                        // Row 0 corresponds to the start move number
+                        let hLen = currentHistory.Length
+                        let plyIndex = 
+                            if hLen % 2 = 0 then
+                                (hLen + (e.RowIndex * 2) + (if isWhiteCol then 0 else 1))
                             else
-                                if e.RowIndex = 0 then historyLength + 1
-                                else historyLength + 2 * e.RowIndex + 1
-                        let movesToPlay = line |> List.truncate prefixLen
-                        movesSelected.Trigger(movesToPlay)
+                                (hLen + (e.RowIndex * 2) + (if isWhiteCol then -1 else 0))
+
+                        if plyIndex >= 0 && plyIndex < line.Length then
+                            let movesToPlay = line |> List.truncate (plyIndex + 1)
+                            movesSelected.Trigger(movesToPlay)
                 | None -> ()
         )
 
-        // Comment focus lost -> update comment for currentHistory
         txtComment.LostFocus.Add(fun _ ->
             match currentRepertoire with
             | Some rep ->
                 let oldComment = Map.tryFind currentHistory rep.Comments |> Option.defaultValue ""
                 if oldComment <> txtComment.Text then
-                    let lastMv = if currentHistory.IsEmpty then { From=0; To=0; Pc=0; CapPc=0; Prom=0 } else List.last currentHistory
                     commentUpdated.Trigger(currentHistory, txtComment.Text)
             | None -> ()
         )
 
-    // Helper to get all SAN figurine moves for a line
     let getSanList (line: Mv list) : string list =
         let rec helper bd moves acc =
             match moves with
@@ -139,142 +97,89 @@ type RepertoirePanel() as this =
                 helper nextBd rest (san :: acc)
         helper Board.Start line []
 
-    [<CLIEvent>] member this.OnMovesSelected = movesSelected.Publish
-    [<CLIEvent>] member this.OnCommentUpdated = commentUpdated.Publish
-
     member this.UpdateAll(repertoire: Repertoire, history: Mv list) =
         let updateAction() =
             currentHistory <- history
             currentRepertoire <- Some repertoire
 
-            // 1. Update Top Panel: next moves
+            // 1. Next Moves Buttons
             pnlNextMoves.SuspendLayout()
             pnlNextMoves.Controls.Clear()
-
             let currentBd = history |> List.fold (fun b m -> Board.MoveApply m b) Board.Start
             let nextMoves =
                 repertoire.Lines
                 |> List.filter (fun line -> Repertoire.IsPrefix history line && line.Length > history.Length)
                 |> List.map (fun line -> line.[history.Length])
                 |> List.distinct
-
             for m in nextMoves do
-                let san = San.ToFigurine (San.ToSan currentBd m)
-                let btn = new Button(
-                    Text = san,
-                    AutoSize = true,
-                    Margin = new Padding(3, 3, 3, 3),
-                    Font = new Font("Segoe UI Symbol", 9.0f)
-                )
-                btn.Click.Add(fun _ ->
-                    movesSelected.Trigger(history @ [m])
-                )
+                let btn = new Button(Text = San.ToFigurine (San.ToSan currentBd m), AutoSize = true, Font = new Font("Segoe UI Symbol", 9.0f))
+                btn.Click.Add(fun _ -> movesSelected.Trigger(history @ [m]))
                 pnlNextMoves.Controls.Add(btn)
-
             pnlNextMoves.ResumeLayout()
 
-            // 2. Update Grid: side-by-side variations (scoresheet layout)
+            // 2. Grid Update
             gridLines.SuspendLayout()
             gridLines.Rows.Clear()
             gridLines.Columns.Clear()
 
-            // Column 0: Move number
-            gridLines.Columns.Add("#", "#") |> ignore
-            gridLines.Columns.[0].Width <- 35
+            gridLines.Columns.Add(new DataGridViewTextBoxColumn(Name="#", HeaderText="#", Width=35, ReadOnly=true)) |> ignore
             gridLines.Columns.[0].DefaultCellStyle.Alignment <- DataGridViewContentAlignment.MiddleCenter
-            gridLines.Columns.[0].SortMode <- DataGridViewColumnSortMode.NotSortable
+            gridLines.Columns.[0].DefaultCellStyle.BackColor <- Color.WhiteSmoke
 
-            let filteredLines =
-                repertoire.Lines
-                |> List.filter (fun line -> Repertoire.IsPrefix history line)
-
-            // Add columns for each filtered line
-            for i = 1 to filteredLines.Length do
-                let colName = sprintf "Line %d" i
-                gridLines.Columns.Add(colName, colName) |> ignore
-                gridLines.Columns.[i].AutoSizeMode <- DataGridViewAutoSizeColumnMode.Fill
-                gridLines.Columns.[i].SortMode <- DataGridViewColumnSortMode.NotSortable
+            let filteredLines = repertoire.Lines |> List.filter (Repertoire.IsPrefix history)
+            
+            // Create 2 columns per variation
+            for i = 0 to filteredLines.Length - 1 do
+                let variationColor = if i % 2 = 0 then Color.White else Color.FromArgb(245, 248, 255)
+                
+                let colW = new DataGridViewTextBoxColumn(HeaderText = sprintf "L%d W" (i+1), Width = 60)
+                colW.DefaultCellStyle.BackColor <- variationColor
+                gridLines.Columns.Add(colW) |> ignore
+                
+                let colB = new DataGridViewTextBoxColumn(HeaderText = sprintf "L%d B" (i+1), Width = 60)
+                colB.DefaultCellStyle.BackColor <- variationColor
+                gridLines.Columns.Add(colB) |> ignore
 
             if not filteredLines.IsEmpty then
-                // Pre-generate SAN list for each line
                 let lineSanLists = filteredLines |> List.map getSanList
+                let maxPlies = filteredLines |> List.map (fun l -> l.Length) |> List.max
+                let startPly = history.Length
+                
+                // Calculate move numbers to display
+                // If history is [d4] (len 1), we are at move 1 Black. Row 0 is Move 1.
+                let firstMoveNum = (startPly / 2) + 1
+                let lastMoveNum = (maxPlies - 1) / 2 + 1
+                
+                for mNum = firstMoveNum to lastMoveNum do
+                    let rowIndex = mNum - firstMoveNum
+                    let rowData : obj[] = Array.create (gridLines.Columns.Count) null
+                    rowData.[0] <- mNum
 
-                // Calculate max plies remaining
-                let maxPliesRemaining = 
-                    filteredLines 
-                    |> List.map (fun line -> line.Length - history.Length)
-                    |> List.max
+                    for lIdx = 0 to filteredLines.Length - 1 do
+                        let sans = lineSanLists.[lIdx]
+                        let plyW = (mNum - 1) * 2
+                        let plyB = plyW + 1
+                        
+                        // Assign text for White column
+                        if plyW >= startPly && plyW < sans.Length then
+                            rowData.[1 + lIdx * 2] <- sans.[plyW]
+                        elif plyW < startPly && plyB >= startPly then
+                            rowData.[1 + lIdx * 2] <- "..." // Placeholder for starting mid-move
 
-                // Calculate number of rows required
-                let numRows = 
-                    if history.Length % 2 = 0 then
-                        (maxPliesRemaining + 1) / 2
-                    else
-                        if maxPliesRemaining <= 1 then 1
-                        else 1 + (maxPliesRemaining - 1 + 1) / 2
-
-                let startMoveNum = history.Length / 2 + 1
-
-                for r = 0 to numRows - 1 do
-                    let moveNum = startMoveNum + r
-                    let rowData : obj[] = Array.create (filteredLines.Length + 1) null
-                    rowData.[0] <- box moveNum
-
-                    for lineIdx = 0 to filteredLines.Length - 1 do
-                        let sanList = lineSanLists.[lineIdx]
-                        let cellText =
-                            if history.Length % 2 = 0 then
-                                let wIdx = history.Length + 2 * r
-                                let bIdx = history.Length + 2 * r + 1
-                                let wSan = if wIdx < sanList.Length then sanList.[wIdx] else ""
-                                let bSan = if bIdx < sanList.Length then sanList.[bIdx] else ""
-                                if String.IsNullOrEmpty(wSan) then ""
-                                elif String.IsNullOrEmpty(bSan) then wSan
-                                else sprintf "%s %s" wSan bSan
-                            else
-                                if r = 0 then
-                                    let bIdx = history.Length
-                                    let bSan = if bIdx < sanList.Length then sanList.[bIdx] else ""
-                                    if String.IsNullOrEmpty(bSan) then ""
-                                    else sprintf "... %s" bSan
-                                else
-                                    let wIdx = history.Length + 2 * r - 1
-                                    let bIdx = history.Length + 2 * r
-                                    let wSan = if wIdx < sanList.Length then sanList.[wIdx] else ""
-                                    let bSan = if bIdx < sanList.Length then sanList.[bIdx] else ""
-                                    if String.IsNullOrEmpty(wSan) then ""
-                                    elif String.IsNullOrEmpty(bSan) then wSan
-                                    else sprintf "%s %s" wSan bSan
-                        rowData.[lineIdx + 1] <- box cellText
+                        // Assign text for Black column
+                        if plyB >= startPly && plyB < sans.Length then
+                            rowData.[2 + lIdx * 2] <- sans.[plyB]
 
                     gridLines.Rows.Add(rowData) |> ignore
 
             gridLines.ResumeLayout()
+            txtComment.Text <- Map.tryFind history repertoire.Comments |> Option.defaultValue ""
 
-            // 3. Update Comments box directly to currentHistory comment
-            let comment = Map.tryFind history repertoire.Comments |> Option.defaultValue ""
-            txtComment.Text <- comment
+        if this.IsHandleCreated then this.BeginInvoke(MethodInvoker(updateAction)) |> ignore else updateAction()
 
-        if this.IsHandleCreated then
-            this.BeginInvoke(MethodInvoker(updateAction)) |> ignore
-        else
-            updateAction()
-
-    member this.Clear() =
-        currentHistory <- []
-        currentRepertoire <- None
-        if this.IsHandleCreated then
-            this.BeginInvoke(MethodInvoker(fun () ->
-                pnlNextMoves.Controls.Clear()
-                gridLines.Rows.Clear()
-                txtComment.Clear()
-            )) |> ignore
-        else
-            pnlNextMoves.Controls.Clear()
-            gridLines.Rows.Clear()
-            txtComment.Clear()
-
+    [<CLIEvent>] member this.OnMovesSelected = movesSelected.Publish
+    [<CLIEvent>] member this.OnCommentUpdated = commentUpdated.Publish
     member this.SetMode(mode) =
-        let isReadOnly = (mode = Read)
-        txtComment.ReadOnly <- isReadOnly
-        txtComment.BackColor <- if isReadOnly then Color.LightGray else Color.White
+        let isRead = (mode = Read)
+        txtComment.ReadOnly <- isRead
+        txtComment.BackColor <- if isRead then Color.LightGray else Color.White

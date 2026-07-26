@@ -16,7 +16,6 @@ type EngineAnalysisPanel() as this =
         ReadOnly = true,
         RowHeadersVisible = false,
         BackgroundColor = Color.White,
-        BorderStyle = BorderStyle.None,
         SelectionMode = DataGridViewSelectionMode.FullRowSelect,
         AllowUserToResizeRows = false,
         AutoSizeRowsMode = DataGridViewAutoSizeRowsMode.AllCells
