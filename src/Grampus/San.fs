@@ -17,22 +17,50 @@ module San =
         | 2 -> "N" | 3 -> "B" | 4 -> "R" | 5 -> "Q" | 6 -> "K"
         | _ -> "" // Pawns have no letter in SAN
     let ToSan (bd: Brd) (m: Mv) =
-        // 1. Check Castling
-        if (m.Pc = WKING || m.Pc = BKING) && abs(m.To - m.From) = 2 then
-            if m.To|>FL = G then "O-O" else "O-O-O"
-        else
-            let pieceChar = getPieceChar m.Pc
-            let target = m.To |> Square.ToStr
-            let promo = if m.Prom <> 0 then "=" + (getPieceChar m.Prom) else ""
-        
-            // Special pawn capture notation (e.g., exd5 or hxg1=Q)
-            if pieceChar = "" && m.CapPc <> 0 then
-                let fromFile = File.ToStr (FL m.From)
-                sprintf "%sx%s%s" fromFile target promo
+            // 1. Check Castling
+            if (m.Pc = WKING || m.Pc = BKING) && abs(m.To - m.From) = 2 then
+                if m.To|>FL = G then "O-O" else "O-O-O"
             else
-                // Standard piece moves, pawn advances, and piece captures
-                let capture = if m.CapPc <> 0 then "x" else ""
-                sprintf "%s%s%s%s" pieceChar capture target promo
+                let pieceChar = getPieceChar m.Pc
+                let target = m.To |> Square.ToStr
+                let promo = if m.Prom <> 0 then "=" + (getPieceChar m.Prom) else ""
+        
+                // 2. Disambiguation Logic
+                // We only disambiguate for pieces (Knights, Bishops, Rooks, Queens)
+                let disambiguation = 
+                    if pieceChar = "" then "" 
+                    else
+                        // Find all OTHER legal moves that target the same square with the same piece type
+                        // Assume 'MoveGen.generateLegalMoves bd' returns a list/seq of legal 'Mv' objects
+                        let others = 
+                            let allLegalMoves =
+                                SQUARES |> List.collect (MoveGen.PossMoves bd)
+                            
+                            allLegalMoves 
+                            |> List.filter (fun alt -> 
+                                alt.To = m.To && 
+                                alt.Pc = m.Pc && 
+                                alt.From <> m.From)
+                    
+                        if List.isEmpty others then ""
+                        else
+                            // Use Rank (RK) if File (FL) is not enough to distinguish
+                            // Assume RK and Rank.ToStr follow your existing FL and File.ToStr patterns
+                            let sameFile = others |> List.exists (fun alt -> FL alt.From = FL m.From)
+                            let sameRank = others |> List.exists (fun alt -> RNK alt.From = RNK m.From)
+                        
+                            if not sameFile then File.ToStr (FL m.From)
+                            elif not sameRank then Rank.ToStr (RNK m.From)
+                            else Square.ToStr m.From
+
+                // 3. Pawn Capture Notation (e.g., exd5)
+                if pieceChar = "" && m.CapPc <> 0 then
+                    let fromFile = File.ToStr (FL m.From)
+                    sprintf "%sx%s%s" fromFile target promo
+                else
+                    // 4. Standard Piece moves, with disambiguation and captures
+                    let capture = if m.CapPc <> 0 then "x" else ""
+                    sprintf "%s%s%s%s%s" pieceChar disambiguation capture target promo    
     /// Converts a standard SAN string (e.g. "Nf3", "Bxe5", "a8=Q") to Figurine notation.
     let ToFigurine (san: string) =
         if System.String.IsNullOrWhiteSpace(san) then ""
