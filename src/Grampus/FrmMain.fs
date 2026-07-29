@@ -88,9 +88,11 @@ type FrmMain() as this =
                     )
                     mnuLoadBackup.DropDownItems.Add(itm) |> ignore
         )
+        let itmPrint = new ToolStripMenuItem("&Print", null, (fun _ _ -> rep.PrintPreview()))
         let itmExit = new ToolStripMenuItem("E&xit", null, (fun _ _ -> this.Close()))
         mnuFile.DropDownItems.Add(mnuLoadBackup) |> ignore
         mnuFile.DropDownItems.Add(new ToolStripSeparator()) |> ignore
+        mnuFile.DropDownItems.Add(itmPrint) |> ignore
         mnuFile.DropDownItems.Add(itmExit) |> ignore
 
         let mnuMode = new ToolStripMenuItem("&Mode")
@@ -201,6 +203,7 @@ type FrmMain() as this =
         setMode Read
         // --- Event Wiring ---
         rep.OnMovesSelected.Add(fun moves ->
+            engine.Post StopSearch
             // 1. Reset Board and History UI
             let mutable tempBoard = Board.Start
             mh.Clear()
@@ -217,14 +220,15 @@ type FrmMain() as this =
             lblPosition.Text <- sprintf "FEN: %s" (if fen.Length > 30 then fen.Substring(0, 27) + "..." else fen)
             ap.SetBoard(tempBoard)
             ap.Clear()
-            engine.Post (SetPosition fen)
-            engine.Post (StartSearch 10000)
             async {
                 let! data = LichessClient.fetchMastersStats fen
                 match data with | Some d -> mr.UpdateData(d) | None -> ()
             } |> Async.Start
+            engine.Post (SetPosition fen)
+            engine.Post (StartSearch 10000)
         )
         bd.OnMoveMade.Add(fun (bdBefore, m) -> 
+            engine.Post StopSearch
             let oldHistory = mh.GetMoveList()
             let san = San.ToSan bdBefore m
             mh.AddMove(bdBefore, m)
@@ -238,14 +242,15 @@ type FrmMain() as this =
             lblPosition.Text <- sprintf "FEN: %s" (if fen.Length > 30 then fen.Substring(0, 27) + "..." else fen)
             ap.SetBoard(currentBrd)
             ap.Clear()
-            engine.Post (SetPosition fen)
-            engine.Post (StartSearch 10000)
             async {
                 let! data = LichessClient.fetchMastersStats fen
                 match data with | Some d -> mr.UpdateData(d) | None -> ()
             } |> Async.Start
+            engine.Post (SetPosition fen)
+            engine.Post (StartSearch 10000)
         )
         mh.OnMoveSelected.Add(fun moves ->
+            engine.Post StopSearch
             let mutable tempBoard = Board.Start
             mh.Clear()
             for m in moves do
@@ -253,17 +258,18 @@ type FrmMain() as this =
                 mh.AddMove(bdBefore, m)
                 tempBoard <- Board.MoveApply m tempBoard
             bd.SetBoard(tempBoard)
+            refreshRep()
             updateAllowedMoves(moves)
             let fen = FEN.FromBrd tempBoard
             lblPosition.Text <- sprintf "FEN: %s" (if fen.Length > 30 then fen.Substring(0, 27) + "..." else fen)
             ap.SetBoard(tempBoard)
             ap.Clear()
-            engine.Post (SetPosition fen)
-            engine.Post (StartSearch 10000)
             async {
                 let! data = LichessClient.fetchMastersStats fen
                 match data with | Some d -> mr.UpdateData(d) | None -> ()
             } |> Async.Start
+            engine.Post (SetPosition fen)
+            engine.Post (StartSearch 10000)
         )
         rep.OnCommentUpdated.Add(fun (mvl, newComment) ->
             // Update the immutable state

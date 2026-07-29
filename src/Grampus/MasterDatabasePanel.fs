@@ -8,7 +8,7 @@ open Grampus
 type MasterDatabasePanel() as this =
     inherit UserControl()
     
-    // Create these once. Do NOT dispose them inside the paint loop.
+    let statusFont = new Font("Segoe UI", 7f, FontStyle.Italic)
     let barFont = new Font("Segoe UI", 7.5f)
     let centerFormat = new StringFormat(Alignment = StringAlignment.Center, LineAlignment = StringAlignment.Center)
     
@@ -19,6 +19,15 @@ type MasterDatabasePanel() as this =
         EnableHeadersVisualStyles = false,
         // Using standard DataGridView - no subclassing
         AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.None
+    )
+    // New Status Label
+    let lblStatus = new Label(
+        Dock = DockStyle.Bottom,
+        Height = 20,
+        TextAlign = ContentAlignment.MiddleRight,
+        Font = statusFont,
+        ForeColor = Color.Gray,
+        Padding = Padding(0, 0, 5, 0)
     )
 
     do
@@ -105,13 +114,15 @@ type MasterDatabasePanel() as this =
                         e.Handled <- true
         )        
         this.Controls.Add(grid)
+        this.Controls.Add(lblStatus)
 
-    member this.UpdateData(data: MasterResponse) =
+    member this.UpdateData(result: MasterDataResult) =
         // Use BeginInvoke to prevent the UI thread from locking up
         this.BeginInvoke(MethodInvoker(fun () -> 
             try
                 grid.SuspendLayout()
                 grid.Rows.Clear()
+                let data = result.Data
             
                 if data.Moves <> null then
                     for m in data.Moves do
@@ -126,8 +137,17 @@ type MasterDatabasePanel() as this =
                 grid.Rows.[sumRowIdx].DefaultCellStyle.BackColor <- Color.AliceBlue
                 grid.Rows.[sumRowIdx].DefaultCellStyle.Font <- new Font(grid.Font, FontStyle.Bold)
             
+                if result.IsCached then
+                    lblStatus.Text <- sprintf "Cached (%s)" (result.Timestamp.ToString("MMM dd HH:mm"))
+                    lblStatus.ForeColor <- Color.SteelBlue
+                else
+                    lblStatus.Text <- "Live data from Lichess"
+                    lblStatus.ForeColor <- Color.ForestGreen
+
+
+
+
                 grid.ResumeLayout()
-                // Force a full redraw
                 grid.Refresh()
             with _ -> 
                 if not grid.IsDisposed then grid.ResumeLayout()

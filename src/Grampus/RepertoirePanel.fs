@@ -3,6 +3,7 @@ namespace GrampusUI
 open System
 open System.Drawing
 open System.Windows.Forms
+open System.Drawing.Printing
 open Grampus
 
 type AppMode = Edit | Read
@@ -183,3 +184,134 @@ type RepertoirePanel() as this =
         let isRead = (mode = Read)
         txtComment.ReadOnly <- isRead
         txtComment.BackColor <- if isRead then Color.LightGray else Color.White
+
+    member private this.SetupPrintDocument() =
+        let pd = new PrintDocument()
+        pd.DocumentName <- "Grampus Chess Repertoire"
+        
+        pd.PrintPage.Add(fun e ->
+            let g = e.Graphics
+            let marginX = 50.0f
+            let mutable currentY = 50.0f
+            
+            let titleFont = new Font("Segoe UI", 13.0f, FontStyle.Bold)
+            let headerFont = new Font("Segoe UI", 9.0f, FontStyle.Bold)
+            let gridFont = new Font("Segoe UI Symbol", 9.0f)
+            let commentRefFont = new Font("Segoe UI", 6.0f, FontStyle.Bold) // Small font for subscripts
+            let footerFont = new Font("Segoe UI", 9.0f)
+
+            // 1. Print INITIAL MOVES with Move Numbers (e.g., 1. d4 Nf6 2. c4)
+            let rec formatPath bd moves ply acc =
+                match moves with
+                | [] -> acc
+                | m :: rest ->
+                    let san = San.ToFigurine (San.ToSan bd m)
+                    let prefix = if ply % 2 = 0 then sprintf "%d. " (ply / 2 + 1) else ""
+                    formatPath (Board.MoveApply m bd) rest (ply + 1) (acc + prefix + san + " ")
+
+            let pathText = formatPath Board.Start currentHistory 0 ""
+            g.DrawString((if pathText = "" then "Starting Position" else pathText.Trim()), titleFont, Brushes.Black, marginX, currentY)
+            currentY <- currentY + 50.0f
+
+            // 2. Setup Comment Tracking
+            // We need to map a "Path" to a "Reference Number" (1, 2, 3...)
+            let foundComments = new System.Collections.Generic.List<string * string>() // List of (RefNumber, CommentText)
+            let pathToRef = new System.Collections.Generic.Dictionary<Mv list, string>()
+
+            let getCommentRef (path: Mv list) =
+                match currentRepertoire with
+                | Some rep ->
+                    match Map.tryFind path rep.Comments with
+                    | Some text when not (String.IsNullOrWhiteSpace text) ->
+                        if pathToRef.ContainsKey(path) then pathToRef.[path]
+                        else
+                            let refNum = (foundComments.Count + 1).ToString()
+                            pathToRef.Add(path, refNum)
+                            foundComments.Add(refNum, text)
+                            refNum
+                    | _ -> ""
+                | None -> ""
+
+            // 3. Print the GRID
+            let colWidths = [| for c in gridLines.Columns -> float32 c.Width |]
+            let rowHeight = 22.0f
+            let filteredLines = 
+                match currentRepertoire with 
+                | Some rep -> rep.Lines |> List.filter (Repertoire.IsPrefix currentHistory)
+                | None -> []
+
+            // Draw Headers
+            let mutable currentX = marginX
+            for i = 0 to gridLines.Columns.Count - 1 do
+                let col = gridLines.Columns.[i]
+                let rect = RectangleF(currentX, currentY, colWidths.[i], rowHeight)
+                g.FillRectangle(Brushes.WhiteSmoke, rect)
+                g.DrawRectangle(Pens.Black, Rectangle.Round(rect))
+                g.DrawString(col.HeaderText, headerFont, Brushes.Black, rect)
+                currentX <- currentX + colWidths.[i]
+            currentY <- currentY + rowHeight
+
+            // Draw Rows
+            for r = 0 to gridLines.Rows.Count - 1 do
+                currentX <- marginX
+                let row = gridLines.Rows.[r]
+                if currentY + rowHeight < float32 e.MarginBounds.Bottom - 100.0f then // Leave room for footer
+                    for c = 0 to gridLines.Columns.Count - 1 do
+                        let rect = RectangleF(currentX, currentY, colWidths.[c], rowHeight)
+                        if c > 0 && ((c - 1) / 2) % 2 <> 0 then 
+                            g.FillRectangle(new SolidBrush(Color.FromArgb(245, 248, 255)), rect)
+                        g.DrawRectangle(Pens.LightGray, Rectangle.Round(rect))
+
+                        let cellValue = if row.Cells.[c].Value <> null then row.Cells.[c].Value.ToString() else ""
+                        if cellValue <> "" && cellValue <> "..." then
+                            g.DrawString(cellValue, gridFont, Brushes.Black, rect)
+                            
+                            // Check for comment subscript
+                            if c > 0 then
+                                let varIdx = (c - 1) / 2
+                                let isWhite = (c - 1) % 2 = 0
+                                let moveNum = row.Cells.[0].Value:?> int
+                                let plyIndex = (moveNum - 1) * 2 + (if isWhite then 0 else 1)
+                                if varIdx < filteredLines.Length && plyIndex < filteredLines.[varIdx].Length then
+                                    let pathAtCell = filteredLines.[varIdx] |> List.truncate (plyIndex + 1)
+                                    let refNum = getCommentRef pathAtCell
+                                    if refNum <> "" then
+                                        let textSize = g.MeasureString(cellValue, gridFont)
+                                        g.DrawString(refNum, commentRefFont, Brushes.Crimson, currentX + textSize.Width - 2.0f, currentY + 2.0f)
+
+                        currentX <- currentX + colWidths.[c]
+                    currentY <- currentY + rowHeight
+
+            // 4. Print FOOTER COMMENTS
+            if foundComments.Count > 0 then
+                currentY <- currentY + 30.0f
+                g.DrawLine(Pens.Black, marginX, currentY, marginX + 300.0f, currentY)
+                currentY <- currentY + 10.0f
+                
+                for (ref, text) in foundComments do
+                    let bullet = sprintf "%s. " ref
+                    let fullText = bullet + text
+                    let rect = RectangleF(marginX, currentY, float32 e.MarginBounds.Width, 100.0f)
+                    g.DrawString(fullText, footerFont, Brushes.Black, rect)
+                    let size = g.MeasureString(fullText, footerFont, int e.MarginBounds.Width)
+                    currentY <- currentY + size.Height + 5.0f
+
+            e.HasMorePages <- false
+        )
+        pd    
+    
+
+    /// Opens the Print Preview Dialog
+    member this.PrintPreview() =
+        let pd = this.SetupPrintDocument()
+        use ppd = new PrintPreviewDialog()
+        ppd.Document <- pd
+        ppd.WindowState <- FormWindowState.Maximized // Better for viewing chess notation
+        ppd.ShowDialog() |> ignore
+
+    /// Directly opens the Print Dialog
+    member this.Print() =
+        let pd = this.SetupPrintDocument()
+        use dialog = new PrintDialog(Document = pd)
+        if dialog.ShowDialog() = DialogResult.OK then
+            pd.Print()
