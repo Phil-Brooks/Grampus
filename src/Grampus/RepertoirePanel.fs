@@ -6,7 +6,7 @@ open System.Windows.Forms
 open System.Drawing.Printing
 open Grampus
 
-type AppMode = Edit | Read
+type AppMode = Edit | Read | Train
 
 type RepertoirePanel() as this =
     inherit UserControl()
@@ -181,9 +181,9 @@ type RepertoirePanel() as this =
     [<CLIEvent>] member this.OnMovesSelected = movesSelected.Publish
     [<CLIEvent>] member this.OnCommentUpdated = commentUpdated.Publish
     member this.SetMode(mode) =
-        let isRead = (mode = Read)
-        txtComment.ReadOnly <- isRead
-        txtComment.BackColor <- if isRead then Color.LightGray else Color.White
+        let isEditable = (mode = Edit)
+        txtComment.ReadOnly <- not isEditable
+        txtComment.BackColor <- if isEditable then Color.White else Color.LightGray
 
     member private this.SetupPrintDocument() =
         let pd = new PrintDocument()

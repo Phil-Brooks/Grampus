@@ -21,20 +21,6 @@ type FrmMain() as this =
     let mutable currentMode = Read
     let refreshRep() =
         rep.UpdateAll(currentRep, mh.GetMoveList())    
-    let switchRep (side: int) =
-        if currentMode = Edit then Repertoire.save repfol currentRep
-        currentRep <- Repertoire.load repfol side
-        bd.Orient(side) 
-        mh.Clear()
-        bd.SetBoard(Board.Start)
-        refreshRep() 
-        lblStatus.Text <- sprintf "Studying %s Repertoire" (if side = WHITE then "White" else "Black")
-    // 2. Setup the Engine logic
-    let onEngineMsg = function
-        | Info info -> ap.UpdateAnalysis(info)
-        | BestMove m -> printfn "Engine suggests: %s" m
-        | Ready -> printfn "Engine is ready"
-    let engine = Engine.spawn engloc onEngineMsg
     let updateAllowedMoves(history: Mv list) =
         if currentMode = Read then
             let nextMoves =
@@ -45,6 +31,21 @@ type FrmMain() as this =
             bd.SetAllowedMoves(nextMoves)
         else
             bd.SetAllowedMoves([]) // Ignore in Edit mode
+    let switchRep (side: int) =
+        if currentMode = Edit then Repertoire.save repfol currentRep
+        currentRep <- Repertoire.load repfol side
+        bd.Orient(side) 
+        mh.Clear()
+        bd.SetBoard(Board.Start)
+        refreshRep()
+        updateAllowedMoves([])
+        lblStatus.Text <- sprintf "Studying %s Repertoire" (if side = WHITE then "White" else "Black")
+    // 2. Setup the Engine logic
+    let onEngineMsg = function
+        | Info info -> ap.UpdateAnalysis(info)
+        | BestMove m -> printfn "Engine suggests: %s" m
+        | Ready -> printfn "Engine is ready"
+    let engine = Engine.spawn engloc onEngineMsg
     let setMode mode =
         currentMode <- mode
         bd.Mode <- mode
@@ -52,6 +53,63 @@ type FrmMain() as this =
         let history = mh.GetMoveList()
         updateAllowedMoves(history)
         lblStatus.Text <- sprintf "Mode: %A | Studying %s" mode (if currentRep.Side = WHITE then "White" else "Black")
+
+    let mutable currentTrainingPositions : Mv list list = []
+    let mutable trainingIndex = 0
+    let mutable attemptsLeft = 3
+    let mutable successCount = 0
+    let mutable currentTrainingCorrectMoves : Mv list = []
+    let mutable trainingStats : Map<Mv list, PositionStats> = Map.empty
+
+    let rec loadTrainingPosition() =
+        if trainingIndex >= currentTrainingPositions.Length then
+            TrainingStats.save repfol currentRep.Side trainingStats
+            MessageBox.Show(sprintf "Training Session Complete!\nScore: %d / %d" successCount currentTrainingPositions.Length, "Grampus Training") |> ignore
+            setMode Read
+            bd.SetBoard(Board.Start)
+            mh.Clear()
+            refreshRep()
+        else
+            let path = currentTrainingPositions.[trainingIndex]
+            attemptsLeft <- 3
+            currentTrainingCorrectMoves <- 
+                currentRep.Lines
+                |> List.filter (fun line -> line.Length > path.Length && Repertoire.IsPrefix path line)
+                |> List.map (fun line -> line.[path.Length])
+                |> List.distinct
+            
+            let mutable tempBoard = Board.Start
+            mh.Clear()
+            for mv in path do
+                mh.AddMove(tempBoard, mv)
+                tempBoard <- Board.MoveApply mv tempBoard
+            bd.SetBoard(tempBoard)
+            
+            lblStatus.Text <- sprintf "Training: Position %d/%d | Attempts left: %d" (trainingIndex + 1) currentTrainingPositions.Length attemptsLeft
+            ap.SetBoard(tempBoard)
+            ap.Clear()
+            let fen = FEN.FromBrd tempBoard
+            lblPosition.Text <- sprintf "FEN: %s" (if fen.Length > 30 then fen.Substring(0, 27) + "..." else fen)
+            async {
+                let! data = LichessClient.fetchMastersStats fen
+                match data with | Some d -> mr.UpdateData(d) | None -> ()
+            } |> Async.Start
+
+    let startTraining() =
+        let startPath = mh.GetMoveList()
+        trainingStats <- TrainingStats.load repfol currentRep.Side
+        let selected = Training.selectTrainingPositions currentRep startPath trainingStats
+        if selected.IsEmpty then
+            MessageBox.Show("No training positions found from the current position/repertoire.", "Grampus Training") |> ignore
+        else
+            let untestedCount = selected |> List.filter (fun p -> not (Map.containsKey p trainingStats)) |> List.length
+            currentTrainingPositions <- selected
+            trainingIndex <- 0
+            successCount <- 0
+            setMode Train
+            loadTrainingPosition()
+            if untestedCount > 0 then
+                lblStatus.Text <- sprintf "Training started! %d untested positions." untestedCount
     // --- Menus ---
     let createMenu() =
         let ms = new MenuStrip()
@@ -98,7 +156,8 @@ type FrmMain() as this =
         let mnuMode = new ToolStripMenuItem("&Mode")
         let itmEdit = new ToolStripMenuItem("Edit Mode (Build Repertoire)", null, fun _ _ -> setMode Edit)
         let itmRead = new ToolStripMenuItem("Read Mode (Practice)", null, fun _ _ -> setMode Read)
-        mnuMode.DropDownItems.AddRange([| itmEdit :> ToolStripItem; itmRead |])
+        let itmTrain = new ToolStripMenuItem("Train Mode (Test Yourself)", null, fun _ _ -> startTraining())
+        mnuMode.DropDownItems.AddRange([| itmEdit :> ToolStripItem; itmRead; itmTrain |])
 
         // Study Menu (remains the same)
         let mnuStudy = new ToolStripMenuItem("&Study")
@@ -176,10 +235,13 @@ type FrmMain() as this =
         let btnSave = new ToolStripButton(Text = "Save Changes", Image = Assets.Sav)
         btnSave.Click.Add(fun _ -> if currentMode = Edit then Repertoire.save repfol currentRep 
                                    else MessageBox.Show("Cannot save in Read Mode") |> ignore)
+        let btnTrain = new ToolStripButton(Text = "Train")
+        btnTrain.Click.Add(fun _ -> startTraining())
         ts.Items.Add(btnWhite) |> ignore
         ts.Items.Add(btnBlack) |> ignore
         ts.Items.Add(new ToolStripSeparator()) |> ignore
         ts.Items.Add(btnSave) |> ignore
+        ts.Items.Add(btnTrain) |> ignore
         ts    
     let colHistory = new Panel(Dock = DockStyle.Left, Width = 184, BorderStyle = BorderStyle.FixedSingle)
     let colBoard   = new Panel(Dock = DockStyle.Left, Width = 600, BorderStyle = BorderStyle.FixedSingle)
@@ -229,25 +291,65 @@ type FrmMain() as this =
         )
         bd.OnMoveMade.Add(fun (bdBefore, m) -> 
             engine.Post StopSearch
-            let oldHistory = mh.GetMoveList()
-            let san = San.ToSan bdBefore m
-            mh.AddMove(bdBefore, m)
-            if currentMode = Edit then
-                currentRep <- Repertoire.update currentRep oldHistory m
-            refreshRep()
-            updateAllowedMoves(mh.GetMoveList())
-            let currentBrd = bd.GetBoard()
-            let fen = FEN.FromBrd currentBrd
-            lblStatus.Text <- sprintf "Last move: %s" san
-            lblPosition.Text <- sprintf "FEN: %s" (if fen.Length > 30 then fen.Substring(0, 27) + "..." else fen)
-            ap.SetBoard(currentBrd)
-            ap.Clear()
-            async {
-                let! data = LichessClient.fetchMastersStats fen
-                match data with | Some d -> mr.UpdateData(d) | None -> ()
-            } |> Async.Start
-            engine.Post (SetPosition fen)
-            engine.Post (StartSearch 10000)
+            if currentMode = Train then
+                let isCorrect = currentTrainingCorrectMoves |> List.exists (fun am -> 
+                    am.From = m.From && am.To = m.To && am.Prom = m.Prom)
+                
+                if isCorrect then
+                    lblStatus.Text <- "Correct! Well done."
+                    
+                    let path = currentTrainingPositions.[trainingIndex]
+                    let oldStat = Map.tryFind path trainingStats |> Option.defaultValue { Attempts = 0; Successes = 0; FailedLastTime = false }
+                    let newStat = { oldStat with Attempts = oldStat.Attempts + 1; Successes = oldStat.Successes + 1; FailedLastTime = false }
+                    trainingStats <- Map.add path newStat trainingStats
+                    successCount <- successCount + 1
+                    
+                    trainingIndex <- trainingIndex + 1
+                    loadTrainingPosition()
+                else
+                    attemptsLeft <- attemptsLeft - 1
+                    lblStatus.Text <- sprintf "Incorrect move! Attempts left: %d" attemptsLeft
+                    
+                    if attemptsLeft <= 0 then
+                        lblStatus.Text <- "Failed 3 times. Moving to next position."
+                        
+                        let path = currentTrainingPositions.[trainingIndex]
+                        let oldStat = Map.tryFind path trainingStats |> Option.defaultValue { Attempts = 0; Successes = 0; FailedLastTime = false }
+                        let newStat = { oldStat with Attempts = oldStat.Attempts + 1; FailedLastTime = true }
+                        trainingStats <- Map.add path newStat trainingStats
+                        
+                        trainingIndex <- trainingIndex + 1
+                        loadTrainingPosition()
+                    else
+                        let path = currentTrainingPositions.[trainingIndex]
+                        let tempBoard = path |> List.fold (fun b mv -> Board.MoveApply mv b) Board.Start
+                        bd.SetBoard(tempBoard)
+                        
+                        mh.Clear()
+                        let mutable b = Board.Start
+                        for mv in path do
+                            mh.AddMove(b, mv)
+                            b <- Board.MoveApply mv b
+            else
+                let oldHistory = mh.GetMoveList()
+                let san = San.ToSan bdBefore m
+                mh.AddMove(bdBefore, m)
+                if currentMode = Edit then
+                    currentRep <- Repertoire.update currentRep oldHistory m
+                refreshRep()
+                updateAllowedMoves(mh.GetMoveList())
+                let currentBrd = bd.GetBoard()
+                let fen = FEN.FromBrd currentBrd
+                lblStatus.Text <- sprintf "Last move: %s" san
+                lblPosition.Text <- sprintf "FEN: %s" (if fen.Length > 30 then fen.Substring(0, 27) + "..." else fen)
+                ap.SetBoard(currentBrd)
+                ap.Clear()
+                async {
+                    let! data = LichessClient.fetchMastersStats fen
+                    match data with | Some d -> mr.UpdateData(d) | None -> ()
+                } |> Async.Start
+                engine.Post (SetPosition fen)
+                engine.Post (StartSearch 10000)
         )
         mh.OnMoveSelected.Add(fun moves ->
             engine.Post StopSearch

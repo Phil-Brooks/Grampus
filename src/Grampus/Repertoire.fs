@@ -128,3 +128,100 @@ open System.IO
                 let newComments = Map.add mvl comment repertoire.Comments
                 { repertoire with Comments = newComments }
 
+    type PositionStats = {
+        Attempts : int
+        Successes : int
+        FailedLastTime : bool
+    }
+
+    type TrainingStatsDto = {
+        StatsList : (Mv list * PositionStats) list
+    }
+
+    module TrainingStats =
+        let private options = JsonSerializerOptions()
+        do
+            options.WriteIndented <- true
+            options.Converters.Add(JsonStringEnumConverter())
+
+        let private getFileName fol side = 
+            let nm = if side = WHITE then "training_stats_white.json" else "training_stats_black.json"
+            Path.Combine(fol, nm)
+
+        let load fol side : Map<Mv list, PositionStats> =
+            let path = getFileName fol side
+            if File.Exists(path) then
+                try
+                    let dto = JsonSerializer.Deserialize<TrainingStatsDto>(File.ReadAllText(path), options)
+                    Map.ofList dto.StatsList
+                with _ -> Map.empty
+            else
+                Map.empty
+
+        let save fol side (stats: Map<Mv list, PositionStats>) =
+            let path = getFileName fol side
+            let dto = { StatsList = Map.toList stats }
+            let json = JsonSerializer.Serialize(dto, options)
+            File.WriteAllText(path, json)
+
+    module Training =
+        let getCandidatePositions (repertoire: Repertoire) (startPath: Mv list) : Mv list list =
+            // Find all prefixes of all lines in repertoire.Lines that start with startPath
+            let allPrefixes =
+                repertoire.Lines
+                |> List.collect (fun line ->
+                    [ for i in startPath.Length .. line.Length do
+                          yield List.truncate i line ]
+                )
+                |> List.distinct
+            
+            // Filter those where it's our side's turn to move, and there is at least one next move
+            allPrefixes
+            |> List.filter (fun path ->
+                let isOurTurn = 
+                    if repertoire.Side = WHITE then
+                        path.Length % 2 = 0
+                    else
+                        path.Length % 2 = 1
+                
+                if not isOurTurn then false
+                else
+                    // Check if there is at least one move after this path in the repertoire
+                    repertoire.Lines
+                    |> List.exists (fun line -> 
+                        line.Length > path.Length && Repertoire.IsPrefix path line
+                    )
+            )
+
+        let selectTrainingPositions (repertoire: Repertoire) (startPath: Mv list) (stats: Map<Mv list, PositionStats>) : Mv list list =
+            let candidates = getCandidatePositions repertoire startPath
+            
+            let getPriorityCategory path =
+                match Map.tryFind path stats with
+                | None -> 0 // Category 0: Untested
+                | Some s ->
+                    if s.FailedLastTime then 1 // Category 1: Failed last time
+                    elif s.Attempts > 0 && s.Successes < s.Attempts then 2 // Category 2: Low success rate
+                    else 3 // Category 3: Mastered
+                    
+            let getSuccessRate path =
+                match Map.tryFind path stats with
+                | None -> 0.0
+                | Some s -> 
+                    if s.Attempts = 0 then 0.0
+                    else float s.Successes / float s.Attempts
+
+            let rng = Random()
+            let sortedCandidates =
+                candidates
+                |> List.sortBy (fun path ->
+                    let cat = getPriorityCategory path
+                    let rate = getSuccessRate path
+                    // Add a tiny random factor for tie breaking
+                    let rand = rng.NextDouble() * 0.01
+                    (cat, rate + rand)
+                )
+                
+            sortedCandidates |> List.truncate 10
+
+

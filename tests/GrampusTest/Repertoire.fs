@@ -121,3 +121,54 @@ module RepertoireTests =
             backups.Length |> should be (greaterThanOrEqualTo 1)
         finally
             if Directory.Exists(fol) then Directory.Delete(fol, true)
+
+    [<Fact>]
+    let ``getCandidatePositions returns correct training positions`` () =
+        let line1 = [mv1; mv2; mv3; mv4]
+        let rep = { Name = "White Repertoire"; Side = WHITE; Lines = [line1]; Comments = Map.empty }
+        
+        let candidates = Training.getCandidatePositions rep []
+        // For white, only even length prefixes are white to move (length 0, 2)
+        // length 0: [] (has next move mv1)
+        // length 2: [mv1; mv2] (has next move mv3)
+        // length 4: [mv1; mv2; mv3; mv4] doesn't have next moves, so not included
+        List.contains [] candidates |> should equal true
+        List.contains [mv1; mv2] candidates |> should equal true
+        candidates.Length |> should equal 2
+
+    [<Fact>]
+    let ``selectTrainingPositions prioritizes untested and failed positions`` () =
+        let line1 = [mv1; mv2; mv3; mv4]
+        let rep = { Name = "White Repertoire"; Side = WHITE; Lines = [line1]; Comments = Map.empty }
+        
+        // stats has one tested position (success) and one untested
+        let stats = 
+            Map.empty 
+            |> Map.add [] { Attempts = 10; Successes = 10; FailedLastTime = false } // Mastered
+            // [mv1; mv2] is untested
+            
+        let selected = Training.selectTrainingPositions rep [] stats
+        // [mv1; mv2] should be preferred/first since it's untested
+        selected.[0] |> should equal [mv1; mv2]
+
+    [<Fact>]
+    let ``TrainingStats load and save persists data correctly`` () =
+        let fol = "test_stats_dir"
+        if Directory.Exists(fol) then Directory.Delete(fol, true)
+        Directory.CreateDirectory(fol) |> ignore
+        
+        try
+            let stats = 
+                Map.empty 
+                |> Map.add [mv1] { Attempts = 3; Successes = 1; FailedLastTime = true }
+                
+            TrainingStats.save fol WHITE stats
+            let loaded = TrainingStats.load fol WHITE
+            
+            loaded.Count |> should equal 1
+            let s = Map.find [mv1] loaded
+            s.Attempts |> should equal 3
+            s.Successes |> should equal 1
+            s.FailedLastTime |> should equal true
+        finally
+            if Directory.Exists(fol) then Directory.Delete(fol, true)
