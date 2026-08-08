@@ -70,6 +70,12 @@ module Assets =
     let Black = loadImage "black.png"
     let White = loadImage "white.png"
     let Sav = loadImage "sav.png"
+    let Edt = loadImage "book-open.png"
+    let Rd = loadImage "pencil.png"
+    let Trn = loadImage "train.png"
+    let Prnt = loadImage "printer.png"
+    let Old = loadImage "arrow-circle-225-left.png"
+    let Exit = loadImage "cross-button.png"
     let Grampus = loadIcon "grampus.ico"
     let loadPcs() =
         [ "wP"; "wN"; "wB"; "wR"; "wQ"; "wK"; 

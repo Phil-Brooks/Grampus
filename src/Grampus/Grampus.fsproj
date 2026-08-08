@@ -11,6 +11,12 @@
   </ItemGroup>
 
   <ItemGroup>
+    <EmbeddedResource Include="Images\arrow-circle-225-left.png" />
+    <EmbeddedResource Include="Images\cross-button.png" />
+    <EmbeddedResource Include="Images\printer.png" />
+    <EmbeddedResource Include="Images\book-open.png" />
+    <EmbeddedResource Include="Images\pencil.png" />
+    <EmbeddedResource Include="Images\train.png" />
     <EmbeddedResource Include="Images\Horsey\bB.png" />
     <EmbeddedResource Include="Images\Horsey\bK.png" />
     <EmbeddedResource Include="Images\Horsey\bN.png" />

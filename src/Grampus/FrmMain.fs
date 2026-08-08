@@ -116,7 +116,7 @@ type FrmMain() as this =
         // File Menu
         let mnuFile = new ToolStripMenuItem("&File")
         // Dynamic Load Old Version Menu
-        let mnuLoadBackup = new ToolStripMenuItem("&Load Old Version")
+        let mnuLoadBackup = new ToolStripMenuItem("&Load Old Version", Assets.Old)
         // This event fires every time the "Load Old Version" sub-menu is hovered/clicked
         mnuLoadBackup.DropDownOpening.Add(fun _ ->
             mnuLoadBackup.DropDownItems.Clear()
@@ -146,17 +146,17 @@ type FrmMain() as this =
                     )
                     mnuLoadBackup.DropDownItems.Add(itm) |> ignore
         )
-        let itmPrint = new ToolStripMenuItem("&Print", null, (fun _ _ -> rep.PrintPreview()))
-        let itmExit = new ToolStripMenuItem("E&xit", null, (fun _ _ -> this.Close()))
+        let itmPrint = new ToolStripMenuItem("&Print", Assets.Prnt, (fun _ _ -> rep.PrintPreview()))
+        let itmExit = new ToolStripMenuItem("E&xit", Assets.Exit, (fun _ _ -> this.Close()))
         mnuFile.DropDownItems.Add(mnuLoadBackup) |> ignore
         mnuFile.DropDownItems.Add(new ToolStripSeparator()) |> ignore
         mnuFile.DropDownItems.Add(itmPrint) |> ignore
         mnuFile.DropDownItems.Add(itmExit) |> ignore
 
         let mnuMode = new ToolStripMenuItem("&Mode")
-        let itmEdit = new ToolStripMenuItem("Edit Mode (Build Repertoire)", null, fun _ _ -> setMode Edit)
-        let itmRead = new ToolStripMenuItem("Read Mode (Practice)", null, fun _ _ -> setMode Read)
-        let itmTrain = new ToolStripMenuItem("Train Mode (Test Yourself)", null, fun _ _ -> startTraining())
+        let itmEdit = new ToolStripMenuItem("Edit Mode (Build Repertoire)", Assets.Edt, fun _ _ -> setMode Edit)
+        let itmRead = new ToolStripMenuItem("Read Mode (Practice)", Assets.Rd, fun _ _ -> setMode Read)
+        let itmTrain = new ToolStripMenuItem("Train Mode (Test Yourself)", Assets.Trn, fun _ _ -> startTraining())
         mnuMode.DropDownItems.AddRange([| itmEdit :> ToolStripItem; itmRead; itmTrain |])
 
         // Study Menu (remains the same)
@@ -235,7 +235,7 @@ type FrmMain() as this =
         let btnSave = new ToolStripButton(Text = "Save Changes", Image = Assets.Sav)
         btnSave.Click.Add(fun _ -> if currentMode = Edit then Repertoire.save repfol currentRep 
                                    else MessageBox.Show("Cannot save in Read Mode") |> ignore)
-        let btnTrain = new ToolStripButton(Text = "Train")
+        let btnTrain = new ToolStripButton(Text = "Train", Image = Assets.Trn)
         btnTrain.Click.Add(fun _ -> startTraining())
         ts.Items.Add(btnWhite) |> ignore
         ts.Items.Add(btnBlack) |> ignore
