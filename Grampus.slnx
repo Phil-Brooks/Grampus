@@ -1,7 +1,18 @@
 <Solution>
+  <Configurations>
+    <Platform Name="Any CPU" />
+    <Platform Name="x64" />
+    <Platform Name="x86" />
+  </Configurations>
   <Folder Name="/bat/">
     <File Path="bat/conv_svg.bat" />
   </Folder>
+  <Project Path="ChessDBBuilder/ChessDBBuilder.vcxproj" Id="48ce8204-5497-4ba7-9e0e-b83eb17ba932" />
+  <Project Path="ChessQuery/ChessQuery.vcxproj" Id="cd0a0562-2145-4675-b737-59c139767b9c" />
+  <Project Path="chess_opn_exp/chess_mcp_server.pyproj" Type="888888a0-9f3d-457c-b088-3a5042f75d52" Id="ab938f1c-cd34-45f1-9295-3256acd2a0c2">
+    <Platform Project="AnyCPU" />
+    <Build Project="false" />
+  </Project>
   <Project Path="src/Grampus/Grampus.fsproj" />
   <Project Path="tests/GrampusTest/GrampusTest.fsproj" Id="92581635-d62d-42ae-bd4e-8100e01d8fdb" />
 </Solution>
