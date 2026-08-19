@@ -6,7 +6,7 @@ import os
 # --- CONFIGURATION ---
 CHESS_QUERY_EXE = r"D:\Github\Grampus\x64\Release\ChessQuery.exe"
 STOCKFISH_EXE = r"D:\Github\mcp-stockfish-master\stockfish.exe"
-OUTPUT_FILE = r"d:\pgns\surprising_black_moves.txt"
+OUTPUT_FILE = r"D:\Github\Grampus\research_traps\surprising_black_moves.txt"
 
 # Thresholds
 MIN_GAMES_FOR_MOVE = 30      # Minimum games to trust the statistical data
