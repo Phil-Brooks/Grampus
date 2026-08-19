@@ -124,8 +124,8 @@ int main() {
     mdb_env_create(&env);
     mdb_env_set_mapsize(env, 20ULL * 1024 * 1024 * 1024);
 
-    std::filesystem::create_directories("d:/pgns/chess_db");
-    if (mdb_env_open(env, "d:/pgns/chess_db", 0, 0664) != 0) {
+    std::filesystem::create_directories("d:/pgns/all15_db");
+    if (mdb_env_open(env, "d:/pgns/all15_db", 0, 0664) != 0) {
         std::cerr << "Failed to open LMDB." << std::endl;
         return 1;
     }
@@ -136,7 +136,7 @@ int main() {
     mdb_dbi_open(txn, NULL, MDB_CREATE, &dbi);
     mdb_txn_commit(txn);
 
-    std::ifstream file("d:/pgns/french_early.pgn");
+    std::ifstream file("d:/pgns/all15.pgn");
     if (!file.is_open()) return 1;
 
     // Use Heap allocation to fix C6262 stack warning

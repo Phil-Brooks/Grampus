@@ -13,6 +13,10 @@
     <Platform Project="AnyCPU" />
     <Build Project="false" />
   </Project>
+  <Project Path="research_traps/research_traps.pyproj" Type="888888a0-9f3d-457c-b088-3a5042f75d52" Id="ba62be73-817a-45a4-8314-6bf2254f917f">
+    <Platform Project="AnyCPU" />
+    <Build Project="false" />
+  </Project>
   <Project Path="src/Grampus/Grampus.fsproj" />
   <Project Path="tests/GrampusTest/GrampusTest.fsproj" Id="92581635-d62d-42ae-bd4e-8100e01d8fdb" />
 </Solution>
