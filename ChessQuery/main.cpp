@@ -39,10 +39,10 @@ int main(int argc, char* argv[]) {
     mdb_env_create(&env);
 
     // REMOVED MDB_NOSUBDIR because your DB is in a folder
-    int rc = mdb_env_open(env, "d:/pgns/chess_db", MDB_RDONLY, 0664);
+    int rc = mdb_env_open(env, "D:/pgns/all15_db", MDB_RDONLY, 0664);
     if (rc != 0) {
         std::cerr << "LMDB Error (env_open): " << mdb_strerror(rc) << std::endl;
-        std::cerr << "Check if d:/pgns/chess_db exists and contains data.mdb" << std::endl;
+        std::cerr << "Check if D:/pgns/all15_db exists and contains data.mdb" << std::endl;
         return 1;
     }
 

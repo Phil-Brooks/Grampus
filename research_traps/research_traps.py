@@ -134,8 +134,8 @@ def crawl(fen, path_string, depth):
             continue
 
 if __name__ == "__main__":
-    # Starting Position for French: after 1. e4 (Black to move)
-    start_fen = "rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b KQkq e3 0 1"
+    # Starting Position for French: after 1. e4 e6 (Black to move)
+    start_fen = "rnbqkbnr/pppp1ppp/4p3/8/4P3/8/PPPP1PPP/RNBQKBNR w KQkq - 0 2"
     
     if os.path.exists(OUTPUT_FILE):
         os.remove(OUTPUT_FILE)
@@ -144,6 +144,6 @@ if __name__ == "__main__":
     print(f"Results will be saved to: {OUTPUT_FILE}")
     
     # Initial path reflects White's first move
-    crawl(start_fen, "1. e4", 1)
+    crawl(start_fen, "1. e4 e6", 1)
     
     print(f"\nSearch complete. Check {OUTPUT_FILE} for discoveries.")
