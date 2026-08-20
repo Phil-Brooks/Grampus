@@ -10,11 +10,11 @@ import re
 # Paths
 CHESS_QUERY_EXE = r"D:\Github\Grampus\x64\Release\ChessQuery.exe"
 STOCKFISH_EXE = r"D:\Github\mcp-stockfish-master\stockfish.exe"
-OUTPUT_FILE = r"D:\Github\Grampus\research_traps\Nf3_black_surprising_moves.txt"
+OUTPUT_FILE = r"D:\Github\Grampus\research_traps\d4Nf6_white.txt"
 
 # Search Parameters
-HUNT_SIDE = chess.BLACK   # Options: chess.WHITE or chess.BLACK
-START_PATH = "1. Nf3"  # Format: "1. e4 e6 2. d4" etc.
+HUNT_SIDE = chess.WHITE   # Options: chess.WHITE or chess.BLACK
+START_PATH = "1. d4 Nf6"  # Format: "1. e4 e6 2. d4" etc.
 
 # Thresholds
 MIN_GAMES_FOR_MOVE = 30      # Minimum games to trust the statistical data

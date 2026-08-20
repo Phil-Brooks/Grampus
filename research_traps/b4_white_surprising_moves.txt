@@ -1,8 +1,0 @@
-SURPRISING MOVE FOR WHITE (Move 4)
-Line: 1. b4 e5 2. Bb2 Bxb4 3. Bxe5 Nf6
-FEN Before: rnbqk2r/pppp1ppp/5n2/4B3/1b6/8/P1PPPPPP/RN1QKBNR w KQkq - 1 4
-Surprising Move: Nc3 (b1c3)
-Win Rate: 50.4% (Total Games: 131)
-Stockfish Evaluation (WHITE Relative): +0.42
-Stats: Wins:66 Draws:16 Losses:49
-============================================================
