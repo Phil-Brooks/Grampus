@@ -1,0 +1,136 @@
+SURPRISING MOVE FOR BLACK (Move 1)
+Line: 1. c4
+FEN Before: rnbqkbnr/pppppppp/8/8/2P5/8/PP1PPPPP/RNBQKBNR b KQkq - 0 1
+Surprising Move: a5 (a7a5)
+Win Rate: 52.9% (Total Games: 34)
+Stockfish Evaluation (BLACK Relative): -0.70
+Stats: Wins:18 Draws:2 Losses:14
+============================================================
+SURPRISING MOVE FOR BLACK (Move 4)
+Line: 1. c4 e5 2. Nc3 Nf6 3. g3 d5 4. cxd5
+FEN Before: rnbqkb1r/ppp2ppp/5n2/3Pp3/8/2N3P1/PP1PPP1P/R1BQKBNR b KQkq - 0 4
+Surprising Move: c6 (c7c6)
+Win Rate: 65.1% (Total Games: 83)
+Stockfish Evaluation (BLACK Relative): -0.78
+Stats: Wins:54 Draws:4 Losses:25
+============================================================
+SURPRISING MOVE FOR BLACK (Move 6)
+Line: 1. c4 e5 2. Nc3 Nc6 3. g3 g6 4. Bg2 Bg7 5. e3 d6 6. Nge2
+FEN Before: r1bqk1nr/ppp2pbp/2np2p1/4p3/2P5/2N1P1P1/PP1PNPBP/R1BQK2R b KQkq - 1 6
+Surprising Move: Be6 (c8e6)
+Win Rate: 52.6% (Total Games: 76)
+Stockfish Evaluation (BLACK Relative): -0.55
+Stats: Wins:40 Draws:16 Losses:20
+============================================================
+SURPRISING MOVE FOR BLACK (Move 6)
+Line: 1. c4 e5 2. Nc3 Nc6 3. g3 g6 4. Bg2 d6 5. e3 Bg7 6. Nge2
+FEN Before: r1bqk1nr/ppp2pbp/2np2p1/4p3/2P5/2N1P1P1/PP1PNPBP/R1BQK2R b KQkq - 2 6
+Surprising Move: Be6 (c8e6)
+Win Rate: 52.6% (Total Games: 76)
+Stockfish Evaluation (BLACK Relative): -0.75
+Stats: Wins:40 Draws:16 Losses:20
+============================================================
+SURPRISING MOVE FOR BLACK (Move 7)
+Line: 1. c4 Nf6 2. Nc3 g6 3. g3 Bg7 4. Bg2 O-O 5. e4 c5 6. Nge2 Nc6 7. O-O
+FEN Before: r1bq1rk1/pp1pppbp/2n2np1/2p5/2P1P3/2N3P1/PP1PNPBP/R1BQ1RK1 b - - 3 7
+Surprising Move: Ne8 (f6e8)
+Win Rate: 55.7% (Total Games: 79)
+Stockfish Evaluation (BLACK Relative): -0.05
+Stats: Wins:44 Draws:17 Losses:18
+============================================================
+SURPRISING MOVE FOR BLACK (Move 8)
+Line: 1. c4 Nf6 2. Nc3 g6 3. g3 Bg7 4. Bg2 O-O 5. Nf3 d6 6. O-O e5 7. d4 Nbd7 8. e4
+FEN Before: r1bq1rk1/pppn1pbp/3p1np1/4p3/2PPP3/2N2NP1/PP3PBP/R1BQ1RK1 b - - 0 8
+Surprising Move: b6 (b7b6)
+Win Rate: 47.4% (Total Games: 38)
+Stockfish Evaluation (BLACK Relative): -0.62
+Stats: Wins:18 Draws:7 Losses:13
+============================================================
+SURPRISING MOVE FOR BLACK (Move 10)
+Line: 1. c4 Nf6 2. Nc3 g6 3. g3 Bg7 4. Bg2 O-O 5. Nf3 d6 6. O-O Nc6 7. d4 e5 8. dxe5 dxe5 9. Qxd8 Rxd8 10. Bg5
+FEN Before: r1br2k1/ppp2pbp/2n2np1/4p1B1/2P5/2N2NP1/PP2PPBP/R4RK1 b - - 1 10
+Surprising Move: h6 (h7h6)
+Win Rate: 47.4% (Total Games: 38)
+Stockfish Evaluation (BLACK Relative): -0.28
+Stats: Wins:18 Draws:10 Losses:10
+============================================================
+SURPRISING MOVE FOR BLACK (Move 13)
+Line: 1. c4 Nf6 2. Nc3 g6 3. e4 d6 4. d4 Bg7 5. Nf3 O-O 6. Be2 e5 7. O-O Nc6 8. d5 Ne7 9. Ne1 Nd7 10. Be3 f5 11. f3 f4 12. Bf2 g5 13. Nd3
+FEN Before: r1bq1rk1/pppnn1bp/3p4/3Pp1p1/2P1Pp2/2NN1P2/PP2BBPP/R2Q1RK1 b - - 1 13
+Surprising Move: Ng6 (e7g6)
+Win Rate: 50.8% (Total Games: 63)
+Stockfish Evaluation (BLACK Relative): -0.84
+Stats: Wins:32 Draws:9 Losses:22
+============================================================
+SURPRISING MOVE FOR BLACK (Move 9)
+Line: 1. c4 Nf6 2. Nc3 g6 3. e4 d6 4. d4 Bg7 5. Nf3 O-O 6. Be2 e5 7. d5 a5 8. Bg5 Na6 9. Nd2
+FEN Before: r1bq1rk1/1pp2pbp/n2p1np1/p2Pp1B1/2P1P3/2N5/PP1NBPPP/R2QK2R b KQ - 3 9
+Surprising Move: h6 (h7h6)
+Win Rate: 52.0% (Total Games: 75)
+Stockfish Evaluation (BLACK Relative): -0.87
+Stats: Wins:39 Draws:8 Losses:28
+============================================================
+SURPRISING MOVE FOR BLACK (Move 8)
+Line: 1. c4 Nf6 2. Nc3 g6 3. e4 d6 4. d4 Bg7 5. Nf3 O-O 6. h3 e5 7. d5 Nh5 8. g3
+FEN Before: rnbq1rk1/ppp2pbp/3p2p1/3Pp2n/2P1P3/2N2NPP/PP3P2/R1BQKB1R b KQ - 0 8
+Surprising Move: Qe8 (d8e8)
+Win Rate: 55.0% (Total Games: 40)
+Stockfish Evaluation (BLACK Relative): -0.78
+Stats: Wins:22 Draws:4 Losses:14
+============================================================
+SURPRISING MOVE FOR BLACK (Move 7)
+Line: 1. c4 Nf6 2. Nc3 g6 3. e4 d6 4. d4 Bg7 5. Nf3 O-O 6. h3 c5 7. d5
+FEN Before: rnbq1rk1/pp2ppbp/3p1np1/2pP4/2P1P3/2N2N1P/PP3PP1/R1BQKB1R b KQ - 0 7
+Surprising Move: e5 (e7e5)
+Win Rate: 56.2% (Total Games: 48)
+Stockfish Evaluation (BLACK Relative): -1.29
+Stats: Wins:27 Draws:4 Losses:17
+============================================================
+SURPRISING MOVE FOR BLACK (Move 5)
+Line: 1. c4 Nf6 2. Nc3 g6 3. e4 Bg7 4. d4 O-O 5. Be2
+FEN Before: rnbq1rk1/ppppppbp/5np1/8/2PPP3/2N5/PP2BPPP/R1BQK1NR b KQ - 2 5
+Surprising Move: c6 (c7c6)
+Win Rate: 53.2% (Total Games: 62)
+Stockfish Evaluation (BLACK Relative): -1.11
+Stats: Wins:33 Draws:9 Losses:20
+============================================================
+SURPRISING MOVE FOR BLACK (Move 6)
+Line: 1. c4 Nf6 2. g3 g6 3. Bg2 Bg7 4. Nf3 O-O 5. O-O d6 6. d4
+FEN Before: rnbq1rk1/ppp1ppbp/3p1np1/8/2PP4/5NP1/PP2PPBP/RNBQ1RK1 b - - 0 6
+Surprising Move: Bf5 (c8f5)
+Win Rate: 50.7% (Total Games: 371)
+Stockfish Evaluation (BLACK Relative): -0.37
+Stats: Wins:188 Draws:68 Losses:115
+============================================================
+SURPRISING MOVE FOR BLACK (Move 6)
+Line: 1. c4 Nf6 2. g3 g6 3. Bg2 Bg7 4. Nf3 d6 5. d4 O-O 6. O-O
+FEN Before: rnbq1rk1/ppp1ppbp/3p1np1/8/2PP4/5NP1/PP2PPBP/RNBQ1RK1 b - - 2 6
+Surprising Move: Bf5 (c8f5)
+Win Rate: 50.7% (Total Games: 371)
+Stockfish Evaluation (BLACK Relative): -0.51
+Stats: Wins:188 Draws:68 Losses:115
+============================================================
+SURPRISING MOVE FOR BLACK (Move 9)
+Line: 1. c4 Nf6 2. g3 e6 3. Bg2 d5 4. Nf3 Be7 5. O-O O-O 6. d4 c6 7. Qc2 b6 8. Nbd2 Bb7 9. Rd1
+FEN Before: rn1q1rk1/pb2bppp/1pp1pn2/3p4/2PP4/5NP1/PPQNPPBP/R1BR2K1 b - - 3 9
+Surprising Move: Na6 (b8a6)
+Win Rate: 51.5% (Total Games: 33)
+Stockfish Evaluation (BLACK Relative): -0.42
+Stats: Wins:17 Draws:6 Losses:10
+============================================================
+SURPRISING MOVE FOR BLACK (Move 8)
+Line: 1. c4 Nf6 2. g3 e6 3. Bg2 d5 4. d4 Bb4+ 5. Bd2 a5 6. Nf3 O-O 7. O-O dxc4 8. Qc2
+FEN Before: rnbq1rk1/1pp2ppp/4pn2/p7/1bpP4/5NP1/PPQBPPBP/RN3RK1 b - - 1 8
+Surprising Move: Bxd2 (b4d2)
+Win Rate: 49.4% (Total Games: 180)
+Stockfish Evaluation (BLACK Relative): -0.09
+Stats: Wins:89 Draws:43 Losses:48
+============================================================
+SURPRISING MOVE FOR BLACK (Move 8)
+Line: 1. c4 Nf6 2. g3 e6 3. Bg2 d5 4. d4 Bb4+ 5. Bd2 a5 6. Nf3 dxc4 7. O-O O-O 8. Qc2
+FEN Before: rnbq1rk1/1pp2ppp/4pn2/p7/1bpP4/5NP1/PPQBPPBP/RN3RK1 b - - 3 8
+Surprising Move: Bxd2 (b4d2)
+Win Rate: 49.4% (Total Games: 180)
+Stockfish Evaluation (BLACK Relative): -0.09
+Stats: Wins:89 Draws:43 Losses:48
+============================================================
