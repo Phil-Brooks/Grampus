@@ -1,0 +1,272 @@
+SURPRISING MOVE FOR WHITE (Move 8)
+Line: 1. d4 Nf6 2. c4 g6 3. Nc3 Bg7 4. e4 d6 5. Nf3 O-O 6. Be2 e5 7. O-O Nc6
+FEN Before: r1bq1rk1/ppp2pbp/2np1np1/4p3/2PPP3/2N2N2/PP2BPPP/R1BQ1RK1 w - - 2 8
+Surprising Move: Be3 (c1e3)
+Win Rate: 51.6% (Total Games: 281)
+Stockfish Evaluation (WHITE Relative): -0.36
+Stats: Wins:145 Draws:52 Losses:84
+============================================================
+SURPRISING MOVE FOR WHITE (Move 9)
+Line: 1. d4 Nf6 2. c4 g6 3. Nc3 Bg7 4. e4 d6 5. Nf3 O-O 6. Be2 e5 7. O-O Nc6 8. d5 Ne7
+FEN Before: r1bq1rk1/ppp1npbp/3p1np1/3Pp3/2P1P3/2N2N2/PP2BPPP/R1BQ1RK1 w - - 1 9
+Surprising Move: Qc2 (d1c2)
+Win Rate: 56.5% (Total Games: 23)
+Stockfish Evaluation (WHITE Relative): -0.59
+Stats: Wins:13 Draws:5 Losses:5
+============================================================
+SURPRISING MOVE FOR WHITE (Move 10)
+Line: 1. d4 Nf6 2. c4 g6 3. Nc3 Bg7 4. e4 d6 5. Nf3 O-O 6. Be2 e5 7. O-O Nc6 8. d5 Ne7 9. b4 Nh5
+FEN Before: r1bq1rk1/ppp1npbp/3p2p1/3Pp2n/1PP1P3/2N2N2/P3BPPP/R1BQ1RK1 w - - 1 10
+Surprising Move: a4 (a2a4)
+Win Rate: 61.8% (Total Games: 34)
+Stockfish Evaluation (WHITE Relative): -0.70
+Stats: Wins:21 Draws:10 Losses:3
+============================================================
+SURPRISING MOVE FOR WHITE (Move 12)
+Line: 1. d4 Nf6 2. c4 g6 3. Nc3 Bg7 4. e4 d6 5. Nf3 O-O 6. Be2 e5 7. O-O Nc6 8. d5 Ne7 9. b4 a5 10. bxa5 Rxa5 11. a4 Ne8
+FEN Before: 2bqnrk1/1pp1npbp/3p2p1/r2Pp3/P1P1P3/2N2N2/4BPPP/R1BQ1RK1 w - - 1 12
+Surprising Move: Be3 (c1e3)
+Win Rate: 50.0% (Total Games: 22)
+Stockfish Evaluation (WHITE Relative): -0.68
+Stats: Wins:11 Draws:10 Losses:1
+============================================================
+SURPRISING MOVE FOR WHITE (Move 12)
+Line: 1. d4 Nf6 2. c4 g6 3. Nc3 Bg7 4. e4 d6 5. Nf3 O-O 6. Be2 e5 7. O-O Nc6 8. d5 Ne7 9. b4 a5 10. bxa5 c5 11. a4 Rxa5
+FEN Before: 2bq1rk1/1p2npbp/3p1np1/r1pPp3/P1P1P3/2N2N2/4BPPP/R1BQ1RK1 w - - 0 12
+Surprising Move: Bd2 (c1d2)
+Win Rate: 79.2% (Total Games: 24)
+Stockfish Evaluation (WHITE Relative): -1.08
+Stats: Wins:19 Draws:3 Losses:2
+============================================================
+SURPRISING MOVE FOR WHITE (Move 11)
+Line: 1. d4 Nf6 2. c4 g6 3. Nc3 Bg7 4. e4 d6 5. Nf3 O-O 6. Be2 e5 7. O-O exd4 8. Nxd4 Re8 9. f3 c6 10. Kh1 d5
+FEN Before: rnbqr1k1/pp3pbp/2p2np1/3p4/2PNP3/2N2P2/PP2B1PP/R1BQ1R1K w - - 0 11
+Surprising Move: exd5 (e4d5)
+Win Rate: 52.4% (Total Games: 21)
+Stockfish Evaluation (WHITE Relative): -0.16
+Stats: Wins:11 Draws:4 Losses:6
+============================================================
+SURPRISING MOVE FOR WHITE (Move 12)
+Line: 1. d4 Nf6 2. c4 g6 3. Nc3 Bg7 4. e4 d6 5. Nf3 O-O 6. Be2 e5 7. O-O exd4 8. Nxd4 Re8 9. f3 Nc6 10. Be3 Nh5 11. Qd2 Nf4
+FEN Before: r1bqr1k1/ppp2pbp/2np2p1/8/2PNPn2/2N1BP2/PP1QB1PP/R4RK1 w - - 5 12
+Surprising Move: Rfd1 (f1d1)
+Win Rate: 50.0% (Total Games: 28)
+Stockfish Evaluation (WHITE Relative): -0.54
+Stats: Wins:14 Draws:10 Losses:4
+============================================================
+SURPRISING MOVE FOR WHITE (Move 12)
+Line: 1. d4 Nf6 2. c4 g6 3. Nc3 Bg7 4. e4 d6 5. Nf3 O-O 6. Be2 e5 7. O-O exd4 8. Nxd4 Nc6 9. Be3 Re8 10. f3 Nh5 11. Qd2 Nf4
+FEN Before: r1bqr1k1/ppp2pbp/2np2p1/8/2PNPn2/2N1BP2/PP1QB1PP/R4RK1 w - - 3 12
+Surprising Move: Rfd1 (f1d1)
+Win Rate: 50.0% (Total Games: 28)
+Stockfish Evaluation (WHITE Relative): -0.57
+Stats: Wins:14 Draws:10 Losses:4
+============================================================
+SURPRISING MOVE FOR WHITE (Move 11)
+Line: 1. d4 Nf6 2. c4 g6 3. Nc3 Bg7 4. e4 d6 5. Nf3 O-O 6. Be2 e5 7. d5 a5 8. Bg5 h6 9. Be3 Ng4 10. Bd2 f5
+FEN Before: rnbq1rk1/1pp3b1/3p2pp/p2Ppp2/2P1P1n1/2N2N2/PP1BBPPP/R2QK2R w KQ - 0 11
+Surprising Move: exf5 (e4f5)
+Win Rate: 58.8% (Total Games: 34)
+Stockfish Evaluation (WHITE Relative): +0.56
+Stats: Wins:20 Draws:5 Losses:9
+============================================================
+SURPRISING MOVE FOR WHITE (Move 13)
+Line: 1. d4 Nf6 2. c4 g6 3. Nc3 Bg7 4. e4 d6 5. Nf3 O-O 6. Be2 e5 7. d5 a5 8. Bg5 h6 9. Be3 Ng4 10. Bd2 f5 11. h3 Nf6 12. exf5 gxf5
+FEN Before: rnbq1rk1/1pp3b1/3p1n1p/p2Ppp2/2P5/2N2N1P/PP1BBPP1/R2QK2R w KQ - 0 13
+Surprising Move: g4 (g2g4)
+Win Rate: 59.1% (Total Games: 22)
+Stockfish Evaluation (WHITE Relative): -0.54
+Stats: Wins:13 Draws:1 Losses:8
+============================================================
+SURPRISING MOVE FOR WHITE (Move 13)
+Line: 1. d4 Nf6 2. c4 g6 3. Nc3 Bg7 4. e4 d6 5. Nf3 O-O 6. Be2 e5 7. d5 a5 8. Bg5 h6 9. Be3 Ng4 10. Bd2 f5 11. exf5 gxf5 12. h3 Nf6
+FEN Before: rnbq1rk1/1pp3b1/3p1n1p/p2Ppp2/2P5/2N2N1P/PP1BBPP1/R2QK2R w KQ - 1 13
+Surprising Move: g4 (g2g4)
+Win Rate: 59.1% (Total Games: 22)
+Stockfish Evaluation (WHITE Relative): -0.54
+Stats: Wins:13 Draws:1 Losses:8
+============================================================
+SURPRISING MOVE FOR WHITE (Move 10)
+Line: 1. d4 Nf6 2. c4 g6 3. Nc3 Bg7 4. e4 d6 5. Nf3 O-O 6. Be2 e5 7. d5 a5 8. Bg5 Na6 9. Nd2 Qe8
+FEN Before: r1b1qrk1/1pp2pbp/n2p1np1/p2Pp1B1/2P1P3/2N5/PP1NBPPP/R2QK2R w KQ - 4 10
+Surprising Move: a3 (a2a3)
+Win Rate: 80.0% (Total Games: 20)
+Stockfish Evaluation (WHITE Relative): -0.71
+Stats: Wins:16 Draws:0 Losses:4
+============================================================
+SURPRISING MOVE FOR WHITE (Move 10)
+Line: 1. d4 Nf6 2. c4 g6 3. Nc3 Bg7 4. e4 d6 5. Nf3 O-O 6. Be2 e5 7. d5 a5 8. Be3 Na6 9. Nd2 Nc5
+FEN Before: r1bq1rk1/1pp2pbp/3p1np1/p1nPp3/2P1P3/2N1B3/PP1NBPPP/R2QK2R w KQ - 4 10
+Surprising Move: g4 (g2g4)
+Win Rate: 57.9% (Total Games: 76)
+Stockfish Evaluation (WHITE Relative): -1.22
+Stats: Wins:44 Draws:5 Losses:27
+============================================================
+SURPRISING MOVE FOR WHITE (Move 8)
+Line: 1. d4 Nf6 2. c4 g6 3. Nc3 Bg7 4. e4 d6 5. Nf3 O-O 6. Be2 e5 7. d5 Nbd7
+FEN Before: r1bq1rk1/pppn1pbp/3p1np1/3Pp3/2P1P3/2N2N2/PP2BPPP/R1BQK2R w KQ - 1 8
+Surprising Move: Be3 (c1e3)
+Win Rate: 57.1% (Total Games: 70)
+Stockfish Evaluation (WHITE Relative): -0.60
+Stats: Wins:40 Draws:15 Losses:15
+============================================================
+SURPRISING MOVE FOR WHITE (Move 10)
+Line: 1. d4 Nf6 2. c4 g6 3. Nc3 Bg7 4. e4 d6 5. Nf3 O-O 6. Be2 e5 7. d5 Nbd7 8. Be3 Nc5 9. Nd2 a5
+FEN Before: r1bq1rk1/1pp2pbp/3p1np1/p1nPp3/2P1P3/2N1B3/PP1NBPPP/R2QK2R w KQ - 0 10
+Surprising Move: g4 (g2g4)
+Win Rate: 57.9% (Total Games: 76)
+Stockfish Evaluation (WHITE Relative): -1.22
+Stats: Wins:44 Draws:5 Losses:27
+============================================================
+SURPRISING MOVE FOR WHITE (Move 10)
+Line: 1. d4 Nf6 2. c4 g6 3. Nc3 Bg7 4. e4 d6 5. Nf3 O-O 6. Be2 Nbd7 7. O-O e5 8. Be3 Qe7 9. Qc2 c6
+FEN Before: r1b2rk1/pp1nqpbp/2pp1np1/4p3/2PPP3/2N1BN2/PPQ1BPPP/R4RK1 w - - 0 10
+Surprising Move: d5 (d4d5)
+Win Rate: 52.5% (Total Games: 139)
+Stockfish Evaluation (WHITE Relative): -0.96
+Stats: Wins:73 Draws:28 Losses:38
+============================================================
+SURPRISING MOVE FOR WHITE (Move 9)
+Line: 1. d4 Nf6 2. c4 g6 3. Nc3 Bg7 4. e4 d6 5. Nf3 O-O 6. Be2 Nbd7 7. O-O e5 8. Be3 c6
+FEN Before: r1bq1rk1/pp1n1pbp/2pp1np1/4p3/2PPP3/2N1BN2/PP2BPPP/R2Q1RK1 w - - 0 9
+Surprising Move: d5 (d4d5)
+Win Rate: 52.4% (Total Games: 248)
+Stockfish Evaluation (WHITE Relative): -0.87
+Stats: Wins:130 Draws:57 Losses:61
+============================================================
+SURPRISING MOVE FOR WHITE (Move 10)
+Line: 1. d4 Nf6 2. c4 g6 3. Nc3 Bg7 4. e4 d6 5. Nf3 O-O 6. Be2 Nbd7 7. O-O e5 8. Be3 c6 9. d5 c5
+FEN Before: r1bq1rk1/pp1n1pbp/3p1np1/2pPp3/2P1P3/2N1BN2/PP2BPPP/R2Q1RK1 w - - 0 10
+Surprising Move: Ne1 (f3e1)
+Win Rate: 52.9% (Total Games: 104)
+Stockfish Evaluation (WHITE Relative): -0.95
+Stats: Wins:55 Draws:24 Losses:25
+============================================================
+SURPRISING MOVE FOR WHITE (Move 10)
+Line: 1. d4 Nf6 2. c4 g6 3. Nc3 Bg7 4. e4 d6 5. Nf3 O-O 6. Be2 Nbd7 7. O-O e5 8. Be3 c6 9. Qc2 Qe7
+FEN Before: r1b2rk1/pp1nqpbp/2pp1np1/4p3/2PPP3/2N1BN2/PPQ1BPPP/R4RK1 w - - 2 10
+Surprising Move: d5 (d4d5)
+Win Rate: 52.5% (Total Games: 139)
+Stockfish Evaluation (WHITE Relative): -0.96
+Stats: Wins:73 Draws:28 Losses:38
+============================================================
+SURPRISING MOVE FOR WHITE (Move 10)
+Line: 1. d4 Nf6 2. c4 g6 3. Nc3 Bg7 4. e4 d6 5. Nf3 O-O 6. h3 e5 7. d5 a5 8. g4 Na6 9. Be3 Nd7
+FEN Before: r1bq1rk1/1ppn1pbp/n2p2p1/p2Pp3/2P1P1P1/2N1BN1P/PP3P2/R2QKB1R w KQ - 3 10
+Surprising Move: Rg1 (h1g1)
+Win Rate: 50.0% (Total Games: 34)
+Stockfish Evaluation (WHITE Relative): -0.51
+Stats: Wins:17 Draws:4 Losses:13
+============================================================
+SURPRISING MOVE FOR WHITE (Move 9)
+Line: 1. d4 Nf6 2. c4 g6 3. Nc3 Bg7 4. e4 d6 5. Nf3 O-O 6. h3 e5 7. d5 a5 8. Be3 Na6
+FEN Before: r1bq1rk1/1pp2pbp/n2p1np1/p2Pp3/2P1P3/2N1BN1P/PP3PP1/R2QKB1R w KQ - 2 9
+Surprising Move: Nd2 (f3d2)
+Win Rate: 48.8% (Total Games: 43)
+Stockfish Evaluation (WHITE Relative): +0.00
+Stats: Wins:21 Draws:6 Losses:16
+============================================================
+SURPRISING MOVE FOR WHITE (Move 10)
+Line: 1. d4 Nf6 2. c4 g6 3. Nc3 Bg7 4. e4 d6 5. Nf3 O-O 6. h3 e5 7. d5 a5 8. Be3 Na6 9. g4 Nd7
+FEN Before: r1bq1rk1/1ppn1pbp/n2p2p1/p2Pp3/2P1P1P1/2N1BN1P/PP3P2/R2QKB1R w KQ - 1 10
+Surprising Move: Rg1 (h1g1)
+Win Rate: 50.0% (Total Games: 34)
+Stockfish Evaluation (WHITE Relative): -0.68
+Stats: Wins:17 Draws:4 Losses:13
+============================================================
+SURPRISING MOVE FOR WHITE (Move 12)
+Line: 1. d4 Nf6 2. c4 g6 3. Nc3 Bg7 4. e4 d6 5. Nf3 O-O 6. h3 c5 7. d5 e6 8. Bd3 exd5 9. exd5 Re8+ 10. Be3 Nbd7 11. O-O a6
+FEN Before: r1bqr1k1/1p1n1pbp/p2p1np1/2pP4/2P5/2NBBN1P/PP3PP1/R2Q1RK1 w - - 0 12
+Surprising Move: Qd2 (d1d2)
+Win Rate: 72.7% (Total Games: 22)
+Stockfish Evaluation (WHITE Relative): -0.83
+Stats: Wins:16 Draws:3 Losses:3
+============================================================
+SURPRISING MOVE FOR WHITE (Move 10)
+Line: 1. d4 Nf6 2. c4 g6 3. Nc3 Bg7 4. e4 d6 5. Nf3 O-O 6. h3 c5 7. d5 e6 8. Bd3 exd5 9. cxd5 b5
+FEN Before: rnbq1rk1/p4pbp/3p1np1/1ppP4/4P3/2NB1N1P/PP3PP1/R1BQK2R w KQ - 0 10
+Surprising Move: O-O (e1g1)
+Win Rate: 57.4% (Total Games: 47)
+Stockfish Evaluation (WHITE Relative): -0.27
+Stats: Wins:27 Draws:2 Losses:18
+============================================================
+SURPRISING MOVE FOR WHITE (Move 12)
+Line: 1. d4 Nf6 2. c4 g6 3. Nc3 Bg7 4. e4 d6 5. Nf3 O-O 6. h3 c5 7. d5 e6 8. Bd3 exd5 9. cxd5 b5 10. Nxb5 Re8 11. O-O Nxe4
+FEN Before: rnbqr1k1/p4pbp/3p2p1/1NpP4/4n3/3B1N1P/PP3PP1/R1BQ1RK1 w - - 0 12
+Surprising Move: Bxe4 (d3e4)
+Win Rate: 60.0% (Total Games: 45)
+Stockfish Evaluation (WHITE Relative): -0.30
+Stats: Wins:27 Draws:6 Losses:12
+============================================================
+SURPRISING MOVE FOR WHITE (Move 12)
+Line: 1. d4 Nf6 2. c4 g6 3. Nc3 Bg7 4. e4 d6 5. Nf3 O-O 6. h3 c5 7. Be3 cxd4 8. Nxd4 Nc6 9. Be2 Bd7 10. O-O Nxd4 11. Bxd4 Bc6
+FEN Before: r2q1rk1/pp2ppbp/2bp1np1/8/2PBP3/2N4P/PP2BPP1/R2Q1RK1 w - - 1 12
+Surprising Move: Qc2 (d1c2)
+Win Rate: 54.2% (Total Games: 441)
+Stockfish Evaluation (WHITE Relative): -0.72
+Stats: Wins:239 Draws:109 Losses:93
+============================================================
+SURPRISING MOVE FOR WHITE (Move 13)
+Line: 1. d4 Nf6 2. c4 g6 3. Nc3 Bg7 4. e4 d6 5. Nf3 O-O 6. h3 c5 7. Be3 cxd4 8. Nxd4 Nc6 9. Be2 Bd7 10. O-O Nxd4 11. Bxd4 Bc6 12. Qc2 a5
+FEN Before: r2q1rk1/1p2ppbp/2bp1np1/p7/2PBP3/2N4P/PPQ1BPP1/R4RK1 w - - 0 13
+Surprising Move: Rfd1 (f1d1)
+Win Rate: 68.2% (Total Games: 22)
+Stockfish Evaluation (WHITE Relative): -0.50
+Stats: Wins:15 Draws:2 Losses:5
+============================================================
+SURPRISING MOVE FOR WHITE (Move 14)
+Line: 1. d4 Nf6 2. c4 g6 3. Nc3 Bg7 4. e4 d6 5. Nf3 O-O 6. h3 c5 7. Be3 cxd4 8. Nxd4 Nc6 9. Be2 Bd7 10. O-O Nxd4 11. Bxd4 Bc6 12. Qc2 Nd7 13. Bxg7 Kxg7
+FEN Before: r2q1r2/pp1nppkp/2bp2p1/8/2P1P3/2N4P/PPQ1BPP1/R4RK1 w - - 0 14
+Surprising Move: Rad1 (a1d1)
+Win Rate: 63.0% (Total Games: 27)
+Stockfish Evaluation (WHITE Relative): -0.74
+Stats: Wins:17 Draws:6 Losses:4
+============================================================
+SURPRISING MOVE FOR WHITE (Move 12)
+Line: 1. d4 Nf6 2. c4 g6 3. Nc3 Bg7 4. e4 d6 5. Nf3 O-O 6. h3 c5 7. Be3 cxd4 8. Nxd4 Nc6 9. Be2 Nxd4 10. Bxd4 Bd7 11. O-O Bc6
+FEN Before: r2q1rk1/pp2ppbp/2bp1np1/8/2PBP3/2N4P/PP2BPP1/R2Q1RK1 w - - 3 12
+Surprising Move: Qc2 (d1c2)
+Win Rate: 54.2% (Total Games: 441)
+Stockfish Evaluation (WHITE Relative): -0.72
+Stats: Wins:239 Draws:109 Losses:93
+============================================================
+SURPRISING MOVE FOR WHITE (Move 8)
+Line: 1. d4 Nf6 2. c4 g6 3. Nc3 Bg7 4. e4 d6 5. Nf3 Bg4 6. Be2 O-O 7. Be3 Nfd7
+FEN Before: rn1q1rk1/pppnppbp/3p2p1/8/2PPP1b1/2N1BN2/PP2BPPP/R2QK2R w KQ - 6 8
+Surprising Move: Qd2 (d1d2)
+Win Rate: 59.6% (Total Games: 52)
+Stockfish Evaluation (WHITE Relative): -0.70
+Stats: Wins:31 Draws:10 Losses:11
+============================================================
+SURPRISING MOVE FOR WHITE (Move 8)
+Line: 1. d4 Nf6 2. c4 g6 3. Nc3 Bg7 4. e4 d6 5. Nf3 Bg4 6. Be2 O-O 7. O-O Nc6
+FEN Before: r2q1rk1/ppp1ppbp/2np1np1/8/2PPP1b1/2N2N2/PP2BPPP/R1BQ1RK1 w - - 6 8
+Surprising Move: Be3 (c1e3)
+Win Rate: 44.4% (Total Games: 45)
+Stockfish Evaluation (WHITE Relative): -0.67
+Stats: Wins:20 Draws:8 Losses:17
+============================================================
+SURPRISING MOVE FOR WHITE (Move 7)
+Line: 1. d4 Nf6 2. c4 g6 3. Nc3 Bg7 4. e4 d6 5. Be2 O-O 6. Be3 e5
+FEN Before: rnbq1rk1/ppp2pbp/3p1np1/4p3/2PPP3/2N1B3/PP2BPPP/R2QK1NR w KQ - 0 7
+Surprising Move: d5 (d4d5)
+Win Rate: 56.8% (Total Games: 1258)
+Stockfish Evaluation (WHITE Relative): -0.82
+Stats: Wins:714 Draws:195 Losses:349
+============================================================
+SURPRISING MOVE FOR WHITE (Move 9)
+Line: 1. d4 Nf6 2. c4 g6 3. Nc3 Bg7 4. e4 d6 5. Be2 O-O 6. Be3 e5 7. d5 Na6 8. g4 Nc5
+FEN Before: r1bq1rk1/ppp2pbp/3p1np1/2nPp3/2P1P1P1/2N1B3/PP2BP1P/R2QK1NR w KQ - 1 9
+Surprising Move: Bf3 (e2f3)
+Win Rate: 58.1% (Total Games: 31)
+Stockfish Evaluation (WHITE Relative): -0.44
+Stats: Wins:18 Draws:2 Losses:11
+============================================================
+SURPRISING MOVE FOR WHITE (Move 10)
+Line: 1. d4 Nf6 2. c4 g6 3. Nc3 Bg7 4. e4 d6 5. Be2 O-O 6. Be3 e5 7. d5 Na6 8. g4 Nc5 9. f3 h5
+FEN Before: r1bq1rk1/ppp2pb1/3p1np1/2nPp2p/2P1P1P1/2N1BP2/PP2B2P/R2QK1NR w KQ - 0 10
+Surprising Move: h4 (h2h4)
+Win Rate: 55.6% (Total Games: 27)
+Stockfish Evaluation (WHITE Relative): -0.01
+Stats: Wins:15 Draws:5 Losses:7
+============================================================

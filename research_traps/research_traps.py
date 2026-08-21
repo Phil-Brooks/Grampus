@@ -10,16 +10,16 @@ import re
 # Paths
 CHESS_QUERY_EXE = r"D:\Github\Grampus\x64\Release\ChessQuery.exe"
 STOCKFISH_EXE = r"D:\Github\mcp-stockfish-master\stockfish.exe"
-OUTPUT_FILE = r"D:\Github\Grampus\research_traps\d4Nf6_white.txt"
+OUTPUT_FILE = r"D:\Github\Grampus\research_traps\KID_white.txt"
 
 # Search Parameters
 HUNT_SIDE = chess.WHITE   # Options: chess.WHITE or chess.BLACK
-START_PATH = "1. d4 Nf6"  # Format: "1. e4 e6 2. d4" etc.
+START_PATH = "1. d4 Nf6 2. c4 g6 3. Nc3 Bg7 4. e4 d6"  # Format: "1. e4 e6 2. d4" etc.
 
 # Thresholds
-MIN_GAMES_FOR_MOVE = 30      # Minimum games to trust the statistical data
+MIN_GAMES_FOR_MOVE = 20      # Minimum games to trust the statistical data
 WIN_RATE_THRESHOLD = 0.35    # Success rate must be at least this (0.0 - 1.0)
-WIN_RATE_OUTLIER_GAP = 0.10  # Move must be this much better than the average of others
+WIN_RATE_OUTLIER_GAP = 0.08  # Move must be this much better than the average of others
 MAX_PLY = 30                 # Search depth in half-moves
 # =============================================================================
 
